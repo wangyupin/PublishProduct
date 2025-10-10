@@ -257,20 +257,20 @@ namespace HqSrv.Controllers
 
             string selectSQL = @"
                 Declare @O_MSG VARCHAR(MAX)=N''
-                IF NOT EXISTS(SELECT 1 FROM WebRPT_Users Where UserID = @EmpId AND Password = @EmpPassword) BEGIN
+                IF NOT EXISTS(SELECT 1 FROM Users Where UserID = @EmpId AND Password = @EmpPassword) BEGIN
 				    SET @O_MSG = '員工帳號或密碼錯誤!'
 				    ;THROW 6636001, @O_MSG, 1;
 			    END  
 
                 DECLARE @GroupName VARCHAR(30) = ''
 
-                SELECT UserNumber AS UserID, UserName, GroupName FROM WebRPT_Users WHERE UserID = @EmpId AND Password = @EmpPassword
-                SELECT @GroupName = GroupName FROM WebRPT_Users WHERE UserID = @EmpId AND Password = @EmpPassword
+                SELECT UserNumber AS UserID, UserName, GroupName FROM Users WHERE UserID = @EmpId AND Password = @EmpPassword
+                SELECT @GroupName = GroupName FROM Users WHERE UserID = @EmpId AND Password = @EmpPassword
                 
                 SELECT DISTINCT PS.PermissionName Action, CAST(PG.ProgramID AS VARCHAR(5)) AS Subject
-                FROM WebRPT_UserGroupPermission GP
-                LEFT JOIN WebRPT_Permission PS ON GP.PermissionID = PS.PermissionID
-                LEFT JOIN WebRPT_Program PG ON PS.ProgramID = PG.ProgramID
+                FROM UserGroupPermission GP
+                LEFT JOIN Permission PS ON GP.PermissionID = PS.PermissionID
+                LEFT JOIN Program PG ON PS.ProgramID = PG.ProgramID
                 LEFT JOIN (SELECT VALUE FROM STRING_SPLIT(REPLACE(@GroupName, ', ', ','),',')) S ON GP.Group_Name = S.VALUE
                 WHERE S.VALUE IS NOT NULL
 

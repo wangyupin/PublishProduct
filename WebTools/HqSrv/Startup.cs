@@ -1,4 +1,8 @@
+using Coravel;
+using HqSrv.Application.Middleware;
+using HqSrv.Application.Services;
 using HqSrv.Configuration;
+using HqSrv.Factories.Ecommerce;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http.Features;
@@ -17,9 +21,6 @@ using System.IO;
 using System.Linq;
 using System.Text.Json;
 using System.Threading.Tasks;
-using HqSrv.Application.Services;
-using HqSrv.Application.Middleware;
-using Coravel;
 
 namespace HqSrv {
     public class Startup {
@@ -55,6 +56,7 @@ namespace HqSrv {
             // OuterApi Srevices
             services.AddExternalApiServices(_configuration);
 
+            services.AddScoped<IEcommerceFactoryManager, EcommerceFactoryManager>();
 
             // Cache
             services.AddMemoryCache();

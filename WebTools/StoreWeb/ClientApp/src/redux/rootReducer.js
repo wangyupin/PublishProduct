@@ -14,10 +14,18 @@ import sysSettings from '@src/views/application/store/sysSettings'
 import SettingMgmt_UserAccount from '@src/views/SettingMgmt/UserAccount/store'
 import SettingMgmt_GroupAccount from '@src/views/SettingMgmt/GroupAccount/store'
 
+//EcommerceMgmt
+import EcommerceMgmt_EcommerceStore from '@src/views/EcommerceMgmt/EcommerceStoreEdit/store'
+import EcommerceMgmt_PublishGoods from '@src/views/EcommerceMgmt/PublishGoods/store'
+
 
 const cityappReducer = {
   appSettings,
   sysSettings,
+
+  // EcommerceMgmt
+  EcommerceMgmt_EcommerceStore,
+  EcommerceMgmt_PublishGoods,
 
   // SettingMgmt
   SettingMgmt_UserAccount,

@@ -7,6 +7,8 @@ import MainTableMgmt from './MainTableMgmt.js'
 import Dashboards from './Dashboards.js'
 import SettingMgmt from './SettingMgmt.js'
 
+import EcommerceMgmt from './EcommerceMgmt.js'
+
 // ** Document title
 const TemplateTitle = `'%s - ${themeConfig.app.appName} V0.1'`
 
@@ -18,6 +20,7 @@ const Routes = [
   ...PagesRoutes,
   ...Dashboards,
   ...MainTableMgmt,
+  ...EcommerceMgmt,
   ...SettingMgmt
 ]
 

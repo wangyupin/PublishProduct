@@ -18,7 +18,7 @@ const MainResult = [
         component: lazy(() => import('../../views/SettingMgmt/UserAccount')),
         meta: {
             action: 'read',
-            resource: '使用者帳號管理'
+            resource: '15'
         },
         breadcrumb: null
     },
@@ -34,7 +34,7 @@ const MainResult = [
         component: lazy(() => import('../../views/SettingMgmt/UserAccount')),
         meta: {
             action: 'read',
-            resource: '使用者帳號管理'
+            resource: '15'
         },
         breadcrumb: ({ match }) => (match.params.id === 'add' ? '新增' : '修改')
     },
@@ -43,7 +43,7 @@ const MainResult = [
         component: lazy(() => import('../../views/SettingMgmt/GroupAccount')),
         meta: {
             action: 'read',
-            resource: '群組權限管理'
+            resource: '16'
         },
         breadcrumb: () => <Link to='/SettingMgmt/GroupAccount'>群組權限管理</Link>
     }

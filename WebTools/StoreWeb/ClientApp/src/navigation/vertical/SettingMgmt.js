@@ -10,14 +10,14 @@ export default [
                 title: '使用者帳號',
                 navLink: '/SettingMgmt/UserAccount',
                 action: 'read',
-                resource: '使用者帳號管理'
+                resource: '15'
             },
             {
                 id: 16,
                 title: '群組權限管理',
                 navLink: '/SettingMgmt/GroupAccount',
                 action: 'read',
-                resource: '群組權限管理'
+                resource: '16'
             }
         ]
     }

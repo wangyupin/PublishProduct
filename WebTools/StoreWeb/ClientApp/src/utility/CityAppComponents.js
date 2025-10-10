@@ -3,6 +3,7 @@ import ReactDOMServer from "react-dom/server"
 import React, { Fragment, useEffect, useRef, memo, forwardRef } from 'react'
 import ReactSelect, { components, StylesConfig, createFilter } from "react-select"
 import { useSelector, useDispatch } from 'react-redux'
+import { useForm, Controller } from 'react-hook-form'
 
 // ** Third Party Components
 import { Row, Col, Card, Button, ButtonGroup, Nav, NavItem, NavLink, Label } from 'reactstrap'
@@ -13,7 +14,7 @@ import useState from 'react-usestateref'
 import { FixedSizeList } from "react-window"
 import { useDebounce } from 'use-debounce'
 import { useTranslation } from 'react-i18next'
-import { TreeSelect, ConfigProvider } from "antd"
+import { TreeSelect, ConfigProvider, Radio as AntdRadio, Space } from "antd"
 
 //** Vuexy components
 import { useSkin } from '@hooks/useSkin'
@@ -592,3 +593,32 @@ export const AntdTreeSelect = React.forwardRef((props, ref) => {
         </ConfigProvider>
     )
 })
+
+export const Radio = ({ control, name, options, onChange, className }) => {
+    return (
+        <Controller
+            name={name}
+            control={control}
+            render={({ field }) => (
+                <AntdRadio.Group
+                    {...field}
+                    className={className}
+                    onChange={(e) => {
+                        field.onChange(e.target.value)
+                        if (onChange) {
+                            onChange(e.target.value)
+                        }
+                    }}
+                >
+                    <Space direction="horizontal">
+                        {options.map(item => (
+                            <AntdRadio key={item.value} value={item.value}>
+                                {item.label}
+                            </AntdRadio>
+                        ))}
+                    </Space>
+                </AntdRadio.Group>
+            )}
+        />
+    )
+}

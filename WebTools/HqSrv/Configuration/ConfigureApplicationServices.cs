@@ -3,6 +3,7 @@ using CityHubCore.Application.Jwt;
 using CityHubCore.Infrastructure.DB;
 using CityHubCore.Infrastructure.ServiceClient;
 using HqSrv.Application.Services;
+using HqSrv.Application.Services.ApiKey;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -69,7 +70,10 @@ namespace HqSrv.Configuration {
             services.AddScoped<IUserAuth, UserAuthCityAdminService>();
             services.AddScoped<IUserAuth, UserAuthPOVWebService>();
 
-
+            //webtools
+            services.AddHttpClient();
+            services.AddScoped<ApiKeyProvider>();
+            services.AddScoped<HttpClientService>();
 
 
             // configure DI for application services sample

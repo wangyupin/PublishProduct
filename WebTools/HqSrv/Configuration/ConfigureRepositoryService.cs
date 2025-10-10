@@ -4,6 +4,7 @@ using Microsoft.Extensions.DependencyInjection;
 
 using HqSrv.Repository.SettingMgmt;
 using HqSrv.Repository.DashBoardMgmt;
+using HqSrv.Repository.EcommerceMgmt;
 
 namespace HqSrv.Configuration
 {
@@ -14,6 +15,9 @@ namespace HqSrv.Configuration
             services.AddScoped<ClientRepository>();
             services.AddScoped<SystemSettingsRepository>();
             services.AddScoped<DashboardRepository>();
+
+            services.AddScoped<PublishGoodsRepository>();
+            services.AddScoped<EcommerceStoreRepository>();
 
             return services;
         }

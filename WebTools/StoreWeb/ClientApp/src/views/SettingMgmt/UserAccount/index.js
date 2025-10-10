@@ -15,10 +15,10 @@ const Index = () => {
     const ability = useContext(AbilityContext)
     const access = useMemo(() => {
         return ({
-            create: ability.can('create', '使用者帳號管理'),
-            delete: ability.can('delete', '使用者帳號管理'),
-            update: ability.can('update', '使用者帳號管理'),
-            export: ability.can('export', '使用者帳號管理')
+            create: ability.can('create', '15'),
+            delete: ability.can('delete', '15'),
+            update: ability.can('update', '15'),
+            export: ability.can('export', '15')
         })
     }, [ability])
 
