@@ -1,0 +1,26 @@
+﻿[LOGO]
+{{SellStore}}
+時間 : {{SellDate}}
+機號 : {{TerminalID}}
+單號 : {{SellID}}
+{{Separator}}
+{{padRight "商品" 17 }} {{padLeft "單價" 6}} {{padLeft "數量" 4}} {{padLeft "小計" 4}}
+{{#each SplitGoodDetail}}
+{{this}}
+{{/each}}
+{{Separator}}
+統計數量 {{padLeft "共" 22}} {{TotalNum}} 個
+統計金額 {{padLeft "共" 22}} {{Total}} 元
+{{Separator}}
+售後規則
+一、消費者在購買商品隔日起七日內對有瑕疵疑慮之商品，可聯絡52TOYS Taiwan粉絲專頁處理瑕疵問題與換貨申請。
+二、是否為瑕疵判斷依據：消費者需真實開箱拍照上傳，照片數量不少於3張，照片中需具有商品外觀及外盒中標與購買消費明細，標註瑕疵問題部位並進行描述(站立不穩者需提供影片)。如遇備品無貨無法為消費者更換同款的情況，可按照該商品消費者實際支付金額進行退貨退款，若為完整一中盒購買有瑕疵無備品情況，會針對瑕疵款/重複款/不符款協助辦理退款乙隻。
+三、本店為實體通路與特殊類潮玩盲盒類商品，盲盒款式為隨機，不符合七天內無條件退換貨。
+四、顧客攜帶商品離境後，恕不受理相關退換貨服務。
+五、52TOYS Taiwan保有最終的決定權及售後規則更改權。
+
+[SocialMedia: "Facebook", "Instagram"]
+
+[QRCODE:{{{FBUrl}}}] [QRCODE:{{{IGUrl}}}]
+
+[BARCODE:{{SellID}}]

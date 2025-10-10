@@ -1,0 +1,141 @@
+.ant-table-wrapper {
+    --active-color: #7367f0;
+    --foreground-color: #000000;
+    --border-color: color-mix(in srgb, transparent, var(--foreground-color) 15%);
+    border-color: var(--border-color0);
+}
+
+.ant-table-wrapper .ant-table-thead>tr>th {
+    font-family: "Montserrat", "Noto Sans TC", Helvetica, Arial, serif !important;
+    font-weight: 400 !important;
+    height: 40px !important;
+    padding: 0 12px !important;
+    line-height: 40px !important;
+    font-size: 15px !important;
+    background-color: #f3f2f7;
+}
+
+
+/* 表格內容樣式 */
+.ant-table-wrapper .ant-table-tbody>tr:not(.ant-table-measure-row)>td {
+    font-family: "Montserrat", "Noto Sans TC", Helvetica, Arial, serif !important;
+    background-color: #ffffff !important;
+    height: 36px !important;
+    line-height: 36px !important;
+    padding: 0 12px !important;
+}
+
+/* 表格內容滑鼠懸停時的背景色 */
+.ant-table-wrapper .ant-table-tbody>tr:hover>td {
+    background-color: color-mix(in srgb, transparent, var(--active-color) 12%) !important;
+}
+
+.ant-table-wrapper .ant-table-row-expand-icon {
+
+    margin-top: 10px !important;
+    /* 微調垂直位置 */
+}
+
+/* 隱藏未排序時的箭頭 */
+.ant-table-wrapper .ant-table-column-sorter-up.ant-table-column-sorter-up-disabled,
+.ant-table-wrapper .ant-table-column-sorter-down.ant-table-column-sorter-down-disabled {
+    display: none !important;
+}
+
+/* 只在實際排序時顯示箭頭 */
+.ant-table-wrapper .ant-table-column-sorter {
+    visibility: hidden;
+}
+
+.ant-table-wrapper .ant-table-thead th.ant-table-column-sort .ant-table-column-sorter {
+    visibility: visible;
+}
+
+.ant-table-wrapper .ant-table-placeholder .ant-table-cell {
+    color: #000000 !important;
+    border: none !important;
+}
+
+
+.ant-table-wrapper .ant-table-tbody>tr.ant-table-placeholder:hover>td {
+    background-color: transparent !important;
+}
+
+.ant-table-wrapper .ant-table-summary>tr:not(.ant-table-measure-row)>td {
+    font-family: "Montserrat", "Noto Sans TC", Helvetica, Arial, serif !important;
+    background-color: #ffffff !important;
+    height: 36px !important;
+    line-height: 36px !important;
+    padding: 0 12px !important;
+}
+
+.ant-table-thead th {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* .ant-table-tbody>tr:not(.ant-table-expanded-row)>td {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.ant-table-tbody>tr.ant-table-expanded-row>td {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+} */
+
+.ant-table-wrapper .ant-table-tbody>tr.custom-expanded-row:not(.ant-table-measure-row)>td {
+    background-color: rgb(234, 244, 244) !important;
+}
+
+:where(.css-dev-only-do-not-override-ccdg5a).ant-table-wrapper .ant-table-summary>tr>th,
+:where(.css-dev-only-do-not-override-ccdg5a).ant-table-wrapper .ant-table-summary>tr>td {
+    border-bottom: none !important;
+}
+
+.ant-table-wrapper {
+    height: 100%;
+    position: relative;
+}
+
+.ant-table-wrapper .ant-spin-nested-loading {
+    height: 100%;
+}
+
+.ant-table-wrapper .ant-spin-nested-loading .ant-spin-container {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
+
+.ant-table-wrapper .ant-spin-container .ant-table {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+.ant-table-wrapper .ant-table .ant-table-container {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+.ant-table-wrapper .ant-table-container .ant-table-header {
+    flex: 0 0 auto;
+}
+
+.ant-table-wrapper .ant-table-container .ant-table-body {
+    flex: 1;
+    overflow: auto;
+}
+
+.ant-table-wrapper .ant-table-summary {
+    position: sticky;
+    bottom: 0;
+    z-index: 2;
+    background-color: #fff;
+    box-shadow: 0 -1px 3px rgba(0, 0, 0, 0.1);
+}

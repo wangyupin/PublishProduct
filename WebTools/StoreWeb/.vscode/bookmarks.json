@@ -1,0 +1,14 @@
+{
+	"files": [
+		{
+			"path": "ClientApp/public/index.html",
+			"bookmarks": [
+				{
+					"line": 28,
+					"column": 21,
+					"label": "限定寬度"
+				}
+			]
+		}
+	]
+}

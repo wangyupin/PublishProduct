@@ -1,0 +1,166 @@
+/*================================================================================
+	Item Name: For CityApp specially define
+	Version: 1.0
+	Author: Moon @ 2021/11/5
+================================================================================*/
+
+// ag-grid Themes
+@import '../agGrid/ag-grid-no-native-widgets';
+@import '../agGrid//ag-theme-quartz';
+
+// react-dual-listbox Themes
+@import '../react-dual-listbox/react-dual-listbox';
+
+@import '../antd/table';
+
+$navbar-height: 63px;
+$footer-height: 47px;
+$full-screen-footer-height: 40px;
+
+.full-screen {
+	// background: #cc0000;
+	// background-color: #000000;
+	background-color: transparent;
+	z-index: 2;
+	width: 100%;
+	height: calc(100% - #{$navbar-height});
+	position: fixed;
+	top: $navbar-height;
+	// top: 300px; //debug
+	left: 0;
+	overflow: hidden;
+}
+
+.cityapp {
+	&.full-screen {
+		@extend .full-screen;
+	}
+
+	&.full-screen-content-mobile {
+		height: calc(100% - #{$full-screen-footer-height} - #{$footer-height});
+	}
+
+	&.full-screen-content-desktop {
+		// height: 600px;
+		height: calc(100vh - 401px);
+	}
+
+	&.full-screen-content-desktop-sale {
+		// height: 600px;
+		height: calc(100vh - 360px);
+		min-height: 300px;
+	}
+
+	&.full-screen-content-desktop-sale-vert {
+		height: calc(100vh - 310px);
+	}
+
+	&.full-screen-content-desktop-sale-Barcode {
+		// height: 600px;
+		height: calc(100vh - 280px);
+	}
+
+	&.full-screen-content-desktop-sale-SettlementRPT-showSearch {
+		height: calc(100vh - 560px);
+		min-height: 250px;
+	}
+
+	&.full-screen-content-desktop-sale-SettlementRPT {
+		height: calc(100vh - 400px);
+	}
+
+	&.full-screen-content-desktop-sale-SettlementRPT-payment {
+		height: 80px;
+		min-height: 80px;
+	}
+
+	&.full-screen-content-desktop-sale-SettlementRPTFront-showSearch {
+		height: calc(100vh - 420px);
+		min-height: 250px;
+	}
+
+	&.full-screen-content-desktop-sale-SettlementRPTFront {
+		height: calc(100vh - 340px);
+	}
+
+	&.full-screen-footer {
+		height: 100%;
+	}
+
+	&.full-screen-uiloader {
+		@extend .full-screen;
+	}
+
+	&.div-uiloader {
+		display: flex;
+		justify-content: center;
+		align-items: center;
+		height: 50vh;
+	}
+}
+
+
+@mixin get-navbar-height {
+	height: calc(100% - #{$navbar-height} - #{$footer-height});
+}
+
+// @function get-navbar-height() {
+// 	@return calc(500% - #{$navbar-height});
+//   }
+
+// @function get-footer-height() {
+// 	@return $footer-height;
+// }  
+
+// context menu
+.grid-context-menu-hidden {
+	position: absolute;
+	top: 0px;
+	left: 0px;
+	width: 100%;
+	height: 100%;
+	box-sizing: inherit;
+	z-index: 1;
+	-webkit-box-align: center;
+	align-items: center;
+	-webkit-box-pack: justify;
+	justify-content: space-between;
+	display: flex;
+	background-color: rgb(227, 242, 253);
+	font-size: 18px;
+	font-weight: 400;
+	color: rgba(0, 0, 0, 0.87);
+	padding-left: 16px;
+	padding-right: 0px;
+	transform: translate3d(0px, -100%, 0px);
+	transition-duration: 125ms;
+	transition-timing-function: cubic-bezier(0, 0, 0.2, 1);
+	will-change: transform;
+	visibility: hidden;
+}
+
+.grid-context-menu-visible {
+	position: absolute;
+	top: 0px;
+	left: 0px;
+	width: 100%;
+	height: 100%;
+	box-sizing: inherit;
+	-webkit-box-align: center;
+	align-items: center;
+	-webkit-box-pack: justify;
+	justify-content: space-between;
+	display: flex;
+	background-color: rgb(227, 242, 253);
+	font-size: 18px;
+	font-weight: 400;
+	color: rgba(0, 0, 0, 0.87);
+	padding-left: 16px;
+	padding-right: 0px;
+	transform: translate3d(0px, 0px, 0px);
+	transition-duration: 125ms;
+	transition-timing-function: cubic-bezier(0, 0, 0.2, 1);
+	will-change: transform;
+	visibility: visible;
+	z-index: 3;
+}

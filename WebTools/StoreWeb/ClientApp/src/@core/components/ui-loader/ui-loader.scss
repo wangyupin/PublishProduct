@@ -1,0 +1,45 @@
+// Component: UI Loader
+// ========================================================================
+
+// ** Base Styles Imports
+@import '../../scss/base/bootstrap-extended/include';
+@import '../../scss/base/components/include';
+
+.ui-loader {
+  position: relative;
+  height: 100%;
+
+  &.show {
+
+    // background-color: rgba($color: $black, $alpha: 0.3);
+    .overlay {
+      content: '';
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      top: 0;
+      //moon @ 2022/1/20
+      // background-color: rgba($color: $black, $alpha: 0.3);
+      z-index: 99999;
+      background-color: rgba($color: $black, $alpha: 0.7);
+    }
+
+    > :first-child,
+    code {
+      background-color: initial;
+    }
+  }
+
+  .loader {
+    top: 50%;
+    left: 50%;
+    display: flex;
+    position: absolute;
+    align-items: center;
+    flex-direction: column;
+    justify-content: center;
+    transform: translate(-50%, -50%);
+    //moon @ 2022/1/20
+    z-index: 9;
+  }
+}

@@ -1,0 +1,1551 @@
+﻿{
+   "CodeGenerationMode": 0,
+   "ContextClassName": "POVWebDbContext",
+   "ContextNamespace": null,
+   "DefaultDacpacSchema": null,
+   "FilterSchemas": false,
+   "IncludeConnectionString": false,
+   "ModelNamespace": null,
+   "OutputContextPath": "Models\/DB\/POVWeb\/",
+   "OutputPath": "Models\/DB\/POVWeb\/",
+   "ProjectRootNamespace": "POVWebDomain",
+   "Schemas": null,
+   "SelectedHandlebarsLanguage": 0,
+   "SelectedToBeGenerated": 0,
+   "Tables": [
+      {
+         "Name": "[dbo].[AdidasTab1]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[Advertisement]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[AgeSegment]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[AGQ_Detail]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[AGQ_GoodDetail]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[AGQ_Goods]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[AGQ_Project]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[Agreement]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[AlikeBrand]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[AlikeSetDate]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[AlipayAccount]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[Api_FF_Returns]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[ApiAtmOrder]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[ApiDeliveryReceipt]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[ApiDeliveryReceiptContrast]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[ApiDRCnew]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[ApiMember]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[ApiOrder]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[ApiOrderDetail]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[ApiPlatform]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[ApiProductSpec]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[ApiProductSpecA]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[ApiProductSpecList]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[ApiProductSpecList2]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[ApiProductSpecListDoMove]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[ApiReturns]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[ApiSetting]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[ApiShippingSupplier]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[ApiSHOPLINEeinv]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[ApiSupplier]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[ApiTransaction]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[APjt]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[APjtDetail]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[APjtT1Send]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[APjtT3Set]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[APjtT4Jia]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[APjtT5NotIncludeItem]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[APjtT5Send]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[Archives]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[ArchivesConfigList]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[ArchivesDelete]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[ArchivesObjectList]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[ArchivesObjectListDelete]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[AreaCode]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[AutoTransferSet]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[Bank]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[BankBusiness]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[BarTemp]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[BPUPList]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[BPUPListDetail]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[Branch_Gather]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[BranchDiscount]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[BranchMoney]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[BranchPay]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[Brand]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[BrandCust]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[Card]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[ChangePrice]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[ChangePriceHaveTran]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[Client]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[ClientChangePrice]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[ClientChangePriceHaveTran]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[ClientDealMode]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[ClientGoods]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[CloseAccount]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[ClosingSetup]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[Color]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[CostAdjust]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[Currency]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[Cust]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[DeleteMemberOrder]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[DeviceInfo]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[DistributeGoods]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[DistributePoint]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[EInvAllowanceDet]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[EInvAllowanceMain]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[EInvCancelAllowance]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[EInvCancelNo]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[EInvGetNo]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[EInvRecallNo]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[EInvSerial]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[EInvSet]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[EInvShipNoDet]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[EInvShipNoMain]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[EmpCheckDetail]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[EmpClockIn]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[EmpClockInMonth]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[EmpDutyTypeSetUp]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[Employee]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[EmployeeCheck]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[EmpOnDuty]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[EmpTXClock]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[ExcelGoods]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[ExcelSpecial]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[Factory]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[FactoryClass]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[FactoryRequire]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[FactorySort]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[FactRequire]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[Finmcr]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[Fonus]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[Gather]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[GatherDetail]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[GBSMS]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[GBSmsAccount]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[GBSMSMaintain]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[Gift]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[GMobileProgram]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[GMobileUserProgram]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[GMobileUsers]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[GoodCheck]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[GoodCompare]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[GoodPrize]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[Goods]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[GoodSamplePicture]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[GoodsBar]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[GoodShelf]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[GoodsMonth]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[GoodSpecial]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[GoodsSample]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[GoodStorage]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[GoodStorage_Update]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[GroupProgram]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[HCTTitle]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[Infonation]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[InvoiceSet]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[KTJTitle]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[LastBPUPList]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[LogOutEInvALLCancelNo]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[LogOutEInvCancelNo]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[MaterialSamplePicture]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[MCommInStore]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[MCommProduce]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[MCommTakeM]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[Member]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[Member_DEL]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[MemberCard]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[MemberGetPoint]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[MemberLv]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[MemberOrder]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[MemberWork]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[MEmpInStore]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[MEmpProduce]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[MEmpTakeM]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[MGather]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[MGatherDetail]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[MidPov232Tmp]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[MidShipTableATmp]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[MidShipTableBTmp]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[MMaterial]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[MMaterialMonth]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[MMaterialStore]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[MMaterialStruct]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[MModify]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[Mms208Tmp]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[Mms211DetailTmp]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[Mms211Tmp]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[Mms212DetailTmp]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[Mms212Tmp]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[Mms213ATmp]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[Mms213DetailTmp]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[Mms213Tmp]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[Mms214ATmp]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[Mms214DetailTmp]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[Mms214Tmp]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[Mms215Temp]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[Mms301Temp]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[Mms302Temp]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[Mms408temp]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[Mms5081Tmp]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[Mms5082Detailtmp]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[Mms5082Totaltmp]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[Mms509Tmp]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[Mms609Temp]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[Mms610Temp]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[Mms611Temp]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[Mms6121ATemp]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[Mms6121BTemp]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[Mms6122Temp]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[Modify]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[MOrders]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[MPay]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[MPayDetail]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[MPreProduct]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[MProcess]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[MPurchase]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[MShip]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[MShipDetail]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[MStgCheck]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[MStock]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[MStockDetail]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[MStyleStruct]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[myChangePriceDetail]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[myClientChangePriceDetail]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[NikeTab1]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[NikeTab2]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[NikeTab3]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[OldGoodSpecial]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[OldGoodSpecialA]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[Orders]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[OtherProc]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[OtherProcDelete]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[OutWork]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[PaperSetup]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[Pay]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[PayDetail]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[petertest]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[Phrase]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[Picture]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[pov1075Temp]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[pov107Temp]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[Pov108BTemp]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[Pov108Temp]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[Pov121SellTemp]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[Pov125Tmp]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[Pov133Temp]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[Pov203Tmp]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[Pov207Temp]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[Pov208Tmp]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[Pov210DetailTmp]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[Pov210Tmp]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[Pov211DetailTmp]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[Pov211Tmp]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[Pov212ATmp]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[Pov212DetailTmp]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[Pov212Tmp]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[Pov213ATmp]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[Pov213DetailTmp]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[Pov213Tmp]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[Pov217Tmp]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[Pov219temp]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[Pov224Tmp]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[Pov225Tmp]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[Pov227Temp]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[Pov232Tmp]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[Pov242Temp]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[Pov271Temp]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[Pov272Tmp]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[pov308temp]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[POV402Tmp]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[Pov408tmp]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[Pov409Detailtmp]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[Pov409Totaltmp]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[Pov412temp]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[Pov413Tmp]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[Pov414Tmp]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[Pov415Tmp]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[Pov418tmp]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[Pov419Tmp]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[Pov501Temp]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[Pov502CalSort]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[Pov502Temp]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[Pov503Temp]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[Pov504Temp]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[Pov505Temp]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[Pov506Temp]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[Pov507Temp]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[Pov508Tmp]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[Pov510Tmp]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[Pov511Tmp]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[Pov512Tmp]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[Pov513Temp]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[Pov514Temp]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[Pov516Temp]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[Pov517Temp]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[Pov518Temp]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[Pov519Temp]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[Pov5201ATemp]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[Pov5201BTemp]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[Pov5202Temp]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[Pov523Temp]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[pov533temp]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[pov534temp]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[pov536temp]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[Pov576Tmp]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[Pov581Tmp]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[Pov610temp]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[POVInOutTemp]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[POVInTranTemp]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[POVShip]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[POVShipDetail]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[PreAchieve]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[PreArchieveSetting]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[PrePurchase]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[PreStock]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[PreStockDetail]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[PreStore]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[PreTransfer]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[PriceAdjust]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[PriceL]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[ProgramTask]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[Purchase]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[Receipts]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[Require]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[RequireRecord]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[RptSet]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[Sell]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[SellChange]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[SellChangeAmount]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[SellClosing]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[Sellding]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[SellDingTran]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[SellInvoice]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[SellNoSaveTmp]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[SellReturns]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[SellVisitorNum]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[SellYahoo]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[Ship]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[ShipDetail]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[ShipDetailP]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[ShipP]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[Shop]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[ShopDiscount]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[SimpleBranchAchieve]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[SiteCollectionList]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[Size]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[SmartClientState]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[SMSgo]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[SMSgoDetail]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[SMSgoMemDet]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[Sort01]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[Sort02]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[Sort03]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[Sort04]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[Sort05]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[stClockOnOff]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[StgCheck]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[StgCheckDetail]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[Stock]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[StockDetail]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[StockDetailP]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[StockP]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[SysSize]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[TableInfo]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[TBCalculate]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[TdSalePlan]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[TdSalePlanD]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[TradeDistributeGoods]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[TradePreShip]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[TransConfig]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[Transfer]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[TransferBarList]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[TransferDelete]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[TransferP]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[TransTemp]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[TransTmp]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[TransToShip]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[TransToStock]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[TsLineHelpField]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[TsLineHelpMain]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[TsPara]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[TsReportCondition]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[TsReportConditionSection]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[TsReportMain]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[TsReportResult]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[TsReportScheme]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[TsReportSchemeTmp]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[TsUserFunction]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[TsUserRight]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[TsUsers]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[UserGroup]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[Users]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[WayBill]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[WayRemark]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[Web_BatchPickStore]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[Web_Payment]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[Web_Phrase]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[Web_Ship]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[Web_WayTrans]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[WebAddChk]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[WebDelLog]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[WebTools_Orders]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[WebToolsGroupProgram]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[WebToolsUserGroup]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[WebToolsUsers]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[YahooSell]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[YahooSellReturns]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[POVWeb].[shopping_cart]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[POVWeb].[tmpHello]",
+         "ObjectType": 0
+      }
+   ],
+   "UiHint": "ECAPP\\SQLEXPRESS.TEST5_NEW",
+   "UseBoolPropertiesWithoutDefaultSql": false,
+   "UseDatabaseNames": true,
+   "UseDbContextSplitting": false,
+   "UseFluentApiOnly": false,
+   "UseHandleBars": false,
+   "UseHierarchyId": false,
+   "UseInflector": false,
+   "UseLegacyPluralizer": false,
+   "UseManyToManyEntity": false,
+   "UseNoConstructor": false,
+   "UseNoDefaultConstructor": false,
+   "UseNoNavigations": false,
+   "UseNoObjectFilter": false,
+   "UseNodaTime": false,
+   "UseNullableReferences": false,
+   "UseSchemaFolders": true,
+   "UseSpatial": false
+}

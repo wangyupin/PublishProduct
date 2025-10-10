@@ -1,0 +1,34 @@
+/*================================================================================
+	Item Name: For home page define
+	Version: 1.0
+	Author: Moon @ 2021/12/30
+================================================================================*/
+// Vuexy
+@import '../../../@core/scss/base/bootstrap-extended/include'; // Bootstrap includes
+@import '../../../@core/scss/base/components/include'; // Components includes
+
+// Cityapp
+@import '../CityApp/style';
+
+// $navbar-height: 60px;
+
+// faq search section
+.home-body {
+  background-size: cover;
+  background-color: rgba($primary, 0.12) !important;
+  width: 100%;
+  // height: calc(100% - #{$navbar-height});
+  @include get-navbar-height;
+  position: fixed;
+  top: $navbar-height;
+  // top: 300px; //debug
+  left: 0;
+
+  .card-body {
+    padding: 6rem !important;
+  }
+}
+
+@function get-navbar-height() {
+  @return calc(500% - #{$navbar-height});
+}

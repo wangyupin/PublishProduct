@@ -1,0 +1,105 @@
+{
+    "userAccount": {
+        "title": "使用者",
+        "userName": "姓名",
+        "userID": "帳號",
+        "userNumber": "員工編號",
+        "groupName": "群組",
+        "description": "其他描述",
+        "password": "密碼",
+        "passwordConfirm": "密碼確認",
+        "email": "Email",
+        "dataPermission": "資料權限",
+        "clientPermission": "店櫃權限"
+    },
+    "import": {
+        "download": "下載範本",
+        "excelName": "匯入範本",
+        "uploadText": "拖曳檔案或開啟資料夾",
+        "main": {
+            "placeholder": "請選擇匯入目標"
+        },
+        "specialPriceExa": "特價匯入範本"
+    },
+    "printFormat": {
+        "title": "吊牌格式設定"
+    },
+    "DepartmentPercent": {
+        "title": "百貨折數設定"
+    },
+    "InvoiceControl": {
+        "title": "發票控管設定",
+        "appID": "店代表號",
+        "clientID": "店櫃代號",
+        "EinvPrefix": "發票字軌",
+        "EinvStartNo": "起始發票",
+        "EinvEndNo": "終止發票",
+        "Einvcount": "張數",
+        "noAlloc": "未配張數",
+        "machineNo": "已取用",
+        "machineID": "機台號",
+        "curretNumber": "目前發票號",
+        "invTerm": "發票期別",
+        "client": "店櫃",
+        "allocated": "已分配過",
+        "unallocated": "尚有未分配",
+        "allocOrder": "分配條件",
+        "crossCheck": "可跨店使用"
+    },
+    "InvoiceNumber": {
+        "title": "發票號設定",
+        "machineID": "機台號設定",
+        "EinvStartNo": "發票起始編號",
+        "EinvEndtNo": "發票終止編號",
+        "openNo": "即將開出編號",
+        "invTerm": "發票期別",
+        "appID": "店代表號",
+        "printNum": "列印內碼"
+    },
+    "systemSetting": {
+        "title": "系統設定",
+        "category_point": "點數設定",
+        "pointsPerDollar": "點數幾點等於一元",
+        "minimumSpend": "點數使用門檻(元)",
+        "maxRedemptionPercentage": "點數最高折抵比例(%)",
+        "refundRestoreUsedPoints": "退貨是否歸還使用點數",
+        "category_sale": "點數設定",
+        "dualScreenDisplay": "雙螢幕閒置畫面",
+        "saleMemberLoadOption": "銷售會員可模糊搜尋",
+        "category_admin": "管理員設定",
+        "countPackagingMaterial": "銷售單包裝材數量顯示",
+        "enableForeignCurrency": "啟用外幣",
+        "localStoreOnly": "只看本店庫存"
+    },
+    "exportPurchase": {
+        "purchaseType": "類別",
+        "purchaseMode": "異動別",
+        "purchaseID": "採購單號",
+        "counterID": "櫃位代號",
+        "POSID": "POS單號",
+        "remark": "備註",
+        "date": "入出日期",
+        "goodsID": "貨品代號",
+        "goodsBar": "條碼",
+        "totalNum": "進出數量",
+        "clientID": "庫點代號"
+    },
+    "exportOrders": {
+        "ordersType": "類別",
+        "ordersMode": "異動別",
+        "orderID": "訂單單號",
+        "counterID": "櫃位代號",
+        "POSID": "POS單號",
+        "remark": "備註",
+        "date": "入出日期",
+        "goodsID": "貨品代號",
+        "goodsBar": "條碼",
+        "totalNum": "進出數量",
+        "clientID": "庫點代號",
+        "item": "項次"
+    },
+    "importDocument": {
+        "outGoods": "出貨單",
+        "imcomingGoods": "進貨單"
+    }
+}

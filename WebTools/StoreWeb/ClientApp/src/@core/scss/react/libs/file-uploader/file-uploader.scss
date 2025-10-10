@@ -1,0 +1,65 @@
+@import '../../../base/bootstrap-extended/include';
+@import '../../../base/components/include';
+
+.dropzone {
+  display: flex;
+  cursor: pointer;
+  min-height: 200px;
+  align-items: 'center';
+  justify-content: center;
+  // background-color: $body-bg;
+  border: 2px dashed $border-color;
+  border-radius: $border-radius;
+}
+
+.dark-layout {
+  .dropzone {
+    background-color: $theme-dark-body-bg;
+  }
+}
+
+.dropzone-small {
+  display: flex;
+  cursor: pointer;
+  height: 100px;
+  width: 100px;
+  align-items: 'center';
+  justify-content: center;
+  background-color: $body-bg;
+  border: 2px solid $border-color;
+  border-radius: $border-radius;
+  margin-right: 8px;
+}
+
+//class for image preview
+.thumbsContainer {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  margin-top: 16px;
+}
+
+.thumb {
+  display: inline-flex;
+  border-radius: 2px;
+  border: 1px solid #eaeaea;
+  margin-bottom: 8px;
+  margin-right: 8px;
+  width: 100px;
+  height: 100px;
+  padding: 4px;
+  box-sizing: border-box;
+}
+
+.thumbInner {
+  display: flex;
+  min-width: 0px;
+  overflow: hidden;
+  position: relative;
+}
+
+.img {
+  display: block;
+  width: auto;
+  height: 100%;
+}

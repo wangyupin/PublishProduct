@@ -1,0 +1,15 @@
+﻿店櫃代號 : {{SellStore}}
+銷售單號 : {{SellID}}
+銷售人員 : {{SellPerson}}
+列印日期 : {{SellDate}}
+
+[BARCODE:{{SellID}}]
+
+{{#each NotSplitDetail}}
+{{this.GoodID}}   {{this.Sort}}
+   {{this.AdvicePrice}} {{this.Qty}} {{this.Discount}} {{this.Subtotal}}
+{{/each}}
+{{Separator}}
+總數量:{{padRight TotalNum 8}}總金額:{{Total}}
+
+備註: {{Remark}}

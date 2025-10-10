@@ -1,0 +1,13 @@
+﻿門市 : {{SellStore}}
+單號 : {{SellID}}
+日期 : {{SellDate}}
+
+[BARCODE:{{SellID}}]
+
+{{#each splitGoodDetail}}
+{{this}}
+{{/each}}
+{{Separator}}
+總件數: {{totalNum}}
+總金額: {{total}}
+備註: {{Remark}}

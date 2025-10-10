@@ -1,0 +1,227 @@
+/*================================================================================
+	Item Name: Vuexy - Vuejs, HTML & Laravel Admin Dashboard Template
+	Version: 2.0
+	Author: PIXINVENT
+	Author URL: http://www.themeforest.net/user/pixinvent
+================================================================================
+
+NOTE:
+------
+PLACE HERE YOUR OWN SCSS CODES AND IF NEEDED, OVERRIDE THE STYLES FROM THE OTHER STYLESHEETS.
+WE WILL RELEASE FUTURE UPDATES SO IN ORDER TO NOT OVERWRITE YOUR STYLES IT'S BETTER LIKE THIS.  */
+
+// CityApp Themes
+@import './CityApp/style.scss';
+
+
+.ch-6 {
+	width: 6ch;
+}
+
+.ch-7 {
+	width: 7ch;
+}
+
+.ch-8 {
+	width: 8ch;
+}
+
+.ch-9 {
+	width: 9ch;
+}
+
+.ch-10 {
+	width: 10ch;
+}
+
+.breadcrumb-item>a {
+	color: unset !important;
+}
+
+@media (min-width: 576px) {
+	.rdl-actions {
+		align-self: center;
+	}
+}
+
+.vl {
+	border-left: 1px solid #ebe9f1;
+	display: flex;
+	width: auto;
+}
+
+//fontSize
+.form-label {
+	font-size: 1rem;
+}
+
+.ag-theme-quartz,
+.ag-theme-quartz-dark,
+.ag-theme-quartz-auto-dark {
+	--ag-font-size: 15px;
+}
+
+.select__control .select__single-value,
+.react-select__control .select__single-value {
+	font-size: 1rem;
+}
+
+.input-group-sm>.form-control,
+.input-group-sm>.form-select,
+.input-group-sm>.input-group-text,
+.input-group-sm>.btn {
+	font-size: 1rem;
+}
+
+.form-control-sm {
+	font-size: 1rem;
+}
+
+.btn-sm,
+.btn-group-sm>.btn {
+	font-size: 1rem;
+}
+
+.section-label {
+	font-size: 1rem;
+}
+
+.custom-cascader.ant-cascader {
+	height: 36px;
+	font-family: var(--bs-body-font-family);
+}
+
+.custom-cascader .ant-select-selector {
+	border-radius: 4px;
+}
+
+.custom-cascader .ant-select-arrow,
+.custom-cascader .ant-select-selection-placeholder {
+	// color: #6e6b7b;
+	// color: #4d4a57;
+	color: #000000;
+}
+
+:where(.css-dev-only-do-not-override-ccdg5a).custom-cascader.ant-select-outlined:not(.ant-select-disabled):not(.ant-select-customize-input):not(.ant-pagination-size-changer):hover .ant-select-selector {
+	border-color: #7367f0;
+	box-shadow: none;
+}
+
+.ant-select-focused:where(.css-dev-only-do-not-override-ccdg5a).custom-cascader.ant-select-outlined:not(.ant-select-disabled):not(.ant-select-customize-input):not(.ant-pagination-size-changer) .ant-select-selector {
+	border-color: #7367f0;
+	box-shadow: none;
+}
+
+.custom-cascader .ant-cascader-menu-item {
+	background-color: #f0f0f0;
+	color: #333;
+}
+
+.custom-cascader .ant-cascader-menu-item:hover {
+	background-color: #e6f7ff;
+	color: palegreen;
+}
+
+:where(.css-dev-only-do-not-override-ccdg5a).ant-cascader-dropdown .ant-cascader-menu-item-active:not(.ant-cascader-menu-item-disabled),
+:where(.css-dev-only-do-not-override-ccdg5a).ant-cascader-dropdown .ant-cascader-menu-item-active:not(.ant-cascader-menu-item-disabled):hover {
+	background-color: #7367f0;
+	color: #fff;
+}
+
+:where(.css-dev-only-do-not-override-ccdg5a).ant-cascader-dropdown .ant-cascader-menu-item.ant-cascader-menu-item-expand .ant-cascader-menu-item-expand-icon,
+:where(.css-dev-only-do-not-override-ccdg5a).ant-cascader-dropdown .ant-cascader-menu-item .ant-cascader-menu-item-loading-icon {
+	color: #fff;
+}
+
+:where(.css-dev-only-do-not-override-ccdg5a).ant-cascader-dropdown .ant-cascader-menu-item:hover {
+	background-color: #7367f01a;
+}
+
+// @media (min-width: 1000px) {
+
+// 	.modal-lg,
+// 	.modal-xl {
+// 		max-width: 900px
+// 	}
+// }
+
+.navbar-search .autocomplete-container {
+	min-height: 3rem;
+}
+
+.navbar-container .navbar-search.search-input.open input {
+	padding: 0.5rem 3.6rem;
+	min-height: 3rem;
+}
+
+.navbar-container .navbar-search.search-input .search-input-icon {
+	top: 25%;
+}
+
+.navbar-container .navbar-search.search-input .search-input-close {
+	top: 25%;
+}
+
+.navbar-search .autocomplete-container .suggestions-list {
+	width: 99%;
+	margin: 0.5rem;
+}
+
+.navbar-container .bookmark-input.show {
+	right: 1%;
+}
+
+[dir=ltr] .navigation li a i,
+[dir=ltr] .navigation li a svg {
+	margin-right: 0.5rem !important;
+}
+
+// [dir=ltr] .main-menu.menu-light .navigation>li ul li>a {
+// 	padding: 10px 15px 10px 23px;
+// }
+
+.thinScrollbar {
+	&::-webkit-scrollbar {
+		width: 15px;
+	}
+
+	&::-webkit-scrollbar-button {
+		background: transparent;
+	}
+
+	&::-webkit-scrollbar-track-piece {
+		background: transparent;
+	}
+
+	&::-webkit-scrollbar-thumb {
+		background-color: #C0C0C0;
+		border: 4px solid transparent;
+		border-radius: 8px;
+		background-clip: padding-box;
+	}
+
+	&::-webkit-scrollbar-track {
+		box-shadow: none;
+	}
+}
+
+[dir] .select__control.select__control--is-disabled,
+[dir] .react-select__control.select__control--is-disabled {
+	border-color: #d8d6de;
+}
+
+// antd tree select
+.custom-tree-select {
+	width: 100%;
+	height: 36px;
+}
+
+/* 調整內部元素垂直居中 */
+.custom-tree-select .ant-select-selection-overflow {
+	display: flex;
+	align-items: center;
+}
+
+.text-right {
+	text-align: right !important;
+}

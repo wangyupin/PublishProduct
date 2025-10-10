@@ -1,0 +1,53 @@
+﻿{
+   "CodeGenerationMode": 0,
+   "ContextClassName": "CityAdminDbContext",
+   "ContextNamespace": null,
+   "DefaultDacpacSchema": null,
+   "FilterSchemas": false,
+   "IncludeConnectionString": false,
+   "ModelNamespace": null,
+   "OutputContextPath": "Models\/DB\/CityAdmin\/",
+   "OutputPath": "Models\/DB\/CityAdmin\/",
+   "ProjectRootNamespace": "CityAdminDomain",
+   "Schemas": null,
+   "SelectedHandlebarsLanguage": 0,
+   "SelectedToBeGenerated": 0,
+   "Tables": [
+      {
+         "Name": "[SSO].[ACL]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[SSO].[Identities]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[SSO].[Session]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[SSO].[SessionHistory]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[SSO].[Users]",
+         "ObjectType": 0
+      }
+   ],
+   "UiHint": "MOON-WIN10DEV-V\\SQLEXPRESS.CityAdminDB",
+   "UseBoolPropertiesWithoutDefaultSql": false,
+   "UseDatabaseNames": true,
+   "UseDbContextSplitting": false,
+   "UseFluentApiOnly": false,
+   "UseHandleBars": false,
+   "UseInflector": false,
+   "UseLegacyPluralizer": false,
+   "UseNoConstructor": false,
+   "UseNoDefaultConstructor": false,
+   "UseNoNavigations": false,
+   "UseNoObjectFilter": false,
+   "UseNodaTime": false,
+   "UseNullableReferences": false,
+   "UseSchemaFolders": true,
+   "UseSpatial": false
+}
