@@ -1,165 +1,190 @@
 ﻿using Microsoft.AspNetCore.Http;
-using Newtonsoft.Json;
 using System.Collections.Generic;
-using System.Net.Http;
 using System.Threading.Tasks;
-using Microsoft.Extensions.Configuration;
-using System.Linq;
 using System;
 using POVWebDomain.Models.ExternalApi.Store91;
-using System.Net.Http.Json;
-using System.Net.Http.Headers;
 using HqSrv.Application.Services.ExternalApiServices.Store91;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore.Metadata.Internal;
+using POVWebDomain.Common;
 
 namespace HqSrv.Application.Services.EcommerceServices
 {
-   
-    public class Ecommerce91Service: IEcommerceService
+    public class Ecommerce91Service : IEcommerceService
     {
         private readonly Store91ExternalApiService __91Api;
+
         public Ecommerce91Service(Store91ExternalApiService _91api)
         {
             __91Api = _91api;
         }
 
-        public async Task<(object, string)> SubmitGoodsAdd(object requestDto, string platformID)
+        public async Task<Result<object>> SubmitGoodsAddAsync(object requestDto, string platformID)
         {
-            __91Api.Configure(platformID);
-            SubmitGoodsRequest request = (SubmitGoodsRequest)requestDto;
-
-            var result = await __91Api.SubmitMain(request.MainRequest);
-
-            if (!string.IsNullOrEmpty(result.Item2)) throw new Exception(result.Item2);
-
-            SubmitMainResponse skuResult = ((dynamic)result.Item1).Data;
-
-            for (int idx = 0; idx < request.MainImage?.Count; idx++)
+            try
             {
-                IFormFile file = request.MainImage[idx];
-                if (file != null && file.Length > 0)
+                __91Api.Configure(platformID);
+                SubmitGoodsRequest request = (SubmitGoodsRequest)requestDto;
+
+                var result = await __91Api.SubmitMain(request.MainRequest);
+                if (result.IsFailure)
+                    return Result<object>.Failure(result.Error);
+
+                SubmitMainResponse skuResult = ((dynamic)result.Data).Data;
+
+                // 上傳主圖片
+                for (int idx = 0; idx < request.MainImage?.Count; idx++)
                 {
-                    UpdateMainImageRequest image = new UpdateMainImageRequest()
+                    IFormFile file = request.MainImage[idx];
+                    if (file != null && file.Length > 0)
                     {
-                        Image = file,
-                        Index = idx,
-                        Id = skuResult.Id
-                    };
+                        UpdateMainImageRequest image = new UpdateMainImageRequest()
+                        {
+                            Image = file,
+                            Index = idx,
+                            Id = skuResult.Id
+                        };
 
-                    result = await __91Api.UpdateMainImage(image);
-                    if (!string.IsNullOrEmpty(result.Item2)) return (skuResult, result.Item2);
+                        var imageResult = await __91Api.UpdateMainImage(image);
+                        if (imageResult.IsFailure)
+                            return Result<object>.Failure(imageResult.Error);
+                    }
                 }
-            }
 
-            for (int idx = 0; idx < request.SkuImage?.Count; idx++)
-            {
-                IFormFile file = request.SkuImage[idx];
-                if (file != null && file.Length > 0)
+                // 上傳 SKU 圖片
+                for (int idx = 0; idx < request.SkuImage?.Count; idx++)
                 {
-                    UpdateSKUImageRequest image = new UpdateSKUImageRequest()
+                    IFormFile file = request.SkuImage[idx];
+                    if (file != null && file.Length > 0)
                     {
-                        Image = file,
-                        Index = 0,
-                        Id = skuResult.SkuList[idx].SkuId
-                    };
+                        UpdateSKUImageRequest image = new UpdateSKUImageRequest()
+                        {
+                            Image = file,
+                            Index = 0,
+                            Id = skuResult.SkuList[idx].SkuId
+                        };
 
-                    result = await __91Api.UpdateSKUImage(image);
-                    if (!string.IsNullOrEmpty(result.Item2)) return (skuResult, result.Item2);
+                        var imageResult = await __91Api.UpdateSKUImage(image);
+                        if (imageResult.IsFailure)
+                            return Result<object>.Failure(imageResult.Error);
+                    }
                 }
-            }
 
-            if (request.UpdateSaleProductSkuRequest != null)
-            {
-                request.UpdateSaleProductSkuRequest.Id = skuResult.Id;
-                for (int idx = 0; idx < request.UpdateSaleProductSkuRequest.SkuList.Count; idx++)
+                // 更新 SKU
+                if (request.UpdateSaleProductSkuRequest != null)
                 {
-                    request.UpdateSaleProductSkuRequest.SkuList[idx].Id = skuResult.SkuList[idx].SkuId;
+                    request.UpdateSaleProductSkuRequest.Id = skuResult.Id;
+                    for (int idx = 0; idx < request.UpdateSaleProductSkuRequest.SkuList.Count; idx++)
+                    {
+                        request.UpdateSaleProductSkuRequest.SkuList[idx].Id = skuResult.SkuList[idx].SkuId;
+                    }
+
+                    var skuUpdateResult = await __91Api.UpdateSaleProductSku(request.UpdateSaleProductSkuRequest);
+                    if (skuUpdateResult.IsFailure)
+                        return Result<object>.Failure(skuUpdateResult.Error);
                 }
 
-                result = await __91Api.UpdateSaleProductSku(request.UpdateSaleProductSkuRequest);
-                if (!string.IsNullOrEmpty(result.Item2)) return (skuResult, result.Item2);
+                // 更新規格表
+                if (request.SpecChartRequest.SalePageSpecChartId != null)
+                {
+                    request.SpecChartRequest.SalePageId = skuResult.Id;
+                    var specResult = await __91Api.UpdateSpecChartId(request.SpecChartRequest);
+                    if (specResult.IsFailure)
+                        return Result<object>.Failure(specResult.Error);
+                }
+
+                // 操作品牌
+                if (request.OperateBrandRequest.BrandId != null)
+                {
+                    request.OperateBrandRequest.SalePageIds = new List<long> { skuResult.Id };
+                    var brandResult = await __91Api.OperateBrand(request.OperateBrandRequest);
+                    if (brandResult.IsFailure)
+                        return Result<object>.Failure(brandResult.Error);
+                }
+
+                return Result<object>.Success(skuResult);
             }
-
-
-            if (request.SpecChartRequest.SalePageSpecChartId != null)
+            catch (Exception ex)
             {
-                request.SpecChartRequest.SalePageId = skuResult.Id;
-                result = await __91Api.UpdateSpecChartId(request.SpecChartRequest);
-                if (!string.IsNullOrEmpty(result.Item2)) return (skuResult, result.Item2);
+                return Result<object>.Failure(Error.Custom("SUBMIT_GOODS_ADD_ERROR", ex.Message));
             }
-
-            if (request.OperateBrandRequest.BrandId != null)
-            {
-                request.OperateBrandRequest.SalePageIds = new List<long> { skuResult.Id };
-                result = await __91Api.OperateBrand(request.OperateBrandRequest);
-                if (!string.IsNullOrEmpty(result.Item2)) return (skuResult, result.Item2);
-            }
-
-            return (skuResult, "");
         }
 
-        public async Task<(object, string)> SubmitGoodsEdit(object requestDto, string platformID)
+        public async Task<Result<object>> SubmitGoodsEditAsync(object requestDto, string platformID)
         {
-            __91Api.Configure(platformID);
-            SubmitGoodsEditRequest request = (SubmitGoodsEditRequest)requestDto;
-
-            var result = await __91Api.UpdateMainDetail(request.MainRequest);
-
-            if (!string.IsNullOrEmpty(result.Item2)) throw new Exception(result.Item2);
-
-            if (request.SpecChartRequest != null)
+            try
             {
-                result = await __91Api.UpdateSpecChartId(request.SpecChartRequest);
-                if (!string.IsNullOrEmpty(result.Item2)) throw new Exception(result.Item2);
-            }
+                __91Api.Configure(platformID);
+                SubmitGoodsEditRequest request = (SubmitGoodsEditRequest)requestDto;
 
-            if (request.UpdateTitleRequest != null)
-            {
-                result = await __91Api.UpdateTitle(request.UpdateTitleRequest);
-                if (!string.IsNullOrEmpty(result.Item2)) throw new Exception(result.Item2);
-            }
+                var result = await __91Api.UpdateMainDetail(request.MainRequest);
+                if (result.IsFailure)
+                    return Result<object>.Failure(result.Error);
 
-            if (request.UpdateSaleProductSkuRequest != null)
-            {
-                result = await __91Api.UpdateSaleProductSku(request.UpdateSaleProductSkuRequest);
-                if (!string.IsNullOrEmpty(result.Item2)) throw new Exception(result.Item2);
-            }
-
-            if (request.CreateSaleProductSkuRequest != null)
-            {
-                result = await __91Api.CreateSaleProductSku(request.CreateSaleProductSkuRequest);
-                if (!string.IsNullOrEmpty(result.Item2)) throw new Exception(result.Item2);
-
-                CreateSaleProductSkuResponse skuResult = ((dynamic)result.Item1).Data;
-                for (int idx = 0; idx < request.CreateSaleProductSkuRequest.SkuList.Count; idx++)
+                // 更新規格表
+                if (request.SpecChartRequest != null)
                 {
-                    SkuList_All sku = request.CreateSaleProductSkuRequest.SkuList[idx];
-                    UpdateSKUImageRequest imageReq = request.SkuImage.Find(t => t.Id == null);
-                    imageReq.Id = skuResult.SkuIds[idx];
-                    request.SkuList.SkuList.Add(new SkuListRes { OuterId = sku.OuterId, SkuId = (int)imageReq.Id });
+                    var specResult = await __91Api.UpdateSpecChartId(request.SpecChartRequest);
+                    if (specResult.IsFailure)
+                        return Result<object>.Failure(specResult.Error);
                 }
-            }
 
-            if (request.MainImage != null)
-            {
-                foreach (UpdateMainImageRequest req in request.MainImage)
+                // 更新標題
+                if (request.UpdateTitleRequest != null)
                 {
-                    result = await __91Api.UpdateMainImage(req);
-                    if (!string.IsNullOrEmpty(result.Item2)) throw new Exception(result.Item2);
+                    var titleResult = await __91Api.UpdateTitle(request.UpdateTitleRequest);
+                    if (titleResult.IsFailure)
+                        return Result<object>.Failure(titleResult.Error);
                 }
-            }
 
-            if (request.SkuImage != null)
-            {
-                foreach (UpdateSKUImageRequest req in request.SkuImage)
+                // 更新 SKU
+                if (request.UpdateSaleProductSkuRequest != null)
                 {
-                    result = await __91Api.UpdateSKUImage(req);
-                    if (!string.IsNullOrEmpty(result.Item2)) throw new Exception(result.Item2);
+                    var skuResult = await __91Api.UpdateSaleProductSku(request.UpdateSaleProductSkuRequest);
+                    if (skuResult.IsFailure)
+                        return Result<object>.Failure(skuResult.Error);
                 }
-            }
 
-            return (request.SkuList, "");
+                if (request.CreateSaleProductSkuRequest != null)
+                {
+                    var createSkuResult = await __91Api.CreateSaleProductSku(request.CreateSaleProductSkuRequest);
+                    if (createSkuResult.IsFailure)
+                        return Result<object>.Failure(createSkuResult.Error);
+
+                    CreateSaleProductSkuResponse skuResult = ((dynamic)createSkuResult.Data).Data;
+                    for (int idx = 0; idx < request.CreateSaleProductSkuRequest.SkuList.Count; idx++)
+                    {
+                        SkuList_All sku = request.CreateSaleProductSkuRequest.SkuList[idx];
+                        UpdateSKUImageRequest imageReq = request.SkuImage.Find(t => t.Id == null);
+                        imageReq.Id = skuResult.SkuIds[idx];
+                        request.SkuList.SkuList.Add(new SkuListRes { OuterId = sku.OuterId, SkuId = (int)imageReq.Id });
+                    }
+                }
+
+                if (request.MainImage != null)
+                {
+                    foreach (UpdateMainImageRequest req in request.MainImage)
+                    {
+                        result = await __91Api.UpdateMainImage(req);
+                        if (result.IsFailure)
+                            return Result<object>.Failure(result.Error);
+                    }
+                }
+
+                if (request.SkuImage != null)
+                {
+                    foreach (UpdateSKUImageRequest req in request.SkuImage)
+                    {
+                        result = await __91Api.UpdateSKUImage(req);
+                        if (result.IsFailure)
+                            return Result<object>.Failure(result.Error);
+                    }
+                }
+              
+                return Result<object>.Success(result.Data);
+            }
+            catch (Exception ex)
+            {
+                return Result<object>.Failure(Error.Custom("SUBMIT_GOODS_EDIT_ERROR", ex.Message));
+            }
         }
     }
 }

@@ -531,4 +531,14 @@ namespace POVWebDomain.Models.API.StoreSrv.EcommerceMgmt.PublishGoods
     }
     #endregion
 
+    public class GetOptionAllResponse
+    {
+        public dynamic ShipType_91app { get; set; }
+        public dynamic Payment { get; set; }
+        public dynamic SpecChart { get; set; }
+        public dynamic ShopCategory { get; set; }
+        public dynamic SalesModeType { get; set; }
+        public dynamic SellingDateTime { get; set; }
+        public dynamic EcIndex { get; set; }
+    }
 }

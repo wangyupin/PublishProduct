@@ -19,6 +19,8 @@ namespace HqSrv.Configuration
             services.AddScoped<PublishGoodsRepository>();
             services.AddScoped<EcommerceStoreRepository>();
 
+            services.AddScoped<IPublishGoodsRepository, PublishGoodsRepository>();
+
             return services;
         }
     }

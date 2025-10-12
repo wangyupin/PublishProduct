@@ -4,6 +4,7 @@ using CityHubCore.Infrastructure.DB;
 using CityHubCore.Infrastructure.ServiceClient;
 using HqSrv.Application.Services;
 using HqSrv.Application.Services.ApiKey;
+using HqSrv.Application.Services.EcommerceMgmt;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -75,6 +76,7 @@ namespace HqSrv.Configuration {
             services.AddScoped<ApiKeyProvider>();
             services.AddScoped<HttpClientService>();
 
+            services.AddScoped<IPublishGoodsApplicationService, PublishGoodsApplicationService>();
 
             // configure DI for application services sample
             //services.AddScoped<IOrderRepository, OrderRepository>();
