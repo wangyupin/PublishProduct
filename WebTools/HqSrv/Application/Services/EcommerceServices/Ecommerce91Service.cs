@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using System;
 using POVWebDomain.Models.ExternalApi.Store91;
-using HqSrv.Application.Services.ExternalApiServices.Store91;
+using HqSrv.Infrastructure.ExternalServices;
 using POVWebDomain.Common;
 
 namespace HqSrv.Application.Services.EcommerceServices

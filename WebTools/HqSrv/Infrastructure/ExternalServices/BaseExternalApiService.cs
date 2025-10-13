@@ -7,8 +7,9 @@ using System.Threading.Tasks;
 using System;
 using System.Text.Json;
 using HqSrv.Application.Services.ApiKey;
+using HqSrv.Application.Services;
 
-namespace HqSrv.Application.Services.ExternalApiServices
+namespace HqSrv.Infrastructure.ExternalServices
 {
     public abstract class BaseExternalApiService
     {

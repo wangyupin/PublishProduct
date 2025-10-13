@@ -27,6 +27,7 @@
 
   <ItemGroup>
     <Folder Include="Application\Models\" />
+    <Folder Include="Application\Services\ExternalApiServices\" />
     <Folder Include="BackendImages\" />
     <Folder Include="BizServices\" />
     <Folder Include="Controllers\MainTableMgmt\" />

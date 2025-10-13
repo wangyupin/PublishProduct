@@ -5,7 +5,7 @@ using POVWebDomain.Models.ExternalApi.Store91;
 using Newtonsoft.Json.Linq;
 using Newtonsoft.Json;
 using System.Collections.Generic;
-using HqSrv.Application.Services.ExternalApiServices.Store91;
+using HqSrv.Infrastructure.ExternalServices;
 using System.Linq;
 using CityAdminDomain.Models.Common;
 using Microsoft.AspNetCore.Http;

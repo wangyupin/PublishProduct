@@ -51,8 +51,8 @@ namespace POVWebDomain.Models.API.StoreSrv.EcommerceMgmt.PublishGoods
         public int CategoryId { get; set; }
         public int? ShopCategoryId { get; set; }
         public string Title { get; set; }
-        public DateTime SellingStartDateTime { get; set; }
-        public DateTime SellingEndDateTime { get; set; }
+        public DateTime? SellingStartDateTime { get; set; }
+        public DateTime? SellingEndDateTime { get; set; }
         public string ApplyType { get; set; }
         public DateTime ExpectShippingDate { get; set; }
         public int ShippingPrepareDay { get; set; }

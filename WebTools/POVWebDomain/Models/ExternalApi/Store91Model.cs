@@ -93,8 +93,8 @@ namespace POVWebDomain.Models.ExternalApi.Store91
         public int ShopCategoryId { get; set; }
         public List<long> MirrorShopCategoryIdList { get; set; }
         public string Title { get; set; }
-        public DateTime SellingStartDateTime { get; set; }
-        public DateTime SellingEndDateTime { get; set; }
+        public DateTime? SellingStartDateTime { get; set; }
+        public DateTime? SellingEndDateTime { get; set; }
         public string ApplyType { get; set; }
         public DateTime ExpectShippingDate { get; set; }
         public int ShippingPrepareDay { get; set; }
@@ -295,8 +295,8 @@ namespace POVWebDomain.Models.ExternalApi.Store91
         public long ShopId { get; set; }
         public int CategoryId { get; set; }
         public int ShopCategoryId { get; set; }
-        public DateTime SellingStartDateTime { get; set; }
-        public DateTime SellingEndDateTime { get; set; }
+        public DateTime? SellingStartDateTime { get; set; }
+        public DateTime? SellingEndDateTime { get; set; }
         public List<long> ShippingTypes { get; set; }
         public List<string> PayTypes { get; set; }
         public string Brand { get; set; }

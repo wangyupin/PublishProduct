@@ -1,5 +1,5 @@
 ﻿
-using HqSrv.Application.Services.ExternalApiServices.Store91;
+using HqSrv.Infrastructure.ExternalServices;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 

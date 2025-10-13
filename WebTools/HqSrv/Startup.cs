@@ -1,3 +1,7 @@
+using CityAdminDomain.Services.User;
+using CityHubCore.Application.Jwt;
+using CityHubCore.Infrastructure.DB;
+using CityHubCore.Infrastructure.ServiceClient;
 using Coravel;
 using HqSrv.Application.Middleware;
 using HqSrv.Application.Services;
@@ -9,14 +13,17 @@ using Microsoft.AspNetCore.Http.Features;
 using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Server.Kestrel.Core;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
+using POVWebDomain.Models.DB.POVWeb;
 using System;
 using System.Collections.Generic;
+using System.Configuration;
 using System.IO;
 using System.Linq;
 using System.Text.Json;
@@ -40,23 +47,62 @@ namespace HqSrv {
             {
                 //options.ModelBinderProviders.Insert(0, new DtoFormBinderProvider());
             })
-                //預設為Jason為camelCase MoonFeng @ 2022/8/4
-                .AddJsonOptions(options => {
-                    options.JsonSerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.CamelCase;
-                    options.JsonSerializerOptions.DictionaryKeyPolicy = JsonNamingPolicy.CamelCase;
-                });
-                
+               //預設為Jason為camelCase MoonFeng @ 2022/8/4
+               .AddJsonOptions(options => {
+                   options.JsonSerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.CamelCase;
+                   options.JsonSerializerOptions.DictionaryKeyPolicy = JsonNamingPolicy.CamelCase;
+               });
 
-            // Add Services
+
+            // ============================================
+            // 1. 基礎設施配置 (資料庫、HTTP Client 等)
+            // ============================================
+
+            // EF Core & Dapper 配置 (保持現有)
+            var POVWebDbConnectionString = _configuration.GetConnectionString("POVWebDb");
+            services.AddDbContext<POVWebDbContext>(options => {
+                options.UseSqlServer(POVWebDbConnectionString);
+            });
+            services.AddScoped<IApplicationDbContext>(provider => provider.GetService<POVWebDbContext>());
+            services.AddScoped<POVWebDbContextDapper>();
+            services.AddScoped(m => new POVWebDapper(POVWebDbConnectionString));
+
+            // HTTP Client
+            services.AddHttpClient();
+
+            // ============================================
+            // 2. Domain Services (核心業務邏輯)
+            // ============================================
+
+            services.AddDomainServices();
+
+            // ============================================
+            // 3. Infrastructure Services (基礎設施實作)
+            // ============================================
+
+            services.AddInfrastructureServices();
+
+            // ============================================
+            // 4. Application Services (用例協調器)
+            // ============================================
+
             services.AddApplicationServices(_configuration);
-            // Repo Services
-            services.AddReopServices(_configuration);
-            // IService
-            services.AddBizServices(_configuration);
-            // OuterApi Srevices
-            services.AddExternalApiServices(_configuration);
 
-            services.AddScoped<IEcommerceFactoryManager, EcommerceFactoryManager>();
+            // ============================================
+            // 5. 傳統 Repository Services (向後兼容)
+            // ============================================
+
+            services.AddRepositoryServices(_configuration);
+
+            // ============================================
+            // 6. 其他服務 (JWT, AutoMapper 等，保持現有)
+            // ============================================
+
+            services.Configure<JwtConfig>(_configuration.GetSection("Jwt"));
+            services.AddHttpClient<CityAdminSrvClient>();
+            services.AddAutoMapper(typeof(Startup));
+            services.AddScoped<IUserAuth, UserAuthCityAdminService>();
+            services.AddScoped<IUserAuth, UserAuthPOVWebService>();
 
             // Cache
             services.AddMemoryCache();
@@ -69,7 +115,8 @@ namespace HqSrv {
 
 
             // AddSwaggerServices
-            if (_env.IsDevelopment() || _env.IsStaging()) {
+            if (_env.IsDevelopment() || _env.IsStaging())
+            {
                 services.AddSwaggerServices(_configuration);
             }
 

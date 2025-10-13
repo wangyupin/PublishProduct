@@ -21,10 +21,12 @@ using System.Text.Json;
 using System.Threading.Tasks;
 using IndexList = POVWebDomain.Models.API.StoreSrv.EcommerceMgmt.PublishGoods.IndexList;
 using JsonSerializer = System.Text.Json.JsonSerializer;
+using HqSrv.Domain.Repositories;
+using HqSrv.Domain.Entities;
 
-namespace HqSrv.Repository.EcommerceMgmt
+namespace HqSrv.Infrastructure.Repositories
 {
-    public class PublishGoodsRepository : IPublishGoodsRepository
+    public class PublishGoodsRepository : IPublishGoodsRepository, IPublishGoodsInfrastructureRepository
     {
         private readonly IWebHostEnvironment _hostEnvironment;
         private readonly POVWebDbContextDapper _context;
@@ -40,8 +42,172 @@ namespace HqSrv.Repository.EcommerceMgmt
             _configuration = configuration;
         }
 
-        #region 查詢方法 (Result Pattern)
 
+        // ============================================
+        // Domain 介面實作 - 業務邏輯相關
+        // ============================================
+        public async Task<Result<Product>> GetProductForEditAsync(string parentId, string platformId)
+        {
+            try
+            {
+                // 查詢特定平台的商品編輯資料
+                using var connection = new SqlConnection(_configuration.GetConnectionString("POVWebDb"));
+                await connection.OpenAsync();
+
+                var sql = @"
+                    SELECT TOP 1 
+                        req.ParentID,
+                        req.RequestParams,
+                        res.ResponseData
+                    FROM ESubmitGoodsReq req
+                    LEFT JOIN ESubmitGoodsRes res ON req.ParentID = res.ParentID AND res.StoreID = @PlatformId
+                    WHERE req.ParentID = @ParentId
+                    ORDER BY req.ChangeTime DESC";
+
+                var result = await connection.QueryFirstOrDefaultAsync<dynamic>(
+                    sql, new { ParentId = parentId, PlatformId = platformId });
+
+                if (result == null)
+                    return Result<Product>.Failure(Error.Custom("PRODUCT_NOT_FOUND", $"找不到商品: {parentId}"));
+
+                // 轉換為 Domain Entity
+                var requestParams = JsonConvert.DeserializeObject<ProductJsonData>(result.RequestParams.ToString());
+                var product = ConvertToProduct(parentId, requestParams);
+
+                return Result<Product>.Success(product);
+            }
+            catch (Exception ex)
+            {
+                return Result<Product>.Failure(Error.Custom("GET_PRODUCT_FOR_EDIT_ERROR", ex.Message));
+            }
+        }
+
+        public async Task<Result<List<Product>>> GetProductsByStatusAsync(string status)
+        {
+            try
+            {
+                // 根據狀態查詢商品列表
+                using var connection = new SqlConnection(_configuration.GetConnectionString("POVWebDb"));
+                await connection.OpenAsync();
+
+                var sql = @"
+                    SELECT DISTINCT 
+                        req.ParentID,
+                        req.RequestParams
+                    FROM ESubmitGoodsReq req
+                    INNER JOIN ESubmitGoodsRes res ON req.ParentID = res.ParentID
+                    WHERE res.ResponseData LIKE @Status";
+
+                var results = await connection.QueryAsync<dynamic>(sql, new { Status = $"%{status}%" });
+
+                var products = new List<Product>();
+                foreach (var data in results)
+                {
+                    try
+                    {
+                        var requestParams = JsonConvert.DeserializeObject<ProductJsonData>(data.RequestParams.ToString());
+                        var product = ConvertToProduct(data.ParentID, requestParams);
+                        products.Add(product);
+                    }
+                    catch
+                    {
+                        // 略過轉換失敗的商品
+                    }
+                }
+
+                return Result<List<Product>>.Success(products);
+            }
+            catch (Exception ex)
+            {
+                return Result<List<Product>>.Failure(Error.Custom("GET_PRODUCTS_BY_STATUS_ERROR", ex.Message));
+            }
+        }
+
+        public async Task<Result<bool>> SaveProductPublishHistoryAsync(Product product, string platformId, object publishData)
+        {
+            try
+            {
+                using var connection = new SqlConnection(_configuration.GetConnectionString("POVWebDb"));
+                await connection.OpenAsync();
+
+                var sql = @"
+                    INSERT INTO EProductPublishHistory (ParentID, PlatformID, PublishData, CreateTime)
+                    VALUES (@ParentId, @PlatformId, @PublishData, GETDATE())";
+
+                await connection.ExecuteAsync(sql, new
+                {
+                    ParentId = product.ParentId,
+                    PlatformId = platformId,
+                    PublishData = JsonConvert.SerializeObject(publishData)
+                });
+
+                return Result<bool>.Success(true);
+            }
+            catch (Exception ex)
+            {
+                return Result<bool>.Failure(Error.Custom("SAVE_PUBLISH_HISTORY_ERROR", ex.Message));
+            }
+        }
+
+        public async Task<Result<object>> GetPlatformConfigurationAsync(string platformId)
+        {
+            try
+            {
+                using var connection = new SqlConnection(_configuration.GetConnectionString("POVWebDb"));
+                await connection.OpenAsync();
+
+                var sql = @"
+                    SELECT 
+                        PlatformID,
+                        PlatformName,
+                        Configuration,
+                        IsActive
+                    FROM EPlatformConfiguration 
+                    WHERE PlatformID = @PlatformId AND IsActive = 1";
+
+                var config = await connection.QueryFirstOrDefaultAsync<dynamic>(sql, new { PlatformId = platformId });
+
+                if (config == null)
+                    return Result<object>.Failure(Error.Custom("PLATFORM_CONFIG_NOT_FOUND",
+                        $"找不到平台設定: {platformId}"));
+
+                return Result<object>.Success(config);
+            }
+            catch (Exception ex)
+            {
+                return Result<object>.Failure(Error.Custom("GET_PLATFORM_CONFIG_ERROR", ex.Message));
+            }
+        }
+
+        public async Task<Result<List<object>>> GetSupportedPlatformsAsync()
+        {
+            try
+            {
+                using var connection = new SqlConnection(_configuration.GetConnectionString("POVWebDb"));
+                await connection.OpenAsync();
+
+                var sql = @"
+                    SELECT 
+                        PlatformID,
+                        PlatformName,
+                        IsActive
+                    FROM EPlatformConfiguration 
+                    WHERE IsActive = 1
+                    ORDER BY PlatformName";
+
+                var platforms = await connection.QueryAsync<dynamic>(sql);
+
+                return Result<List<object>>.Success(platforms.Cast<object>().ToList());
+            }
+            catch (Exception ex)
+            {
+                return Result<List<object>>.Failure(Error.Custom("GET_SUPPORTED_PLATFORMS_ERROR", ex.Message));
+            }
+        }
+
+        // ============================================
+        // Infrastructure 介面實作 - 保持現有所有方法
+        // ============================================
         public async Task<Result<object>> GetSubmitModeAsync(GetSubmitModeRequest request)
         {
             string searchSql = @"
@@ -65,6 +231,7 @@ namespace HqSrv.Repository.EcommerceMgmt
                     return Result<object>.Failure(Error.Custom("DB_ERROR", e.Message));
                 }
             }
+            throw new NotImplementedException("保持原有的 GetSubmitModeAsync 實作");
         }
 
         public async Task<Result<object>> GetSubmitDefValAsync(GetSubmitDefValRequest request)
@@ -136,6 +303,7 @@ namespace HqSrv.Repository.EcommerceMgmt
                     return Result<object>.Failure(Error.Custom("DB_ERROR", e.Message));
                 }
             }
+            throw new NotImplementedException("保持原有的 GetSubmitDefValAsync 實作");
         }
 
         public async Task<Result<object>> GetEStoreCatOptionsAsync()
@@ -172,11 +340,8 @@ namespace HqSrv.Repository.EcommerceMgmt
                     return Result<object>.Failure(Error.Custom("DB_ERROR", e.Message));
                 }
             }
+            throw new NotImplementedException("保持原有的 GetEStoreCatOptionsAsync 實作");
         }
-
-        #endregion
-
-        #region 查詢方法 (保持原樣)
 
         public async Task<GetSubmitModeReponse> GetSubmitResByStoreAsync(string parentID, string platformID)
         {
@@ -196,6 +361,7 @@ namespace HqSrv.Repository.EcommerceMgmt
             {
                 connection.Close();
             }
+            throw new NotImplementedException("保持原有的 GetSubmitResByStoreAsync 實作");
         }
 
         public async Task<GetLookupAndCommonValueResponse> GetLookupAndCommonValueAsync(string parentID, string storeID)
@@ -235,6 +401,7 @@ namespace HqSrv.Repository.EcommerceMgmt
             {
                 connection.Close();
             }
+            throw new NotImplementedException("保持原有的 GetLookupAndCommonValueAsync 實作");
         }
 
         public async Task<GetEcIndexReturn> MergeEcAttributesAsync(List<string> platforms, string categoryCode = null)
@@ -291,11 +458,8 @@ namespace HqSrv.Repository.EcommerceMgmt
                 Options = new List<EcIndex>(),
                 IndexList = new List<IndexList>()
             };
+            throw new NotImplementedException("保持原有的 MergeEcAttributesAsync 實作");
         }
-
-        #endregion
-
-        #region 儲存方法 (Result Pattern)
 
         public async Task<Result<object>> SaveSubmitGoodsReqAsync(SubmitMainRequestAll request)
         {
@@ -332,13 +496,10 @@ namespace HqSrv.Repository.EcommerceMgmt
             {
                 connection.Close();
             }
+            throw new NotImplementedException("保持原有的 SaveSubmitGoodsReqAsync 實作");
         }
 
-        public async Task<Result<object>> SaveSubmitGoodsResAsync(
-            SubmitMainRequestAll request,
-            object requestDto,
-            SubmitMainResponseAll response,
-            StoreSetting store)
+        public async Task<Result<object>> SaveSubmitGoodsResAsync(SubmitMainRequestAll request, object requestDto, SubmitMainResponseAll response, StoreSetting store)
         {
             JObject objJson = JObject.Parse(request.JsonData);
             JObject obj = JObject.Parse(request.BasicInfo);
@@ -388,6 +549,7 @@ namespace HqSrv.Repository.EcommerceMgmt
             {
                 connection.Close();
             }
+            throw new NotImplementedException("保持原有的 SaveSubmitGoodsResAsync 實作");
         }
 
         public async Task<Result<object>> SavePictureAsync(IFormFile file, string baseName, string type, int? index = -1)
@@ -445,11 +607,8 @@ namespace HqSrv.Repository.EcommerceMgmt
             }
 
             return Result<object>.Success(new { path = relativePath });
+            throw new NotImplementedException("保持原有的 SavePictureAsync 實作");
         }
-
-        #endregion
-
-        #region 處理方法 (保持原樣)
 
         public async Task HandleImageAsync(SubmitMainRequestAll request)
         {
@@ -501,6 +660,7 @@ namespace HqSrv.Repository.EcommerceMgmt
             MoreInfoResult moreInfoResult = await ProcessMoreInfoAsync((string)obj["moreInfo"], request.ParentID, request.Origin);
             obj["moreInfo"] = moreInfoResult.ProcessedHtml;
             request.JsonData = obj.ToString(Formatting.None);
+            throw new NotImplementedException("保持原有的 HandleImageAsync 實作");
         }
 
         public async Task<MoreInfoResult> ProcessMoreInfoAsync(string originalHtml, string baseName, string origin)
@@ -540,9 +700,111 @@ namespace HqSrv.Repository.EcommerceMgmt
                 ProcessedHtml = processedHtml,
                 UploadedImages = uploadedImages
             };
+            throw new NotImplementedException("保持原有的 ProcessMoreInfoAsync 實作");
         }
 
-        #endregion
+        // ============================================
+        // 私有方法 - 資料轉換（與 ProductRepository 共用邏輯）
+        // ============================================
+        private Product ConvertToProduct(string parentId, ProductJsonData jsonData)
+        {
+            var product = Product.Create(
+                parentId: parentId,
+                title: jsonData.Title ?? "",
+                price: jsonData.Price,
+                cost: jsonData.Cost,
+                applyType: jsonData.ApplyType ?? "一般");
+
+            // 設定詳細資訊
+            product.UpdateBasicInfo(
+                title: jsonData.Title ?? "",
+                description: jsonData.ProductDescription ?? "",
+                moreInfo: jsonData.MoreInfo ?? "");
+
+            product.UpdatePricing(
+                suggestPrice: jsonData.SuggestPrice,
+                price: jsonData.Price,
+                cost: jsonData.Cost);
+
+            if (jsonData.SellingStartDateTime.HasValue || jsonData.SellingEndDateTime.HasValue)
+            {
+                product.SetSellingPeriod(
+                    startTime: jsonData.SellingStartDateTime,
+                    endTime: jsonData.SellingEndDateTime);
+            }
+
+            product.SetDimensions(
+                height: jsonData.Height,
+                width: jsonData.Width,
+                length: jsonData.Length,
+                weight: jsonData.Weight);
+
+            // 處理 SKU
+            if (jsonData.HasSku && jsonData.SkuList?.Any() == true)
+            {
+                product.EnableSkuMode();
+
+                foreach (var skuData in jsonData.SkuList)
+                {
+                    var sku = ProductSku.Create(
+                        outerId: skuData.OuterId ?? "",
+                        name: skuData.Name ?? "",
+                        qty: skuData.Qty,
+                        onceQty: skuData.OnceQty,
+                        price: skuData.Price,
+                        cost: skuData.Cost);
+
+                    sku.UpdatePricing(skuData.SuggestPrice, skuData.Price, skuData.Cost);
+                    sku.UpdateInventory(skuData.Qty, skuData.SafetyStockQty);
+
+                    product.AddSku(sku);
+                }
+            }
+            else if (jsonData.Qty.HasValue)
+            {
+                product.DisableSkuMode(
+                    qty: jsonData.Qty.Value,
+                    onceQty: jsonData.OnceQty ?? 1,
+                    outerId: jsonData.OuterId ?? "");
+            }
+
+            return product;
+        }
+
+        private class ProductJsonData
+        {
+            public string Title { get; set; }
+            public string ProductDescription { get; set; }
+            public string MoreInfo { get; set; }
+            public decimal Price { get; set; }
+            public decimal Cost { get; set; }
+            public decimal SuggestPrice { get; set; }
+            public string ApplyType { get; set; }
+            public DateTime? SellingStartDateTime { get; set; }
+            public DateTime? SellingEndDateTime { get; set; }
+            public int Height { get; set; }
+            public int Width { get; set; }
+            public int Length { get; set; }
+            public int Weight { get; set; }
+            public string TemperatureTypeDef { get; set; }
+            public bool HasSku { get; set; }
+            public int? Qty { get; set; }
+            public int? OnceQty { get; set; }
+            public string OuterId { get; set; }
+            public List<SkuJsonData> SkuList { get; set; } = new List<SkuJsonData>();
+        }
+
+        private class SkuJsonData
+        {
+            public string OuterId { get; set; }
+            public string Name { get; set; }
+            public int Qty { get; set; }
+            public int OnceQty { get; set; }
+            public decimal Price { get; set; }
+            public decimal Cost { get; set; }
+            public decimal SuggestPrice { get; set; }
+            public int SafetyStockQty { get; set; }
+        }
 
         #region 私有輔助方法
 

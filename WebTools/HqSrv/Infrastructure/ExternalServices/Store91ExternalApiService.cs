@@ -14,8 +14,9 @@ using System.Net.Http.Headers;
 using System.Threading.Tasks;
 using StringContentWithoutContentType = POVWebDomain.Models.ExternalApi.Store91.StringContentWithoutContentType;
 using SubmitMainRequest = POVWebDomain.Models.ExternalApi.Store91.SubmitMainRequest;
+using HqSrv.Application.Services;
 
-namespace HqSrv.Application.Services.ExternalApiServices.Store91
+namespace HqSrv.Infrastructure.ExternalServices
 {
     public class ApiResponse_91App<T>
     {
