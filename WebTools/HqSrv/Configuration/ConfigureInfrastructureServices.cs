@@ -44,6 +44,10 @@ namespace HqSrv.Configuration
             // services.AddScoped<MomoExternalApiService>();
             // services.AddScoped<ShopeeExternalApiService>();
 
+            // Domain Event Service
+            services.AddScoped<IDomainEventService, DomainEventService>();
+
+
             return services;
         }
     }
