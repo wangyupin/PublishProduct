@@ -46,12 +46,12 @@ namespace POVWebDomain.Models.ExternalApi.OfficialWebsite
         public string WebPageTitle { get; set; }
         public string WebPageDesc { get; set; }
         public string WebPageKeywords { get; set; }
-        public int IsShowProduct { get; set; }
-        public int IsShowSold { get; set; }
-        public int IsShowInventory { get; set; }
-        public int IsRestricted { get; set; }
+        public bool IsShowProduct { get; set; }
+        public bool IsShowSold { get; set; }
+        public bool IsShowInventory { get; set; }
+        public bool IsRestricted { get; set; }
         public int StockoutShow { get; set; }
-        public int IsReturnable { get; set; }
+        public bool IsReturnable { get; set; }
         public string ProductFeatures { get; set; }
         public string ProductDetail { get; set; }
         public int[] Brand { get; set; }
@@ -81,9 +81,8 @@ namespace POVWebDomain.Models.ExternalApi.OfficialWebsite
 
     public class AddProductResponse
     {
-        public string Error { get; set; }
         public long ProductID { get; set; }
-        public List<SkuResult> SkuList { get; set; }
+        public List<SkuResult> ProductOpton { get; set; }
     }
 
     public class AddProductOptionRequest

@@ -62,80 +62,80 @@ namespace HqSrv.Factories.Ecommerce
                     SellingEndDT = basicInfo.SellingEndDateTime,
                     SellingEndSetting = 1, // 預設一年
                     IsProductOption = basicInfo.HasSku,
-                    GoodID = basicInfo.OuterId,
+                    GoodID = request.ParentID,
                     SuggestPrice = basicInfo.SuggestPrice,
                     Price = basicInfo.Price,
                     Cost = basicInfo.Cost,
                     SafetyInventoryQty = basicInfo.SafetyStockQty,
                     InventoryQty = basicInfo.Qty ?? 0,
                     LimitedQty = basicInfo.OnceQty ?? 1,
-                    //DeliveryDateType = basicInfo.ApplyType switch
-                    //{
-                    //    "一般" => 1, // 指定出貨日
-                    //    "預購(指定出貨日)" => 4, // 預設等待天數
-                    //    "預購(指定工作天)" => 5, // 預設備貨天數
-                    //    "訂製" => 2, // 可配送區間
-                    //    "客約" => 3, // 不提供配送
-                    //    _ => 1
-                    //},
-                    //SpecifiedDeliveryDate = basicInfo.ExpectShippingDate,
-                    //WaitingDays = basicInfo.ShippingPrepareDay,
-                    //IsEnbaleDeliveryDate = basicInfo.IsEnableBookingPickupDate,
-                    //PrepareDays = basicInfo.PrepareDays,
-                    //AvailableDeliveryDays = basicInfo.AvailablePickupDays,
-                    //AvailableDeliveryStartDate = basicInfo.AvailablePickupStartDateTime,
-                    //AvailableDeliveryEndDate = basicInfo.AvailablePickupEndDateTime,
-                    //TemperatureTypeID = basicInfo.TemperatureTypeDef switch
-                    //{
-                    //    "Normal" => 1, // 常溫
-                    //    "Refrigerator" => 2, // 冷藏
-                    //    "Freezer" => 5, // 冷凍
-                    //    _ => 1
-                    //}, // 預設常溫
-                    //Length = basicInfo.Length,
-                    //Width = basicInfo.WIdth,
-                    //Height = basicInfo.Height,
-                    //Weight = basicInfo.Weight,
-                    //WebPageTitle = basicInfo.SEOTitle,
-                    //WebPageDesc = basicInfo.SEODescription,
-                    //WebPageKeywords = basicInfo.SEOKeywords,
-                    //IsShowProduct = 1, //加前端欄位
-                    //IsShowSold = (commonInfo.IsShowSoldQty_91 ?? false) ? 1: 0,
-                    //IsShowInventory = (commonInfo.IsShowStockQty_91 ?? false) ? 1 : 0,
-                    //IsRestricted = (commonInfo.IsRestricted_91 ?? false) ? 1 : 0,
-                    //StockoutShow = basicInfo.SoldOutActionType switch
-                    //{
-                    //    "OutOfStock" => 1, // 已售完
-                    //    "NoRestock" => 3, // 售完不補貨
-                    //    "Restock" => 2, // 售完補貨中
-                    //    "BackInStockAlert" => 4, //貨到通知
-                    //    _ => 1
-                    //},
-                    //IsReturnable = basicInfo.IsReturnable ? 1 : 0,
-                    //ProductFeatures = basicInfo.ProductDescription ?? "",
-                    //ProductDetail = basicInfo.MoreInfo ?? "",
-                    //Brand = new int[] { int.Parse(commonInfo.BrandID) },
-                    //PictureCount = request.MainImage.Count,
-                    //PayType = basicInfo.PayTypes.ToArray(),
-                    //ShippingType = basicInfo.ShipType_91app.Select(t=> (int) t).ToArray(),
-                    //ProductSpecification = basicInfo.Specifications.ConvertToOfficial(new List<ProductSpecification>()),
-                    //IsProductOption1 = useOption1,
-                    //IsProductOption2 = useOption2,
-                    //ProductOption1 = useOption1 ? new ProductOptionType
-                    //{
-                    //    Type = 1,
-                    //    Name = hasColDetail1 ? "尺寸" : "顏色",
-                    //    Data = hasColDetail1 ?
-                    //        basicInfo.SkuList.Select(s => s.ColDetail1?.Label).Where(v => !string.IsNullOrEmpty(v)).Distinct().ToArray() :
-                    //        basicInfo.SkuList.Select(s => s.ColDetail2?.Label).Where(v => !string.IsNullOrEmpty(v)).Distinct().ToArray()
-                    //} : null,
-                    //ProductOption2 = useOption2 ? new ProductOptionType
-                    //{
-                    //    Type = 2,
-                    //    Name = "顏色",
-                    //    Data = basicInfo.SkuList.Select(s => s.ColDetail2?.Label).Where(v => !string.IsNullOrEmpty(v)).Distinct().ToArray()
-                    //} : null,
-                    //ProductOptionList = productOptions
+                    DeliveryDateType = basicInfo.ApplyType switch
+                    {
+                        "一般" => 1, // 指定出貨日
+                        "預購(指定出貨日)" => 4, // 預設等待天數
+                        "預購(指定工作天)" => 5, // 預設備貨天數
+                        "訂製" => 2, // 可配送區間
+                        "客約" => 3, // 不提供配送
+                        _ => 1
+                    },
+                    SpecifiedDeliveryDate = basicInfo.ExpectShippingDate,
+                    WaitingDays = basicInfo.ShippingPrepareDay,
+                    IsEnbaleDeliveryDate = basicInfo.IsEnableBookingPickupDate,
+                    PrepareDays = basicInfo.PrepareDays,
+                    AvailableDeliveryDays = basicInfo.AvailablePickupDays,
+                    AvailableDeliveryStartDate = basicInfo.AvailablePickupStartDateTime,
+                    AvailableDeliveryEndDate = basicInfo.AvailablePickupEndDateTime,
+                    TemperatureTypeID = basicInfo.TemperatureTypeDef switch
+                    {
+                        "Normal" => 1, // 常溫
+                        "Refrigerator" => 2, // 冷藏
+                        "Freezer" => 5, // 冷凍
+                        _ => 1
+                    }, // 預設常溫
+                    Length = basicInfo.Length,
+                    Width = basicInfo.WIdth,
+                    Height = basicInfo.Height,
+                    Weight = basicInfo.Weight,
+                    WebPageTitle = basicInfo.SEOTitle,
+                    WebPageDesc = basicInfo.SEODescription,
+                    WebPageKeywords = basicInfo.SEOKeywords,
+                    IsShowProduct = true, //加前端欄位
+                    IsShowSold = commonInfo.IsShowSoldQty_91 ?? false,
+                    IsShowInventory = commonInfo.IsShowStockQty_91 ?? false,
+                    IsRestricted = commonInfo.IsRestricted_91 ?? false,
+                    StockoutShow = basicInfo.SoldOutActionType switch
+                    {
+                        "OutOfStock" => 1, // 已售完
+                        "NoRestock" => 3, // 售完不補貨
+                        "Restock" => 2, // 售完補貨中
+                        "BackInStockAlert" => 4, //貨到通知
+                        _ => 1
+                    },
+                    IsReturnable = basicInfo.IsReturnable,
+                    ProductFeatures = basicInfo.ProductDescription ?? "",
+                    ProductDetail = basicInfo.MoreInfo ?? "",
+                    Brand = new int[] { 14 },
+                    PictureCount = request.MainImage?.Count ?? 0,
+                    PayType = basicInfo.PayTypes.ToArray(),
+                    ShippingType = basicInfo.ShipType_91app.Select(t => (int)t).ToArray(),
+                    ProductSpecification = basicInfo.Specifications.ConvertToOfficial(new List<ProductSpecification>()),
+                    IsProductOption1 = useOption1,
+                    IsProductOption2 = useOption2,
+                    ProductOption1 = useOption1 ? new ProductOptionType
+                    {
+                        Type = 1,
+                        Name = hasColDetail1 ? "尺寸" : "顏色",
+                        Data = hasColDetail1 ?
+                            basicInfo.SkuList.Select(s => s.ColDetail1?.Label).Where(v => !string.IsNullOrEmpty(v)).Distinct().ToArray() :
+                            basicInfo.SkuList.Select(s => s.ColDetail2?.Label).Where(v => !string.IsNullOrEmpty(v)).Distinct().ToArray()
+                    } : null,
+                    ProductOption2 = useOption2 ? new ProductOptionType
+                    {
+                        Type = 2,
+                        Name = "顏色",
+                        Data = basicInfo.SkuList.Select(s => s.ColDetail2?.Label).Where(v => !string.IsNullOrEmpty(v)).Distinct().ToArray()
+                    } : null,
+                    ProductOptionList = productOptions
                 }
             };
         }
@@ -253,7 +253,7 @@ namespace HqSrv.Factories.Ecommerce
 
                 foreach (SkuItem sku in basicInfo.SkuList)
                 {
-                    SkuResult historySkuResult = historyResponse.SkuList?.FirstOrDefault(h => h.GoodID == sku.OuterId);
+                    SkuResult historySkuResult = historyResponse.ProductOpton?.FirstOrDefault(h => h.GoodID == sku.OuterId);
 
                     updateOptions.Add(new ProductOptionUpdate
                     {
