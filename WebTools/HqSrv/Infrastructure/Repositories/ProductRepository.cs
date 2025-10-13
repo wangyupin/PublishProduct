@@ -115,51 +115,6 @@ namespace HqSrv.Infrastructure.Repositories
             }
         }
 
-        public async Task<Result<Product>> SaveAsync(Product product)
-        {
-            try
-            {
-                using var connection = new SqlConnection(_configuration.GetConnectionString("POVWebDb"));
-                await connection.OpenAsync();
-                using var transaction = connection.BeginTransaction();
-
-                try
-                {
-                    // 轉換為 JSON 格式
-                    var jsonData = ConvertToJson(product);
-
-                    var sql = @"
-                        MERGE INTO ESubmitGoodsReq AS target
-                        USING (VALUES (@ParentID, @RequestParams, GETDATE(), @ChangePerson)) AS source (ParentID, RequestParams, ChangeTime, ChangePerson)
-                        ON target.ParentID = source.ParentID
-                        WHEN MATCHED THEN
-                            UPDATE SET RequestParams = source.RequestParams, ChangeTime = source.ChangeTime, ChangePerson = source.ChangePerson
-                        WHEN NOT MATCHED THEN
-                            INSERT (ParentID, RequestParams, ChangeTime, ChangePerson)
-                            VALUES (source.ParentID, source.RequestParams, source.ChangeTime, source.ChangePerson);";
-
-                    await connection.ExecuteAsync(sql, new
-                    {
-                        ParentID = product.ParentId,
-                        RequestParams = jsonData,
-                        ChangePerson = "SYSTEM" // 或從上下文取得使用者
-                    }, transaction);
-
-                    transaction.Commit();
-                    return Result<Product>.Success(product);
-                }
-                catch
-                {
-                    transaction.Rollback();
-                    throw;
-                }
-            }
-            catch (Exception ex)
-            {
-                return Result<Product>.Failure(Error.Custom("SAVE_PRODUCT_ERROR", ex.Message));
-            }
-        }
-
         public async Task<Result<bool>> ExistsAsync(string parentId)
         {
             try
@@ -286,43 +241,6 @@ namespace HqSrv.Infrastructure.Repositories
             return product;
         }
 
-        private string ConvertToJson(Product product)
-        {
-            var jsonData = new ProductJsonData
-            {
-                Title = product.Title,
-                ProductDescription = product.Description,
-                MoreInfo = product.MoreInfo,
-                Price = product.Price,
-                Cost = product.Cost,
-                SuggestPrice = product.SuggestPrice,
-                ApplyType = product.ApplyType,
-                SellingStartDateTime = product.SellingStartDateTime,
-                SellingEndDateTime = product.SellingEndDateTime,
-                Height = product.Height,
-                Width = product.Width,
-                Length = product.Length,
-                Weight = product.Weight,
-                TemperatureTypeDef = product.TemperatureTypeDef,
-                HasSku = product.HasSku,
-                Qty = product.Qty,
-                OnceQty = product.OnceQty,
-                OuterId = product.OuterId,
-                SkuList = product.SkuList.Select(s => new SkuJsonData
-                {
-                    OuterId = s.OuterId,
-                    Name = s.Name,
-                    Qty = s.Qty,
-                    OnceQty = s.OnceQty,
-                    Price = s.Price,
-                    Cost = s.Cost,
-                    SuggestPrice = s.SuggestPrice,
-                    SafetyStockQty = s.SafetyStockQty
-                }).ToList()
-            };
-
-            return JsonConvert.SerializeObject(jsonData);
-        }
 
         // ============================================
         // 資料模型 - JSON 序列化用

@@ -186,15 +186,21 @@ namespace HqSrv.Infrastructure.ExternalServices
             return Result<dynamic>.Success(new { responseBody });
         }
 
-        public async Task<Result<ApiResponse_91App<SalePageSpecChartGetListResponse>>> SalePageSpecChartGetList(
+        public async Task<Result<dynamic>> SalePageSpecChartGetList(
             SalePageSpecChartGetListRequest request)
         {
             await EnsureStoreIdAsync();
             request.SearchItem.ShopId = long.Parse(_storeId);
 
-            return await CallPostAsync<SalePageSpecChartGetListRequest, SalePageSpecChartGetListRequest,
-                ApiResponse_91App<SalePageSpecChartGetListResponse>>(
+
+             var result = await CallPostAsync<SalePageSpecChartGetListRequest, SalePageSpecChartGetListRequest, ApiResponse_91App<SalePageSpecChartGetListResponse>>(
                 "V2/SalePageSpecChart/GetList", request);
+         
+            if (result.IsFailure)
+                return Result<dynamic>.Failure(result.Error);
+            List<Option<long>> options = result.Data.Data.List.Select(t => new Option<long> { Value = t.SalePageSpecChartId, Label = t.Title }).ToList();
+
+            return Result<dynamic>.Success(new { options });
         }
 
         public async Task<Result<ApiResponse_91App<SubmitMainResponse>>> SubmitMain(SubmitMainRequest request)

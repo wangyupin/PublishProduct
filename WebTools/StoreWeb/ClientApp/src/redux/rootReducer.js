@@ -18,6 +18,8 @@ import SettingMgmt_GroupAccount from '@src/views/SettingMgmt/GroupAccount/store'
 import EcommerceMgmt_EcommerceStore from '@src/views/EcommerceMgmt/EcommerceStoreEdit/store'
 import EcommerceMgmt_PublishGoods from '@src/views/EcommerceMgmt/PublishGoods/store'
 
+//MainTableMgmt
+import MainTableMgmt_GoodsInfo from '@src/views/MainTableMgmt/GoodsInfo/store'
 
 const cityappReducer = {
   appSettings,
@@ -29,7 +31,10 @@ const cityappReducer = {
 
   // SettingMgmt
   SettingMgmt_UserAccount,
-  SettingMgmt_GroupAccount
+  SettingMgmt_GroupAccount,
+
+  // MainTableMgmt
+  MainTableMgmt_GoodsInfo
 }
 
 // 定義一個全域清空 slice 的 action

@@ -1,4 +1,5 @@
-﻿using HqSrv.Domain.ValueObjects;
+﻿using HqSrv.Domain.Events;
+using HqSrv.Domain.ValueObjects;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -53,6 +54,44 @@ namespace HqSrv.Domain.Entities
 
         // 溫層設定
         public string TemperatureTypeDef { get; private set; }
+
+        // 新增：Domain Events 支援
+        private readonly List<IDomainEvent> _domainEvents = new List<IDomainEvent>();
+        public IReadOnlyCollection<IDomainEvent> DomainEvents => _domainEvents.AsReadOnly();
+
+        /// <summary>
+        /// 添加領域事件
+        /// </summary>
+        public void AddDomainEvent(IDomainEvent domainEvent)
+        {
+            _domainEvents.Add(domainEvent);
+        }
+
+        /// <summary>
+        /// 清除領域事件
+        /// </summary>
+        public void ClearDomainEvents()
+        {
+            _domainEvents.Clear();
+        }
+
+        /// <summary>
+        /// 標記為已發布（觸發事件）
+        /// </summary>
+        public void MarkAsPublished(string platformId, string publishResult)
+        {
+            var publishEvent = ProductPublishedEvent.Create(ParentId, platformId, publishResult);
+            AddDomainEvent(publishEvent);
+        }
+
+        /// <summary>
+        /// 標記驗證失敗（觸發事件）
+        /// </summary>
+        public void MarkValidationFailed(string platformId, List<string> errors)
+        {
+            var validationFailedEvent = ProductValidationFailedEvent.Create(ParentId, platformId, errors);
+            AddDomainEvent(validationFailedEvent);
+        }
 
         // ============================================
         // 工廠方法 - 建立新商品

@@ -380,7 +380,7 @@ namespace HqSrv.Infrastructure.Repositories
                 LEFT JOIN Country_Mapping CM ON C.CountryID = CM.CountryID AND CM.EStoreID = @EstoreID
                 LEFT JOIN Brand B ON G.Brand = B.BrandID
                 LEFT JOIN Brand_Mapping BM ON B.BrandID = BM.BrandID AND BM.EStoreID = @EstoreID
-                LEFT JOIN EstoreValue E ON G.ParentID = E.ParentID
+                LEFT JOIN EC_Store E ON E.EStoreID = @EStoreID
                 WHERE G.ParentID = @ParentID
             ";
 
@@ -481,7 +481,7 @@ namespace HqSrv.Infrastructure.Repositories
             {
                 int effectRows = await connection.ExecuteAsync(
                     saveReqSql,
-                    new { request.ParentID, RequestParams = request.JsonData, request.ChangePerson },
+                    new { request.ParentID, RequestParams = request.BasicInfo, request.ChangePerson },
                     transaction: transaction,
                     commandTimeout: 180);
 
@@ -561,7 +561,7 @@ namespace HqSrv.Infrastructure.Repositories
                 try
                 {
                     string fileHash = "";
-                    string folder = $"Images/PublishGoods/{baseName}";
+                    string folder = $"BackendImages/PublishGoods/{baseName}";
                     string directory = Path.Combine(_hostEnvironment.ContentRootPath, folder);
 
                     switch (type)
@@ -660,7 +660,7 @@ namespace HqSrv.Infrastructure.Repositories
             MoreInfoResult moreInfoResult = await ProcessMoreInfoAsync((string)obj["moreInfo"], request.ParentID, request.Origin);
             obj["moreInfo"] = moreInfoResult.ProcessedHtml;
             request.JsonData = obj.ToString(Formatting.None);
-            throw new NotImplementedException("保持原有的 HandleImageAsync 實作");
+    
         }
 
         public async Task<MoreInfoResult> ProcessMoreInfoAsync(string originalHtml, string baseName, string origin)
@@ -701,6 +701,28 @@ namespace HqSrv.Infrastructure.Repositories
                 UploadedImages = uploadedImages
             };
             throw new NotImplementedException("保持原有的 ProcessMoreInfoAsync 實作");
+        }
+
+        public async Task<string> GetOriginalRequestParamsAsync(string parentID)
+        {
+            string searchSql = @"
+        SELECT TOP 1 RequestParams 
+        FROM ESubmitGoodsReq 
+        WHERE ParentID = @ParentID 
+        ORDER BY ChangeTime DESC
+    ";
+
+            var connection = _context.Connection;
+            connection.Open();
+            try
+            {
+                var requestParams = connection.QueryFirstOrDefault<string>(searchSql, new { parentID });
+                return requestParams;
+            }
+            finally
+            {
+                connection.Close();
+            }
         }
 
         // ============================================

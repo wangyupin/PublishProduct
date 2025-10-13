@@ -46,7 +46,7 @@ namespace HqSrv.Factories.Ecommerce
             {
                 MainRequest = new POVWebDomain.Models.ExternalApi.Store91.SubmitMainRequest
                 {
-                    CategoryId = (int)storeSetting.CategoryId,
+                    CategoryId = 2598,
                     MirrorCategoryIdList = new List<int>(),
                     ShopCategoryId = (int)basicInfo.ShopCategoryId,
                     MirrorShopCategoryIdList = new List<long>(),
@@ -131,203 +131,212 @@ namespace HqSrv.Factories.Ecommerce
             };
         }
 
-        public async Task<object> CreateRequestDtoEdit(SubmitMainRequestAll request, string request1, string request2, StoreSetting storeSetting)
+        public async Task<object> CreateRequestDtoEdit(SubmitMainRequestAll request, string originalBasicInfo, string platformResponse, StoreSetting storeSetting)
         {
-            POVWebDomain.Models.API.StoreSrv.EcommerceMgmt.PublishGoods.SubmitMainRequest basicInfo = JsonConvert.DeserializeObject<POVWebDomain.Models.API.StoreSrv.EcommerceMgmt.PublishGoods.SubmitMainRequest>(request.BasicInfo);
 
-            POVWebDomain.Models.API.StoreSrv.EcommerceMgmt.PublishGoods.SubmitMainRequest historyRequest = JsonConvert.DeserializeObject<POVWebDomain.Models.API.StoreSrv.EcommerceMgmt.PublishGoods.SubmitMainRequest>(request1);
+            // 當前要編輯的基本資料
+            POVWebDomain.Models.API.StoreSrv.EcommerceMgmt.PublishGoods.SubmitMainRequest basicInfo =
+                JsonConvert.DeserializeObject<POVWebDomain.Models.API.StoreSrv.EcommerceMgmt.PublishGoods.SubmitMainRequest>(request.BasicInfo);
+
+            // originalBasicInfo 現在直接就是 SubmitMainRequest 的 JSON，不包含 IFormFile
+            POVWebDomain.Models.API.StoreSrv.EcommerceMgmt.PublishGoods.SubmitMainRequest historyRequest =
+                JsonConvert.DeserializeObject<POVWebDomain.Models.API.StoreSrv.EcommerceMgmt.PublishGoods.SubmitMainRequest>(originalBasicInfo);
+
+            // 平台回應資料
+            SubmitMainResponse historyResponse = JsonConvert.DeserializeObject<SubmitMainResponse>(platformResponse);
 
 
-            SubmitMainResponse historyResponse = JsonConvert.DeserializeObject<SubmitMainResponse>(request2);
 
             SubmitGoodsEditRequest editRequest = new SubmitGoodsEditRequest
-            {
-                MainRequest = new UpdateMainDetailRequest
                 {
-                    Id = historyResponse.Id,
-                    CategoryId = (int)storeSetting.CategoryId,
-                    ShopCategoryId = (int)basicInfo.ShopCategoryId,
-                    SellingStartDateTime = basicInfo.SellingStartDateTime,
-                    SellingEndDateTime = basicInfo.SellingEndDateTime,
-                    ShippingTypes = basicInfo.ShipType_91app,
-                    PayTypes = basicInfo.PayTypes,
-                    Type = basicInfo.Type,
-                    Specifications = basicInfo.Specifications.ConvertToDictionary(basicInfo.IndexList.ConvertToDictionary()),
-                    ProductHighlight = basicInfo.ProductHighlight,
-                    ProductDescription = basicInfo.ProductDescription,
-                    MoreInfo = basicInfo.MoreInfo,
-                    SEOTitle = basicInfo.SEOTitle,
-                    SEOKeywords = basicInfo.SEOKeywords,
-                    SEODescription = basicInfo.SEODescription,
-                    TemperatureTypeDef = basicInfo.TemperatureTypeDef,
-                    Length = basicInfo.Length,
-                    WIdth = basicInfo.WIdth,
-                    Height = basicInfo.Height,
-                    Weight = basicInfo.Weight,
-                    Status = basicInfo.Status,
-                    IsShowStockQty = basicInfo.IsShowStockQty,
-                    TaxTypeDef = basicInfo.TaxTypeDef,
-                    IsReturnable = basicInfo.IsReturnable,
-                    IsEnableBookingPickupDate = basicInfo.IsEnableBookingPickupDate,
-                    PrepareDays = basicInfo.PrepareDays,
-                    AvailablePickupDays = basicInfo.AvailablePickupDays,
-                    AvailablePickupStartDateTime = basicInfo.AvailablePickupStartDateTime,
-                    AvailablePickupEndDateTime = basicInfo.AvailablePickupEndDateTime,
-                    ApplyType = basicInfo.ApplyType,
-                    ExpectShippingDate = basicInfo.ExpectShippingDate,
-                    ShippingPrepareDay = basicInfo.ShippingPrepareDay.ToString(),
-                    IsShowPurchaseList = basicInfo.IsShowPurchaseList,
-                    IsShowSoldQty = basicInfo.IsShowSoldQty,
-                    IsDesignatedReturnGoodsType = basicInfo.IsDesignatedReturnGoodsType,
-                    ReturnGoodsType = basicInfo.ReturnGoodsType,
-                    SoldOutActionType = basicInfo.SoldOutActionType,
-                    IsRestricted = basicInfo.IsRestricted,
-                    SalesModeTypeDef = basicInfo.SalesModeTypeDef,
-                    PointsPayPairs = basicInfo.PointsPayPairs
-                },
-                SkuList = historyResponse
-            };
-
-            if (request.MainImage?.Count > 0)
-            {
-                List<UpdateMainImageRequest> tmp = new List<UpdateMainImageRequest>();
-                for(int idx=0; idx<request.MainImage.Count; idx++)
-                {
-                    IFormFile file = request.MainImage[idx];
-                    if (file == null || file.Length == 0) continue;
-                    tmp.Add(new UpdateMainImageRequest
+                    MainRequest = new UpdateMainDetailRequest
                     {
                         Id = historyResponse.Id,
-                        Image = file,
-                        Index = idx
-                    });
-                }
-                if (tmp.Count > 0) editRequest.MainImage = tmp;
-            }
-
-            if (request.SkuImage?.Count > 0)
-            {
-                List<UpdateSKUImageRequest> tmp = new List<UpdateSKUImageRequest>();
-                for (int idx = 0; idx < request.SkuImage.Count; idx++)
-                {
-                    IFormFile file = request.SkuImage[idx];
-                    if (file == null || file.Length == 0) continue;
-
-                    SkuListRes res = historyResponse.SkuList.Find(t => t.OuterId == basicInfo.SkuList[idx].OriginalOuterId);
-
-                    tmp.Add(new UpdateSKUImageRequest
-                    {
-                        Id = res?.SkuId,
-                        Image = file,
-                        Index = 0
-                    });
-                }
-                if (tmp.Count > 0) editRequest.SkuImage = tmp;
-            }
-
-
-            if (basicInfo.SalePageSpecChartId != historyRequest.SalePageSpecChartId)
-            {
-                editRequest.SpecChartRequest = new UpdateSpecChartIdRequest
-                {
-                    SalePageId = historyResponse.Id,
-                    SalePageSpecChartId = basicInfo.SalePageSpecChartId
+                        CategoryId = 2598,
+                        ShopCategoryId = (int)basicInfo.ShopCategoryId,
+                        SellingStartDateTime = basicInfo.SellingStartDateTime,
+                        SellingEndDateTime = basicInfo.SellingEndDateTime,
+                        ShippingTypes = basicInfo.ShipType_91app,
+                        PayTypes = basicInfo.PayTypes,
+                        Type = basicInfo.Type,
+                        Specifications = basicInfo.Specifications.ConvertToDictionary(basicInfo.IndexList.ConvertToDictionary()),
+                        ProductHighlight = basicInfo.ProductHighlight,
+                        ProductDescription = basicInfo.ProductDescription,
+                        MoreInfo = basicInfo.MoreInfo,
+                        SEOTitle = basicInfo.SEOTitle,
+                        SEOKeywords = basicInfo.SEOKeywords,
+                        SEODescription = basicInfo.SEODescription,
+                        TemperatureTypeDef = basicInfo.TemperatureTypeDef,
+                        Length = basicInfo.Length,
+                        WIdth = basicInfo.WIdth,
+                        Height = basicInfo.Height,
+                        Weight = basicInfo.Weight,
+                        Status = basicInfo.Status,
+                        IsShowStockQty = basicInfo.IsShowStockQty,
+                        TaxTypeDef = basicInfo.TaxTypeDef,
+                        IsReturnable = basicInfo.IsReturnable,
+                        IsEnableBookingPickupDate = basicInfo.IsEnableBookingPickupDate,
+                        PrepareDays = basicInfo.PrepareDays,
+                        AvailablePickupDays = basicInfo.AvailablePickupDays,
+                        AvailablePickupStartDateTime = basicInfo.AvailablePickupStartDateTime,
+                        AvailablePickupEndDateTime = basicInfo.AvailablePickupEndDateTime,
+                        ApplyType = basicInfo.ApplyType,
+                        ExpectShippingDate = basicInfo.ExpectShippingDate,
+                        ShippingPrepareDay = basicInfo.ShippingPrepareDay.ToString(),
+                        IsShowPurchaseList = basicInfo.IsShowPurchaseList,
+                        IsShowSoldQty = basicInfo.IsShowSoldQty,
+                        IsDesignatedReturnGoodsType = basicInfo.IsDesignatedReturnGoodsType,
+                        ReturnGoodsType = basicInfo.ReturnGoodsType,
+                        SoldOutActionType = basicInfo.SoldOutActionType,
+                        IsRestricted = basicInfo.IsRestricted,
+                        SalesModeTypeDef = basicInfo.SalesModeTypeDef,
+                        PointsPayPairs = basicInfo.PointsPayPairs
+                    },
+                    SkuList = historyResponse
                 };
-            }
 
-            if(storeSetting.Title != historyRequest.Title)
-            {
-                editRequest.UpdateTitleRequest = new UpdateTitleRequest
+                if (request.MainImage?.Count > 0)
                 {
-                    Id = historyResponse.Id,
-                    Title = storeSetting.Title
-                };
-            }
-
-            List<UpdSku> updSku = new List<UpdSku>();
-            List<SkuList_All> addSku = new List<SkuList_All>();
-            if (!basicInfo.HasSku && !historyRequest.HasSku)
-            {
-                updSku.Add(new UpdSku
-                {
-                    Id = historyResponse.SkuList[0].SkuId,
-                    ChangeQty = basicInfo.Qty - historyRequest.Qty,
-                    Sort = 1,
-                    OnceQty = (int)basicInfo.OnceQty,
-                    OuterId = basicInfo.OuterId,
-                    IsShow = true,
-                    SuggestPrice = basicInfo.SuggestPrice,
-                    Price = basicInfo.Price,
-                    Cost = basicInfo.Cost,
-                    SafetyStockQty = basicInfo.SafetyStockQty
-                });
-            }
-            else
-            {
-                
-                for (int idx =0; idx<basicInfo.SkuList.Count; idx++)
-                {
-                    SkuItem sku = basicInfo.SkuList[idx];
-                    SkuItem historySku = historyRequest.SkuList.Find(t => t.OuterId == sku.OuterId);
-                    SkuListRes res = historyResponse.SkuList.Find(t => t.OuterId == sku.OriginalOuterId);
-                    if (res != null)
+                    List<UpdateMainImageRequest> tmp = new List<UpdateMainImageRequest>();
+                    for (int idx = 0; idx < request.MainImage.Count; idx++)
                     {
-                        updSku.Add(new UpdSku
+                        IFormFile file = request.MainImage[idx];
+                        if (file == null || file.Length == 0) continue;
+                        tmp.Add(new UpdateMainImageRequest
                         {
-                            Id = res.SkuId,
-                            ChangeQty = sku.Qty - historySku.Qty,
-                            Sort = idx + 1,
-                            OnceQty = sku.OnceQty,
-                            OuterId = sku.OuterId,
-                            IsShow = true,
-                            SuggestPrice = sku.SuggestPrice,
-                            Price = sku.Price,
-                            Cost = sku.Cost,
-                            SafetyStockQty = sku.SafetyStockQty
+                            Id = historyResponse.Id,
+                            Image = file,
+                            Index = idx
                         });
                     }
-                    else
-                    {
-                        addSku.Add(new SkuList_All
-                        {
-                            Name = sku.ConbineColDetail(),
-                            Sort = idx + 1,
-                            Qty = sku.Qty,
-                            OnceQty = sku.OnceQty,
-                            OuterId = sku.OuterId,
-                            IsShow = true,
-                            SuggestPrice = sku.SuggestPrice,
-                            Price = sku.Price,
-                            Cost = sku.Cost,
-                            SafetyStockQty = sku.SafetyStockQty
-                        });
-                    }
+                    if (tmp.Count > 0) editRequest.MainImage = tmp;
                 }
 
-               
-            }
-
-            if (updSku.Count > 0)
-            {
-                editRequest.UpdateSaleProductSkuRequest = new UpdateSaleProductSkuRequest
+                if (request.SkuImage?.Count > 0)
                 {
-                    Id = historyResponse.Id,
-                    IsSkuDifferentPrice = true,
-                    SkuList = updSku
-                };
-            }
+                    List<UpdateSKUImageRequest> tmp = new List<UpdateSKUImageRequest>();
+                    for (int idx = 0; idx < request.SkuImage.Count; idx++)
+                    {
+                        IFormFile file = request.SkuImage[idx];
+                        if (file == null || file.Length == 0) continue;
 
-            if (addSku.Count > 0)
-            {
-                editRequest.CreateSaleProductSkuRequest = new CreateSaleProductSkuRequest
+                        SkuListRes res = historyResponse.SkuList.Find(t => t.OuterId == basicInfo.SkuList[idx].OriginalOuterId);
+
+                        tmp.Add(new UpdateSKUImageRequest
+                        {
+                            Id = res?.SkuId,
+                            Image = file,
+                            Index = 0
+                        });
+                    }
+                    if (tmp.Count > 0) editRequest.SkuImage = tmp;
+                }
+
+
+                if (basicInfo.SalePageSpecChartId != historyRequest.SalePageSpecChartId)
                 {
-                    Id = historyResponse.Id,
-                    IsSkuDifferentPrice = true,
-                    SkuList = addSku
-                };
-            }
+                    editRequest.SpecChartRequest = new UpdateSpecChartIdRequest
+                    {
+                        SalePageId = historyResponse.Id,
+                        SalePageSpecChartId = basicInfo.SalePageSpecChartId
+                    };
+                }
 
-            return editRequest;
+                if (storeSetting.Title != historyRequest.Title)
+                {
+                    editRequest.UpdateTitleRequest = new UpdateTitleRequest
+                    {
+                        Id = historyResponse.Id,
+                        Title = storeSetting.Title
+                    };
+                }
+
+                List<UpdSku> updSku = new List<UpdSku>();
+                List<SkuList_All> addSku = new List<SkuList_All>();
+                if (!basicInfo.HasSku && !historyRequest.HasSku)
+                {
+                    updSku.Add(new UpdSku
+                    {
+                        Id = historyResponse.SkuList[0].SkuId,
+                        ChangeQty = basicInfo.Qty - historyRequest.Qty,
+                        Sort = 1,
+                        OnceQty = (int)basicInfo.OnceQty,
+                        OuterId = basicInfo.OuterId,
+                        IsShow = true,
+                        SuggestPrice = basicInfo.SuggestPrice,
+                        Price = basicInfo.Price,
+                        Cost = basicInfo.Cost,
+                        SafetyStockQty = basicInfo.SafetyStockQty
+                    });
+                }
+                else
+                {
+
+                    for (int idx = 0; idx < basicInfo.SkuList.Count; idx++)
+                    {
+                        SkuItem sku = basicInfo.SkuList[idx];
+                        SkuItem historySku = historyRequest.SkuList.Find(t => t.OuterId == sku.OuterId);
+                        SkuListRes res = historyResponse.SkuList.Find(t => t.OuterId == sku.OriginalOuterId);
+                        if (res != null)
+                        {
+                            updSku.Add(new UpdSku
+                            {
+                                Id = res.SkuId,
+                                ChangeQty = sku.Qty - historySku.Qty,
+                                Sort = idx + 1,
+                                OnceQty = sku.OnceQty,
+                                OuterId = sku.OuterId,
+                                IsShow = true,
+                                SuggestPrice = sku.SuggestPrice,
+                                Price = sku.Price,
+                                Cost = sku.Cost,
+                                SafetyStockQty = sku.SafetyStockQty
+                            });
+                        }
+                        else
+                        {
+                            addSku.Add(new SkuList_All
+                            {
+                                Name = sku.ConbineColDetail(),
+                                Sort = idx + 1,
+                                Qty = sku.Qty,
+                                OnceQty = sku.OnceQty,
+                                OuterId = sku.OuterId,
+                                IsShow = true,
+                                SuggestPrice = sku.SuggestPrice,
+                                Price = sku.Price,
+                                Cost = sku.Cost,
+                                SafetyStockQty = sku.SafetyStockQty
+                            });
+                        }
+                    }
+
+
+                }
+
+                if (updSku.Count > 0)
+                {
+                    editRequest.UpdateSaleProductSkuRequest = new UpdateSaleProductSkuRequest
+                    {
+                        Id = historyResponse.Id,
+                        IsSkuDifferentPrice = true,
+                        SkuList = updSku
+                    };
+                }
+
+                if (addSku.Count > 0)
+                {
+                    editRequest.CreateSaleProductSkuRequest = new CreateSaleProductSkuRequest
+                    {
+                        Id = historyResponse.Id,
+                        IsSkuDifferentPrice = true,
+                        SkuList = addSku
+                    };
+                }
+
+                return editRequest;
+
+
         }
 
         public Type GetResponseDtoType() => typeof(SubmitMainResponse);

@@ -30,5 +30,6 @@ namespace HqSrv.Infrastructure.Repositories
         // 處理方法
         Task HandleImageAsync(SubmitMainRequestAll request);
         Task<MoreInfoResult> ProcessMoreInfoAsync(string originalHtml, string baseName, string origin);
+        Task<string> GetOriginalRequestParamsAsync(string parentID);
     }
 }

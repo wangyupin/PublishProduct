@@ -250,7 +250,7 @@ namespace POVWebDomain.Models.ExternalApi.Store91
     public class SearchItem
     {
         public long ShopId { get; set; }
-        public long? SalePageSpecChartId { get; set; }
+        public long SalePageSpecChartId { get; set; }
         public string Name { get; set; }
         public string Title { get; set; }
     }

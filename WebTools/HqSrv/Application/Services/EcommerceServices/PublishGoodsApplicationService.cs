@@ -110,7 +110,7 @@ namespace HqSrv.Application.Services.EcommerceMgmt
                 {
                     ShipType_91app = (shippingResult.Data as dynamic)?.responseBody,
                     Payment = (paymentResult.Data as dynamic)?.responseBody,
-                    SpecChart = (specChartResult.Data as dynamic)?.Data,
+                    SpecChart = (specChartResult.Data as dynamic)?.options,
                     ShopCategory = (shopCategoryResult.Data as dynamic)?.responseBody,
                     SalesModeType = (salesModeTypeResult.Data as dynamic)?.responseBody,
                     SellingDateTime = (sellingDateTimeResult.Data as dynamic)?.responseBody,
@@ -152,12 +152,8 @@ namespace HqSrv.Application.Services.EcommerceMgmt
                 if (publishOrderResult.IsFailure)
                     return Result<object>.Failure(publishOrderResult.Error);
 
-                // 5. 儲存 Domain Entity
-                var saveResult = await _productRepository.SaveAsync(product);
-                if (saveResult.IsFailure)
-                    return Result<object>.Failure(saveResult.Error);
 
-                // 6. 執行實際發布流程
+                // 5. 執行實際發布流程
                 var publishResult = await ExecutePublishingWorkflowAsync(request, product, publishOrderResult.Data);
                 if (publishResult.IsFailure)
                     return Result<object>.Failure(publishResult.Error);
@@ -281,12 +277,6 @@ namespace HqSrv.Application.Services.EcommerceMgmt
                 // 處理圖片
                 await _repository.HandleImageAsync(request);
 
-                // 儲存請求
-                var saveReqResult = await _repository.SaveSubmitGoodsReqAsync(request);
-                if (saveReqResult.IsFailure)
-                {
-                    errorList.Add(saveReqResult.Error.Message);
-                }
 
                 // 解析商店設定
                 var storeSettings = JsonConvert.DeserializeObject<List<StoreSetting>>(request.StoreSettings);
@@ -374,7 +364,8 @@ namespace HqSrv.Application.Services.EcommerceMgmt
                 else
                 {
                     // 編輯模式
-                    requestDto = factory.CreateRequestDtoEdit(request, resData.RequestParams, resData.ResponseData, store);
+                    var originalRequestParams = await _repository.GetOriginalRequestParamsAsync(request.ParentID);
+                    requestDto = await factory.CreateRequestDtoEdit(request, originalRequestParams, resData.ResponseData, store);
                     submitResult = await service.SubmitGoodsEditAsync(requestDto, store.PlatformID);
                 }
 
@@ -383,6 +374,8 @@ namespace HqSrv.Application.Services.EcommerceMgmt
                 {
                     var saveResResult = await _repository.SaveSubmitGoodsResAsync(request, requestDto,
                         new SubmitMainResponseAll { Response = submitResult.Data }, store);
+
+                    var saveReqResult = await _repository.SaveSubmitGoodsReqAsync(request);
 
                     if (saveResResult.IsFailure)
                     {

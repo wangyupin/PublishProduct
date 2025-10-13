@@ -51,7 +51,7 @@ const MainResult = [
   },
   {
     path: '/EcommerceMgmt/PublishGoods/:mode',
-    component: () => <Navigate to='/EcommerceMgmt/PublishGoods/add/C01001' replace />,
+    component: () => <Navigate to='/MainTableMgmt/GoodsInfo/List' replace />,
     breadcrumb: null
   },
   {
