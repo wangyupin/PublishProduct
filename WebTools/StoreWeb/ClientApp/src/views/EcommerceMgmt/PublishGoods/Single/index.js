@@ -198,18 +198,14 @@ const Single = ({ access, t, mode, id }) => {
             expDays: data.expDays,
             isExpiringItem: data.isExpiringItem,
             productStatus: data.productStatus?.value,
-            shipType_shopee: data.shipType_shopee
-        }
+            shipType_shopee: data.shipType_shopee,
 
-        const saveData = {
-            ...data,
             mainImage: data.mainImage.map(img => ({ path: img.path || '' })),
-            skuList: data.skuList.map(sku => ({ ...sku, image: { path: sku.image?.path || '' } }))
+            sizeImage: { path: data.sizeImage?.path || '' }
         }
 
         const formData = new FormData()
         formData.append('basicInfo', JSON.stringify(basicInfo))
-        formData.append('jsonData', JSON.stringify(saveData))
         formData.append('parentID', id)
         formData.append('changePerson', getUserData()?.userId)
         formData.append('store', '010000016')
@@ -222,6 +218,7 @@ const Single = ({ access, t, mode, id }) => {
         }))))
         formData.append('origin', process.env.NODE_ENV === 'production' ? window.location.origin : 'https://localhost:44320')
 
+        // 檔案處理保持不變
         data.mainImage.forEach((img) => {
             if (img.file) formData.append('mainImage', img.file)
             else formData.append('mainImage', new Blob(), img.path === '' ? undefined : img.path)
@@ -229,7 +226,6 @@ const Single = ({ access, t, mode, id }) => {
         data.skuList.forEach((sku) => {
             if (sku.image?.file) formData.append('skuImage', sku.image?.file)
             else formData.append('skuImage', new Blob(), sku.image?.path === '' ? undefined : sku.image?.path)
-
         })
 
         if (data.sizeImage?.file) formData.append('sizeImage', data.sizeImage?.file)

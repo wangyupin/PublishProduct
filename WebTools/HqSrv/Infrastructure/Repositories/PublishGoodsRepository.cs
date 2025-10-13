@@ -501,12 +501,6 @@ namespace HqSrv.Infrastructure.Repositories
 
         public async Task<Result<object>> SaveSubmitGoodsResAsync(SubmitMainRequestAll request, object requestDto, SubmitMainResponseAll response, StoreSetting store)
         {
-            JObject objJson = JObject.Parse(request.JsonData);
-            JObject obj = JObject.Parse(request.BasicInfo);
-            obj["categoryId"] = store.CategoryId;
-            obj["title"] = store.Title;
-            obj["cost"] = store.Cost;
-            obj["moreInfo"] = objJson["moreInfo"];
 
             string saveResSql = @"
                 MERGE INTO ESubmitGoodsRes AS target
@@ -612,8 +606,9 @@ namespace HqSrv.Infrastructure.Repositories
 
         public async Task HandleImageAsync(SubmitMainRequestAll request)
         {
-            JObject obj = JObject.Parse(request.JsonData);
+            JObject obj = JObject.Parse(request.BasicInfo);
 
+            // 處理主圖片
             for (int idx = 0; idx < request.MainImage?.Count; idx++)
             {
                 IFormFile image = request.MainImage[idx];
@@ -622,6 +617,7 @@ namespace HqSrv.Infrastructure.Repositories
                 var result = await SavePictureAsync(image, request.ParentID, "mainImage", idx);
                 if (result.IsFailure) throw new Exception(result.Error.Message);
 
+                // 第一張圖也儲存為廣告圖
                 if (idx == 0)
                 {
                     var adResult = await SavePictureAsync(image, request.ParentID, "ad", idx);
@@ -629,9 +625,24 @@ namespace HqSrv.Infrastructure.Repositories
                 }
 
                 string path = ((dynamic)result.Data).path;
+
+                // 確保 mainImage 陣列存在
+                if (obj["mainImage"] == null)
+                    obj["mainImage"] = new JArray();
+
+                JArray mainImageArray = (JArray)obj["mainImage"];
+
+                // 確保該索引的物件存在
+                while (mainImageArray.Count <= idx) 
+                {
+                    mainImageArray.Add(new JObject());
+                }
+
+                // 更新圖片路徑
                 obj["mainImage"][idx]["path"] = path == "" ? image.FileName : path;
             }
 
+            // 處理 SKU 圖片
             for (int idx = 0; idx < request.SkuImage?.Count; idx++)
             {
                 IFormFile image = request.SkuImage[idx];
@@ -641,9 +652,18 @@ namespace HqSrv.Infrastructure.Repositories
                 if (result.IsFailure) throw new Exception(result.Error.Message);
 
                 string path = ((dynamic)result.Data).path;
-                obj["skuList"][idx]["image"]["path"] = path == "" ? image.FileName : path;
+
+                // 確保 skuList 和對應的 image 結構存在
+                if (obj["skuList"] != null && obj["skuList"][idx] != null)
+                {
+                    if (obj["skuList"][idx]["image"] == null)
+                        obj["skuList"][idx]["image"] = new JObject();
+
+                    obj["skuList"][idx]["image"]["path"] = path == "" ? image.FileName : path;
+                }
             }
 
+            // 處理尺寸圖片
             if (request.SizeImage != null)
             {
                 IFormFile image = request.SizeImage;
@@ -651,16 +671,27 @@ namespace HqSrv.Infrastructure.Repositories
                 if (result.IsFailure) throw new Exception(result.Error.Message);
 
                 string path = ((dynamic)result.Data).path;
+
                 if (image.FileName != "blob")
                 {
+                    // 確保 sizeImage 物件存在
+                    if (obj["sizeImage"] == null)
+                        obj["sizeImage"] = new JObject();
+
                     obj["sizeImage"]["path"] = path == "" ? image.FileName : path;
                 }
             }
 
-            MoreInfoResult moreInfoResult = await ProcessMoreInfoAsync((string)obj["moreInfo"], request.ParentID, request.Origin);
-            obj["moreInfo"] = moreInfoResult.ProcessedHtml;
-            request.JsonData = obj.ToString(Formatting.None);
-    
+            // 處理 moreInfo 中的圖片
+            if (obj["moreInfo"] != null)
+            {
+                MoreInfoResult moreInfoResult = await ProcessMoreInfoAsync(obj["moreInfo"].ToString(), request.ParentID, request.Origin);
+                obj["moreInfo"] = moreInfoResult.ProcessedHtml;
+            }
+
+            // 更新 BasicInfo
+            request.BasicInfo = obj.ToString(Formatting.None);
+
         }
 
         public async Task<MoreInfoResult> ProcessMoreInfoAsync(string originalHtml, string baseName, string origin)

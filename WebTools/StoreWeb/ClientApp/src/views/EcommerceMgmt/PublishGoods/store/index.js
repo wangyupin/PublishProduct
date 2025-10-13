@@ -5,6 +5,7 @@ import { ShowToast } from '@CityAppExtComponents/caToaster'
 import axios from 'axios'
 
 import { clearSlice } from '@store/rootReducer'
+import { createInstance } from 'i18next'
 
 const sliceName = 'EcommerceMgmt_PublishGoods'
 
@@ -170,10 +171,35 @@ export const slice = createSlice({
                 const { defVal: defValReq, submitHistory: submitHistoryReq, missingItems, optionList } = action.payload.data
                 const submitHistory = JSON.parse(submitHistoryReq)
 
+                const convertedSubmitHistory = submitHistory ? {
+                    ...submitHistory,
+
+                    // 轉換 shopCategoryId：從單一值轉為陣列
+                    shopCategoryId: submitHistory.shopCategoryId ? [submitHistory.shopCategoryId] : [],
+
+                    // 轉換 shipType_91app：使用 targetDefaultValue 和已選擇的 ID
+                    shipType_91app: state.targetDefaultValue.shipType_91app.map(option => ({
+                        ...option,
+                        checked: submitHistory.shipType_91app?.includes(option.id) || false
+                    })),
+
+                    // 轉換 payTypes：使用 targetDefaultValue 和已選擇的 ID  
+                    payTypes: state.targetDefaultValue.payTypes.map(option => ({
+                        ...option,
+                        checked: submitHistory.payTypes?.includes(option.id) || false
+                    })),
+
+                    // 轉換 salesModeTypeDef：從數字轉為checkbox陣列
+                    salesModeTypeDef: [
+                        { checked: submitHistory.salesModeTypeDef === 1 || submitHistory.salesModeTypeDef === 3 },
+                        { checked: submitHistory.salesModeTypeDef === 2 || submitHistory.salesModeTypeDef === 3 }
+                    ]
+                } : {}
+
                 state.selectedValue = {
                     parentID: action.payload.params.parentID,
                     ...defValReq,
-                    ...submitHistory,
+                    ...convertedSubmitHistory,
                     skuList: [
                         ...(submitHistory?.skuList || []),
                         ...missingItems

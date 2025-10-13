@@ -23,6 +23,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using SubmitMainRequest = POVWebDomain.Models.API.StoreSrv.EcommerceMgmt.PublishGoods.SubmitMainRequest;
 using HqSrv.Infrastructure.Repositories;
+using Newtonsoft.Json.Linq;
 
 namespace HqSrv.Application.Services.EcommerceMgmt
 {
@@ -276,6 +277,13 @@ namespace HqSrv.Application.Services.EcommerceMgmt
 
                 // 處理圖片
                 await _repository.HandleImageAsync(request);
+
+                if (!string.IsNullOrEmpty(request.StoreSettings))
+                {
+                    JObject basicInfoObj = JObject.Parse(request.BasicInfo);
+                    basicInfoObj["storeSettings"] = JToken.Parse(request.StoreSettings);
+                    request.BasicInfo = basicInfoObj.ToString(Formatting.None);
+                }
 
 
                 // 解析商店設定

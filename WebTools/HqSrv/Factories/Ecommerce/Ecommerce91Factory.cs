@@ -24,7 +24,6 @@ namespace HqSrv.Factories.Ecommerce
 
         public async Task<object> CreateRequestDtoAdd(SubmitMainRequestAll request, StoreSetting storeSetting, GetLookupAndCommonValueResponse commonInfo)
         {
-            JObject obj = JObject.Parse(request.JsonData);
 
             POVWebDomain.Models.API.StoreSrv.EcommerceMgmt.PublishGoods.SubmitMainRequest basicInfo = JsonConvert.DeserializeObject<POVWebDomain.Models.API.StoreSrv.EcommerceMgmt.PublishGoods.SubmitMainRequest>(request.BasicInfo);
 
@@ -63,7 +62,7 @@ namespace HqSrv.Factories.Ecommerce
                     Cost = basicInfo.Cost,
                     ProductHighlight = basicInfo.ProductHighlight,
                     ProductDescription = basicInfo.ProductDescription,
-                    MoreInfo = (string)obj["moreInfo"],
+                    MoreInfo = (string)basicInfo.MoreInfo,
                     Brand = null,
                     Type = basicInfo.Type,
                     Specifications = basicInfo.Specifications.ConvertToDictionary(basicInfo.IndexList.ConvertToDictionary()),

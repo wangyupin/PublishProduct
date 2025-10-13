@@ -24,7 +24,6 @@ namespace POVWebDomain.Models.API.StoreSrv.EcommerceMgmt.PublishGoods
     {
         public string ParentID { get; set; }
         public string BasicInfo { get; set; }
-        public string JsonData { get; set; }
         public List<IFormFile> MainImage { get; set; }
         public List<IFormFile> SkuImage { get; set; }
         public IFormFile SizeImage { get; set; }
