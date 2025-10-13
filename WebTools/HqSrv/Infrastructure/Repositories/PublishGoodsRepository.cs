@@ -756,6 +756,39 @@ namespace HqSrv.Infrastructure.Repositories
             }
         }
 
+        public async Task<Result<object>> DeleteSubmitResByStoreAsync(string parentID, string platformID)
+        {
+            string sql = @"
+        DELETE FROM ESubmitGoodsRes 
+        WHERE ParentID = @ParentID AND StoreID = @StoreID
+    ";
+
+            var connection = _context.Connection;
+            connection.Open();
+            using var transaction = connection.BeginTransaction();
+            try
+            {
+                int effectRows = await connection.ExecuteAsync(
+                    sql,
+                    new { ParentID = parentID, StoreID = platformID },
+                    transaction: transaction,
+                    commandTimeout: 180);
+
+                transaction.Commit();
+                return Result<object>.Success(new { effectRows });
+            }
+            catch (SqlException e)
+            {
+                transaction.Rollback();
+                return Result<object>.Failure(Error.Custom("DB_ERROR", e.Message));
+            }
+            finally
+            {
+                connection.Close();
+            }
+        }
+
+
         // ============================================
         // 私有方法 - 資料轉換（與 ProductRepository 共用邏輯）
         // ============================================

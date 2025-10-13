@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.AspNetCore.Http;
+using System;
 using System.Collections.Generic;
 
 namespace POVWebDomain.Models.ExternalApi.OfficialWebsite
@@ -10,7 +11,9 @@ namespace POVWebDomain.Models.ExternalApi.OfficialWebsite
     public class SubmitGoodsRequest
     {
         public AddProductRequest MainRequest { get; set; }
-        public AddProductOptionRequest ProductOptionRequest { get; set; }
+        public List<IFormFile> MainImage { get; set; }
+        public List<IFormFile> SkuImage { get; set; }
+
     }
 
     public class AddProductRequest
@@ -81,13 +84,13 @@ namespace POVWebDomain.Models.ExternalApi.OfficialWebsite
 
     public class AddProductResponse
     {
-        public long ProductID { get; set; }
+        public int ProductID { get; set; }
         public List<SkuResult> ProductOpton { get; set; }
     }
 
     public class AddProductOptionRequest
     {
-        public long ProductID { get; set; }
+        public int ProductID { get; set; }
         public List<ProductOption> ProductOptionList { get; set; }
     }
 
@@ -141,12 +144,12 @@ namespace POVWebDomain.Models.ExternalApi.OfficialWebsite
         public string WebPageTitle { get; set; }
         public string WebPageDesc { get; set; }
         public string WebPageKeywords { get; set; }
-        public int IsShowProduct { get; set; }
-        public int IsShowSold { get; set; }
-        public int IsShowInventory { get; set; }
-        public int IsRestricted { get; set; }
+        public bool IsShowProduct { get; set; }
+        public bool IsShowSold { get; set; }
+        public bool IsShowInventory { get; set; }
+        public bool IsRestricted { get; set; }
         public int StockoutShow { get; set; }
-        public int IsReturnable { get; set; }
+        public bool IsReturnable { get; set; }
         public string ProductFeatures { get; set; }
         public string ProductDetail { get; set; }
         public int[] Brand { get; set; }
@@ -154,11 +157,6 @@ namespace POVWebDomain.Models.ExternalApi.OfficialWebsite
         public string[] PayType { get; set; }
         public int[] ShippingType { get; set; }
         public List<ProductSpecification> ProductSpecification { get; set; }
-        public bool IsProductOption1 { get; set; }
-        public bool IsProductOption2 { get; set; }
-        public ProductOptionType ProductOption1 { get; set; }
-        public ProductOptionType ProductOption2 { get; set; }
-        public string ProductDescription { get; set; }
     }
 
     public class UpdateProductResponse
@@ -205,5 +203,46 @@ namespace POVWebDomain.Models.ExternalApi.OfficialWebsite
     {
         public long SkuID { get; set; }
         public string GoodID { get; set; }
+    }
+
+    // 主圖上傳 Request (Update_ProductImage)
+    public class UpdateProductImageRequest
+    {
+        public int StoreNumber { get; set; }
+        public int ProductID { get; set; }
+        public List<ProductImageData> Data { get; set; } = new List<ProductImageData>();
+    }
+
+    public class ProductImageData
+    {
+        public int DisplayOrder { get; set; }
+        public IFormFile ImageFile { get; set; }
+    }
+
+    // 選項圖片上傳 Request (Update_ProductOption_Image)
+    public class UpdateProductOptionImageRequest
+    {
+        public int StoreNumber { get; set; }
+        public List<ProductOptionImageData> Data { get; set; } = new List<ProductOptionImageData>();
+    }
+
+    public class ProductOptionImageData
+    {
+        public long SkuID { get; set; }
+        public int DisplayOrder { get; set; }
+        public IFormFile ImageFile { get; set; }
+    }
+
+    public class RemoveProductRequest
+    {
+        public int StoreNumber { get; set; }
+        public int ProductID { get; set; }
+    }
+
+    public class RemoveProductResponse
+    {
+        public bool Success { get; set; }
+        public string Message { get; set; }
+        public string Data { get; set; }
     }
 }

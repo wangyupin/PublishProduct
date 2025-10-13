@@ -318,6 +318,97 @@ const render91App = ({ arrVal, control, setValue, getValues, errors, t, watch, o
     )
 }
 
+const renderOfficialPlatform = ({ arrVal, control, setValue, getValues, errors, t, watch, option }) => {
+
+    const renderCheckboxes = useCallback((list, name) => {
+        return list.map((item, idx) => {
+            return (
+                <div className='form-check d-flex align-items-center' key={`${name}.${idx}.checked`} >
+                    <Controller
+                        name={`${name}.${idx}.checked`}
+                        control={control}
+                        render={({ field }) => (
+                            <Input type='checkbox' id={`${name}.${idx}.checked`} className='form-check-input' checked={field.value} {...field} />
+                        )}
+
+                    />
+                    <Label className='form-check-label ms-25 me-1 ' for={`${name}.${idx}.checked`}>
+                        {item.name}
+                    </Label>
+                </div>
+            )
+        })
+    }, [])
+
+    const onRadioChange = useCallback(({ target }) => {
+        const { name, value } = target
+        if (value === 'true' || value === 'false') {
+            setValue(name, value === 'true')
+        } else {
+            setValue(name, value)
+        }
+    }, [])
+
+    return (
+        <Fragment>
+            <Row className='mb-1'>
+                <Col sm='3' className='mb-1'>
+                    <Label className='form-label' for='isClosed'>
+                        {t('publish.isClosed', { ns: 'ecommerceMgmt' })}
+                    </Label>
+                    <div className='d-flex flex-grow-1 align-items-center' style={{ lineHeight: '36px' }}>
+                        <Controller
+                            name='isClosed'
+                            control={control}
+                            render={({ field }) => (
+                                <Input type='radio' id='isClosed_0'  {...field} checked={field.value === false} value={false} onChange={onRadioChange} />
+                            )}
+                        />
+                        <Label className='ms-25 me-1 form-check-label' for='isClosed_0'>
+                            開啟
+                        </Label>
+
+                        <Controller
+                            name='isClosed'
+                            control={control}
+                            render={({ field }) => (
+                                <Input type='radio' id='isClosed_1'  {...field} checked={field.value === true} value={true} onChange={onRadioChange} />
+                            )}
+                        />
+                        <Label className='ms-25 me-1 form-check-label' for='isClosed_1'>
+                            關閉
+                        </Label>
+                    </div>
+                </Col>
+
+            </Row>
+
+            <Row className='mb-1'>
+                <Col sm='12' className='mb-1'>
+                    <Label className='form-label'>
+                        {t('publish.payTypes', { ns: 'ecommerceMgmt' })} <span className='text-danger'>*</span>
+                    </Label>
+
+                    <div className='d-flex' style={{ lineHeight: '36px' }}>
+                        {renderCheckboxes(option.paymentOption, 'payTypes')}
+                    </div>
+                </Col>
+                <Col sm='12' className='mb-1'>
+                    <Label className='form-label'>
+                        {t('publish.shippingTypes', { ns: 'ecommerceMgmt' })} <span className='text-danger'>*</span>
+                    </Label>
+
+                    <div className='d-flex' style={{ lineHeight: '36px' }}>
+                        {renderCheckboxes(option.shipType_91appOption, 'shipType_91app')}
+                    </div>
+                </Col>
+            </Row>
+        </Fragment>
+
+    )
+}
+
+
 const renderShop = ({ arrVal, control, setValue, getValues, errors, t, watch, option }) => {
     const [active, setActive] = useState('1')
 
@@ -337,13 +428,13 @@ const renderShop = ({ arrVal, control, setValue, getValues, errors, t, watch, op
                                 toggle('1')
                             }}
                         >
-                            91App
+                            官網
                         </NavLink>
                     </NavItem>
                 </Nav>
                 <TabContent activeTab={active}>
                     <TabPane tabId='1'>
-                        {render91App({ arrVal, control, setValue, getValues, errors, t, watch, option })}
+                        {renderOfficialPlatform({ arrVal, control, setValue, getValues, errors, t, watch, option })}
                     </TabPane>
                 </TabContent>
 
@@ -1126,8 +1217,8 @@ const renderAddiInfo = ({ arrVal, control, setValue, getValues, watch, t, option
                     <Col sm='3'>
                         <Label className='form-label d-flex' for='sellingStartDateTime'>
                             {t('publish.sellingStartDateTime', { ns: 'ecommerceMgmt' })} <span className='text-danger me-1'>*</span>
-                            <Avatar className='ms-50' img={'/assets/image/ecommerce/91app_logo.png'} imgHeight='20' imgWidth='20' />
-                            <Avatar className='ms-50' img={'/assets/image/ecommerce/yahoo_logo.webp'} imgHeight='20' imgWidth='20' />
+                            {/* <Avatar className='ms-50' img={'/assets/image/ecommerce/91app_logo.png'} imgHeight='20' imgWidth='20' />
+                            <Avatar className='ms-50' img={'/assets/image/ecommerce/yahoo_logo.webp'} imgHeight='20' imgWidth='20' /> */}
                         </Label>
                         <Controller
                             name='sellingStartDateTime'
@@ -1177,8 +1268,8 @@ const renderAddiInfo = ({ arrVal, control, setValue, getValues, watch, t, option
                     <Col sm='12'>
                         <Label className='form-label d-flex' for='applyType_0'>
                             {t('publish.applyType', { ns: 'ecommerceMgmt' })}<span className='text-danger me-1'>*</span>
-                            <Avatar className='ms-50' img={'/assets/image/ecommerce/91app_logo.png'} imgHeight='20' imgWidth='20' />
-                            <Avatar className='ms-50' img={'/assets/image/ecommerce/yahoo_logo.webp'} imgHeight='20' imgWidth='20' />
+                            {/* <Avatar className='ms-50' img={'/assets/image/ecommerce/91app_logo.png'} imgHeight='20' imgWidth='20' />
+                            <Avatar className='ms-50' img={'/assets/image/ecommerce/yahoo_logo.webp'} imgHeight='20' imgWidth='20' /> */}
                         </Label>
                         <div className='d-flex flex-grow-1 align-items-center' style={{ lineHeight: '36px' }}>
                             <Controller
@@ -1283,7 +1374,7 @@ const renderAddiInfo = ({ arrVal, control, setValue, getValues, watch, t, option
                         </div>
                     </Col>
                 </Row>
-                <Row className='mb-1'>
+                {/* <Row className='mb-1'>
                     <Col sm='3'>
                         <Label className='form-label d-flex' for='expDays'>
                             {t('publish.expDays', { ns: 'ecommerceMgmt' })} <span className='text-danger me-1'>*</span>
@@ -1299,7 +1390,7 @@ const renderAddiInfo = ({ arrVal, control, setValue, getValues, watch, t, option
 
                         />
                     </Col>
-                </Row>
+                </Row> */}
             </CardBody>
         </Card >
     )

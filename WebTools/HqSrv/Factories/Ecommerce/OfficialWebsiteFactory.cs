@@ -136,7 +136,9 @@ namespace HqSrv.Factories.Ecommerce
                         Data = basicInfo.SkuList.Select(s => s.ColDetail2?.Label).Where(v => !string.IsNullOrEmpty(v)).Distinct().ToArray()
                     } : null,
                     ProductOptionList = productOptions
-                }
+                },
+                MainImage = request.MainImage,
+                SkuImage = request.SkuImage 
             };
         }
 
@@ -210,7 +212,7 @@ namespace HqSrv.Factories.Ecommerce
                     WebPageTitle = basicInfo.SEOTitle,
                     WebPageDesc = basicInfo.SEODescription,
                     WebPageKeywords = basicInfo.SEOKeywords,
-                    IsShowProduct = 1,
+                    IsShowProduct = true,
                     StockoutShow = basicInfo.SoldOutActionType switch
                     {
                         "OutOfStock" => 1,
@@ -219,30 +221,14 @@ namespace HqSrv.Factories.Ecommerce
                         "BackInStockAlert" => 4,
                         _ => 1
                     },
-                    IsReturnable = basicInfo.IsReturnable ? 1 : 0,
+                    IsReturnable = basicInfo.IsReturnable,
                     ProductFeatures = basicInfo.ProductDescription ?? "",
                     ProductDetail = basicInfo.MoreInfo ?? "",
                     PictureCount = request.MainImage.Count,
                     PayType = basicInfo.PayTypes.ToArray(),
                     ShippingType = basicInfo.ShipType_91app.Select(t => (int)t).ToArray(),
-                    ProductSpecification = basicInfo.Specifications.ConvertToOfficial(new List<ProductSpecification>()),
-                    IsProductOption1 = useOption1,
-                    IsProductOption2 = useOption2,
-                    ProductOption1 = useOption1 ? new ProductOptionType
-                    {
-                        Type = 1,
-                        Name = hasColDetail1 ? "尺寸" : "顏色",
-                        Data = hasColDetail1 ?
-                            basicInfo.SkuList.Select(s => s.ColDetail1?.Label).Where(v => !string.IsNullOrEmpty(v)).Distinct().ToArray() :
-                            basicInfo.SkuList.Select(s => s.ColDetail2?.Label).Where(v => !string.IsNullOrEmpty(v)).Distinct().ToArray()
-                    } : null,
-                    ProductOption2 = useOption2 ? new ProductOptionType
-                    {
-                        Type = 2,
-                        Name = "顏色",
-                        Data = basicInfo.SkuList.Select(s => s.ColDetail2?.Label).Where(v => !string.IsNullOrEmpty(v)).Distinct().ToArray()
-                    } : null,
-                    ProductDescription = basicInfo.ProductDescription
+                    ProductSpecification = basicInfo.Specifications.ConvertToOfficial(new List<ProductSpecification>())
+                    
                 }
             };
 

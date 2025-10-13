@@ -186,5 +186,11 @@ namespace HqSrv.Application.Services.EcommerceServices
                 return Result<object>.Failure(Error.Custom("SUBMIT_GOODS_EDIT_ERROR", ex.Message));
             }
         }
+
+        public async Task<Result<object>> DeleteGoodsAsync(int storeNumber, int productID, string platformID)
+        {
+            // 91App 暫時不支援刪除,或是你可以實作他們的刪除 API
+            return Result<object>.Success(new { Message = "91App 暫不支援刪除" });
+        }
     }
 }

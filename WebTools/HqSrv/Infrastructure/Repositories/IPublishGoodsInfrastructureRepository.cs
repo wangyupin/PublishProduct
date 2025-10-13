@@ -31,5 +31,6 @@ namespace HqSrv.Infrastructure.Repositories
         Task HandleImageAsync(SubmitMainRequestAll request);
         Task<MoreInfoResult> ProcessMoreInfoAsync(string originalHtml, string baseName, string origin);
         Task<string> GetOriginalRequestParamsAsync(string parentID);
+        Task<Result<object>> DeleteSubmitResByStoreAsync(string parentID, string platformID);
     }
 }

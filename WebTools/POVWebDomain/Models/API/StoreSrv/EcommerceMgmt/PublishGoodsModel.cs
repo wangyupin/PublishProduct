@@ -42,6 +42,7 @@ namespace POVWebDomain.Models.API.StoreSrv.EcommerceMgmt.PublishGoods
         public string Title { get; set; }
         public decimal Cost { get; set; }
         public bool Publish { get; set; }
+        public bool NeedDelete { get; set; }
     }
 
     public class SubmitMainRequest

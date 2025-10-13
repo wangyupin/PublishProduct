@@ -397,7 +397,7 @@ namespace HqSrv.Application.Services
             }
             catch (HttpRequestException)
             {
-                return default;
+                throw;
             }
         }
 

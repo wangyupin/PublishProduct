@@ -62,6 +62,7 @@ const StoreSetting = ({ t, reset, getValues, setValue, control, arrVal }) => {
                                 platformID: store.platformID,
                                 eStoreID: store.eStoreID,
                                 publish: false,
+                                needDelete: false,
                                 category0: null,
                                 category1: null,
                                 cost: 0,
@@ -83,6 +84,24 @@ const StoreSetting = ({ t, reset, getValues, setValue, control, arrVal }) => {
             name: 'storeSettings'
         }
     )
+
+    const handlePublishToggle = (index, currentValue) => {
+        const newValue = !currentValue
+        const currentStore = getValues(`storeSettings.${index}`)
+
+        // 如果是關閉開關,且這個平台已上架過
+        if (!newValue && currentStore.isPublished) {
+            const storeName = storeTag?.[index]?.storeName || '此平台'
+
+            if (window.confirm(`確定要將商品從 ${storeName} 下架並刪除嗎?\n此操作無法復原!`)) {
+                setValue(`storeSettings.${index}.publish`, false)
+                setValue(`storeSettings.${index}.needDelete`, true)
+            }
+        } else {
+            setValue(`storeSettings.${index}.publish`, newValue)
+            setValue(`storeSettings.${index}.needDelete`, false)
+        }
+    }
 
     return (
         <div>
@@ -109,7 +128,13 @@ const StoreSetting = ({ t, reset, getValues, setValue, control, arrVal }) => {
                                             name={`storeSettings.${index}.publish`}
                                             control={control}
                                             render={({ field }) => (
-                                                <Input {...field} type='switch' id={`storeSettings.${index}.publish`} name={`storeSettings.${index}.publish`} checked={field.value} />
+                                                <Input
+                                                    type='switch'
+                                                    id={`storeSettings.${index}.publish`}
+                                                    name={`storeSettings.${index}.publish`}
+                                                    checked={field.value}
+                                                    onChange={() => handlePublishToggle(index, field.value)}
+                                                />
                                             )}
                                         />
                                         <CustomLabel htmlFor={`storeSettings.${index}.publish`} />
@@ -156,6 +181,15 @@ const StoreSetting = ({ t, reset, getValues, setValue, control, arrVal }) => {
                                         )}
                                     />
                                 </Col>
+
+                                {/* 新增:隱藏的 needDelete 欄位 */}
+                                <Controller
+                                    name={`storeSettings.${index}.needDelete`}
+                                    control={control}
+                                    render={({ field }) => (
+                                        <input type="hidden" {...field} />
+                                    )}
+                                />
                             </Row>
                         )
                     })}

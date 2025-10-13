@@ -7,13 +7,18 @@
 // ============================================
 // Application/Services/EcommerceMgmt/PublishGoodsApplicationService.cs (重構)
 // ============================================
-using HqSrv.Infrastructure.ExternalServices;
-using HqSrv.Factories.Ecommerce;
-using HqSrv.Repository.EcommerceMgmt;
-using HqSrv.Domain.Services;  // 新增 - 引用 Domain Services
 using HqSrv.Domain.Entities;  // 新增 - 引用 Domain Entities
 using HqSrv.Domain.Repositories;  // 新增 - 引用 Domain Repository 介面
+using HqSrv.Domain.Services;  // 新增 - 引用 Domain Services
+using HqSrv.Factories.Ecommerce;
+using HqSrv.Infrastructure.ExternalServices;
+using HqSrv.Infrastructure.Helpers;
+using HqSrv.Infrastructure.Repositories;
+using HqSrv.Repository.EcommerceMgmt;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.Hosting;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using POVWebDomain.Common;
 using POVWebDomain.Models.API.StoreSrv.EcommerceMgmt.PublishGoods;
 using POVWebDomain.Models.ExternalApi.Store91;
@@ -22,8 +27,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using SubmitMainRequest = POVWebDomain.Models.API.StoreSrv.EcommerceMgmt.PublishGoods.SubmitMainRequest;
-using HqSrv.Infrastructure.Repositories;
-using Newtonsoft.Json.Linq;
 
 namespace HqSrv.Application.Services.EcommerceMgmt
 {
@@ -43,6 +46,7 @@ namespace HqSrv.Application.Services.EcommerceMgmt
         private readonly IPublishingService _publishingService;
         private readonly IPlatformMappingService _platformMappingService;
         private readonly IProductRepository _productRepository;
+        private readonly IWebHostEnvironment _hostEnvironment;
 
 
         public PublishGoodsApplicationService(
@@ -53,7 +57,8 @@ namespace HqSrv.Application.Services.EcommerceMgmt
             IProductValidationService productValidationService,  // 新增
             IPublishingService publishingService,                // 新增
             IPlatformMappingService platformMappingService,      // 新增
-            IProductRepository productRepository)                // 新增
+            IProductRepository productRepository,
+            IWebHostEnvironment hostEnvironment)                // 新增
         {
             _repository = repository;
             _domainRepository = domainRepository;
@@ -63,6 +68,7 @@ namespace HqSrv.Application.Services.EcommerceMgmt
             _publishingService = publishingService;
             _platformMappingService = platformMappingService;
             _productRepository = productRepository;
+            _hostEnvironment = hostEnvironment;
         }
 
         // ============================================
@@ -133,31 +139,60 @@ namespace HqSrv.Application.Services.EcommerceMgmt
         {
             try
             {
-                // 1. 將 DTO 轉換為 Domain Entity
+                // 1. 驗證輸入
+                if (string.IsNullOrEmpty(request.BasicInfo))
+                    return Result<object>.Failure(Error.Custom("INVALID_INPUT", "商品基本資料不可為空"));
+
+                // 2. 轉換為 Product 實體
                 var productResult = await ConvertToProductEntityAsync(request);
                 if (productResult.IsFailure)
                     return Result<object>.Failure(productResult.Error);
 
                 var product = productResult.Data;
 
-                // 2. 取得目標發布平台
+                // 3. 取得目標發布平台
                 var targetPlatforms = GetTargetPlatforms(request.StoreSettings);
 
-                // 3. 使用 Domain Service 進行發布前驗證
+                // 處理刪除邏輯 
+                var storeSettings = JsonConvert.DeserializeObject<List<StoreSetting>>(request.StoreSettings);
+                var deleteErrors = new List<string>();
+
+                foreach (var store in storeSettings.Where(s => s.NeedDelete))
+                {
+                    var deleteResult = await DeleteFromPlatformAsync(request.ParentID, store);
+                    if (deleteResult.IsFailure)
+                    {
+                        deleteErrors.Add($"平台 {store.EStoreID} 刪除失敗: {deleteResult.Error.Message}");
+                    }
+                }
+
+                if (deleteErrors.Any())
+                {
+                    return Result<object>.Failure(Error.Custom("DELETE_ERRORS", string.Join("; ", deleteErrors)));
+                }
+
+                // 4. 使用 Domain Service 進行發布前驗證
                 var canPublishResult = await _publishingService.CanPublishAsync(product, targetPlatforms);
                 if (canPublishResult.IsFailure)
                     return Result<object>.Failure(canPublishResult.Error);
 
-                // 4. 使用 Domain Service 計算發布順序
+                // 5. 使用 Domain Service 計算發布順序
                 var publishOrderResult = _publishingService.CalculatePublishOrder(targetPlatforms);
                 if (publishOrderResult.IsFailure)
                     return Result<object>.Failure(publishOrderResult.Error);
 
 
-                // 5. 執行實際發布流程
+                // 6. 執行實際發布流程
                 var publishResult = await ExecutePublishingWorkflowAsync(request, product, publishOrderResult.Data);
                 if (publishResult.IsFailure)
                     return Result<object>.Failure(publishResult.Error);
+
+
+                var saveReqResult = await _repository.SaveSubmitGoodsReqAsync(request);
+                if (saveReqResult.IsFailure)
+                {
+                    // 記錄警告但不失敗
+                }
 
                 return Result<object>.Success(publishResult.Data);
             }
@@ -340,6 +375,8 @@ namespace HqSrv.Application.Services.EcommerceMgmt
         {
             try
             {
+                await ProcessImagesBeforePublish(request);
+
                 // 取得平台工廠
                 var factory = _ecommerceFactoryManager.GetFactory(
                     store.EStoreID switch
@@ -383,14 +420,6 @@ namespace HqSrv.Application.Services.EcommerceMgmt
                 {
                     var saveResResult = await _repository.SaveSubmitGoodsResAsync(request, requestDto,
                         new SubmitMainResponseAll { Response = submitResult.Data }, store);
-
-                    var saveReqResult = await _repository.SaveSubmitGoodsReqAsync(request);
-
-                    if (saveResResult.IsFailure)
-                    {
-                        // 記錄警告但不失敗
-                        // Logger.LogWarning($"儲存回應失敗: {saveResResult.Error.Message}");
-                    }
                 }
 
                 return submitResult;
@@ -398,6 +427,75 @@ namespace HqSrv.Application.Services.EcommerceMgmt
             catch (Exception ex)
             {
                 return Result<object>.Failure(Error.Custom("PLATFORM_PUBLISH_ERROR", ex.Message));
+            }
+        }
+
+        // ============================================
+        // 私有方法 - 從平台刪除商品
+        // ============================================
+        private async Task<Result<object>> DeleteFromPlatformAsync(string parentID, StoreSetting store)
+        {
+            try
+            {
+                // 1. 取得該平台的商品回應資料(包含 ProductID)
+                var resData = await _repository.GetSubmitResByStoreAsync(parentID, store.PlatformID);
+                if (resData == null)
+                {
+                    // 如果沒有回應資料,代表該平台從未上架過,不需要刪除
+                    return Result<object>.Success(new { Message = "該平台未曾上架,無需刪除" });
+                }
+
+                // 2. 解析回應資料取得 ProductID
+                var responseData = JsonConvert.DeserializeObject<dynamic>(resData.ResponseData);
+                int productID = 0;
+
+                // 根據不同平台解析 ProductID
+                if (store.EStoreID == "0005") // OfficialWebsite
+                {
+                    productID = (int)responseData.Data.ProductID;
+                }
+                else if (store.EStoreID == "0001") // 91App
+                {
+                    productID = (int)responseData.Data.Id;
+                }
+
+                if (productID == 0)
+                {
+                    return Result<object>.Failure(Error.Custom("INVALID_PRODUCT_ID", "無法取得商品ID"));
+                }
+
+                // 3. 取得平台工廠
+                var factory = _ecommerceFactoryManager.GetFactory(
+                    store.EStoreID switch
+                    {
+                        "0001" => "91App",
+                        "0002" => "Yahoo",
+                        "0003" => "Momo",
+                        "0004" => "Shopee",
+                        "0005" => "OfficialWebsite",
+                        _ => null
+                    });
+
+                if (factory == null)
+                    return Result<object>.Failure(Error.Custom("UNSUPPORTED_PLATFORM", $"不支援的平台: {store.EStoreID}"));
+
+                var service = factory.CreateEcommerceService();
+
+                // 4. 執行刪除
+                int storeNumber = int.Parse(store.PlatformID);
+                var deleteResult = await service.DeleteGoodsAsync(storeNumber, productID, store.PlatformID);
+
+                if (deleteResult.IsFailure)
+                    return Result<object>.Failure(deleteResult.Error);
+
+                // 5. 刪除成功後,清除資料庫中的回應記錄
+                await _repository.DeleteSubmitResByStoreAsync(parentID, store.PlatformID);
+
+                return Result<object>.Success(deleteResult.Data);
+            }
+            catch (Exception ex)
+            {
+                return Result<object>.Failure(Error.Custom("DELETE_FROM_PLATFORM_ERROR", ex.Message));
             }
         }
 
@@ -417,6 +515,50 @@ namespace HqSrv.Application.Services.EcommerceMgmt
         public async Task<Result<object>> GetEStoreCategoryOptionsAsync()
         {
             return await _repository.GetEStoreCatOptionsAsync();
+        }
+
+        private async Task ProcessImagesBeforePublish(SubmitMainRequestAll request)
+        {
+            // 處理主圖
+            if (request.MainImage != null)
+            {
+                for (int idx = 0; idx < request.MainImage.Count; idx++)
+                {
+                    var file = request.MainImage[idx];
+                    if (file != null && file.Length == 0 && file.FileName != "blob")
+                    {
+                        // 從檔案系統讀取
+                        var actualFile = await ImageFileHelper.ReadImageFromPath(
+                            file.FileName,
+                            _hostEnvironment); // 需要注入到 PublishGoodsApplicationService
+
+                        if (actualFile != null)
+                        {
+                            request.MainImage[idx] = actualFile;
+                        }
+                    }
+                }
+            }
+
+            // 處理 SKU 圖片
+            if (request.SkuImage != null)
+            {
+                for (int idx = 0; idx < request.SkuImage.Count; idx++)
+                {
+                    var file = request.SkuImage[idx];
+                    if (file != null && file.Length == 0 && file.FileName != "blob")
+                    {
+                        var actualFile = await ImageFileHelper.ReadImageFromPath(
+                            file.FileName,
+                            _hostEnvironment);
+
+                        if (actualFile != null)
+                        {
+                            request.SkuImage[idx] = actualFile;
+                        }
+                    }
+                }
+            }
         }
     }
 }

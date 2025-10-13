@@ -159,19 +159,6 @@ const Single = ({ access, t, mode, id }) => {
             qty: data.hasSku ? null : data.qty,
             outerId: data.hasSku ? null : data.outerId,
             skuList: data.skuList,
-            // skuList: data.skuList.map(sku => ({
-            //     name: sku.name.map(item => `${item.name}:${item.value}`).join(';'),
-            //     qty: sku.qty,
-            //     onceQty: sku.onceQty,
-            //     outerId: sku.outerId,
-            //     safetyStockQty: sku.safetyStockQty,
-            //     originalOuterId: sku.originalOuterId,
-            //     originalQty: sku.originalQty,
-            //     suggestPrice: sku.suggestPrice,
-            //     price: sku.price,
-            //     cost: sku.cost,
-            //     path: sku.image?.path
-            // })),
             temperatureTypeDef: data.temperatureTypeDef,
             length: data.length,
             wIdth: data.wIdth,
@@ -214,7 +201,8 @@ const Single = ({ access, t, mode, id }) => {
             eStoreID: store.eStoreID,
             cost: store.cost || basicInfo.cost,
             title: store.title || basicInfo.title,
-            publish: store.publish
+            publish: store.publish,
+            needDelete: store.needDelete || false
         }))))
         formData.append('origin', process.env.NODE_ENV === 'production' ? window.location.origin : 'https://localhost:44320')
 

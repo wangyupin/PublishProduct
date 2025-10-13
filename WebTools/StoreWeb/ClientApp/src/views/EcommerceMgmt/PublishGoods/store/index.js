@@ -6,6 +6,7 @@ import axios from 'axios'
 
 import { clearSlice } from '@store/rootReducer'
 import { createInstance } from 'i18next'
+import StoreSetting from '../Single/StoreSetting'
 
 const sliceName = 'EcommerceMgmt_PublishGoods'
 
@@ -193,7 +194,12 @@ export const slice = createSlice({
                     salesModeTypeDef: [
                         { checked: submitHistory.salesModeTypeDef === 1 || submitHistory.salesModeTypeDef === 3 },
                         { checked: submitHistory.salesModeTypeDef === 2 || submitHistory.salesModeTypeDef === 3 }
-                    ]
+                    ],
+
+                    storeSettings: submitHistory.storeSettings ? submitHistory.storeSettings.map(item => ({
+                        ...item,
+                        isPublished: item.publish
+                    })) : []
                 } : {}
 
                 state.selectedValue = {
