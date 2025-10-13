@@ -66,6 +66,7 @@ namespace HqSrv.Domain.Services
                     "0002" => PrepareYahooData(product, platformConfig),
                     "0003" => PrepareMomoData(product, platformConfig),
                     "0004" => PrepareShopeeData(product, platformConfig),
+                    "0005" => PrepareOfficialWebsiteData(product, platformConfig),
                     _ => throw new ProductDomainException($"不支援的平台: {platformId}")
                 };
 
@@ -85,7 +86,8 @@ namespace HqSrv.Domain.Services
                 { "0001", 1 }, // 91App - 主平台，優先發布
                 { "0002", 2 }, // Yahoo
                 { "0003", 3 }, // Momo
-                { "0004", 4 }  // Shopee
+                { "0004", 4 },  // Shopee
+                { "0005", 5 }
             };
 
             var orderedPlatforms = platforms
@@ -182,6 +184,22 @@ namespace HqSrv.Domain.Services
                 Title = product.Title,
                 Price = product.Price,
                 SkuList = product.SkuList.Take(20).ToList() // Shopee 限制 20 個 SKU
+            };
+        }
+
+        private object PrepareOfficialWebsiteData(Product product, object platformConfig)
+        {
+            // 根據 OfficialWebsite 平台的特殊需求準備資料
+            return new
+            {
+                ProductId = product.ParentId,
+                Title = product.Title,
+                Price = product.Price,
+                Description = product.Description,
+                HasSku = product.HasSku,
+                SkuCount = product.SkuList.Count,
+                // 可以根據需求添加更多欄位
+                PreparedAt = DateTime.UtcNow
             };
         }
     }

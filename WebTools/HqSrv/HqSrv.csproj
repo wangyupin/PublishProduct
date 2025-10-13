@@ -27,11 +27,9 @@
 
   <ItemGroup>
     <Folder Include="Application\Models\" />
-    <Folder Include="Application\Services\ExternalApiServices\" />
     <Folder Include="BackendImages\" />
     <Folder Include="BizServices\" />
     <Folder Include="Controllers\MainTableMgmt\" />
-    <Folder Include="Factories\" />
     <Folder Include="Generators\" />
     <Folder Include="NewFolder\" />
     <Folder Include="Tasks\" />

@@ -5,6 +5,7 @@ using POVWebDomain.Models.API.StoreSrv.Common;
 using POVWebDomain.Models.API.StoreSrv.EcommerceMgmt.Common;
 using POVWebDomain.Models.API.StoreSrv.EcommerceMgmt.EcommerceStore;
 using POVWebDomain.Models.ExternalApi.Momo;
+using POVWebDomain.Models.ExternalApi.OfficialWebsite;
 using POVWebDomain.Models.ExternalApi.Store91;
 using System;
 using System.Collections.Generic;
@@ -384,6 +385,24 @@ namespace POVWebDomain.Models.API.StoreSrv.EcommerceMgmt.PublishGoods
             return indexList;
         }
 
+        // 官網
+        public static List<ProductSpecification> ConvertToOfficial(this List<Specifications> specsList, List<ProductSpecification> indexList)
+        {
+            foreach (var specs in specsList)
+            {
+                if (string.IsNullOrEmpty(specs.Key) || string.IsNullOrEmpty(specs.Value))
+                    continue;
+
+                indexList.Add(new ProductSpecification
+                {
+                    Title = specs.Key,
+                    Value = specs.Value
+                });
+            }
+
+            return indexList;
+        }
+
     }
 
     public static class SkuListExtensions
@@ -393,6 +412,17 @@ namespace POVWebDomain.Models.API.StoreSrv.EcommerceMgmt.PublishGoods
         {
             string name = "";
             if (!string.IsNullOrEmpty(sku.ColDetail1.Label) && !string.IsNullOrEmpty(sku.ColDetail2.Label)) name = $"尺寸:{sku.ColDetail1.Label};顏色:{sku.ColDetail2.Label}";
+            else if (!string.IsNullOrEmpty(sku.ColDetail1.Label)) name = $"尺寸:{sku.ColDetail1.Label}";
+            else if (!string.IsNullOrEmpty(sku.ColDetail2.Label)) name = $"顏色:{sku.ColDetail2.Label}";
+
+            return name;
+        }
+
+        // Official
+        public static string ConbineColDetail_Official(this SkuItem sku)
+        {
+            string name = "";
+            if (!string.IsNullOrEmpty(sku.ColDetail1.Label) && !string.IsNullOrEmpty(sku.ColDetail2.Label)) name = $"尺寸:{sku.ColDetail1.Label}*顏色:{sku.ColDetail2.Label}";
             else if (!string.IsNullOrEmpty(sku.ColDetail1.Label)) name = $"尺寸:{sku.ColDetail1.Label}";
             else if (!string.IsNullOrEmpty(sku.ColDetail2.Label)) name = $"顏色:{sku.ColDetail2.Label}";
 

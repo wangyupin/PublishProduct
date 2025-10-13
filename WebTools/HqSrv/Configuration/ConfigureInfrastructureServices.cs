@@ -38,6 +38,7 @@ namespace HqSrv.Configuration
 
             // 91App External API Service
             services.AddScoped<Store91ExternalApiService>();
+            services.AddScoped<OfficialWebsiteExternalApiService>();
 
             // 其他外部服務
             // services.AddScoped<YahooExternalApiService>();

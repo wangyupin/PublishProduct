@@ -22,6 +22,9 @@ namespace HqSrv.Factories.Ecommerce
                 "91App" => new Ecommerce91Factory(
                     _serviceProvider.GetRequiredService<Store91ExternalApiService>()),
 
+                "OfficialWebsite" => new OfficialWebsiteFactory(
+                    _serviceProvider.GetRequiredService<OfficialWebsiteExternalApiService>()),
+
                 // 未來其他平台的 Factory
                 // "Yahoo" => new EcommerceYahooFactory(
                 //     _serviceProvider.GetRequiredService<YahooExternalApiService>()),

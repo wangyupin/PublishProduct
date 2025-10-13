@@ -16,7 +16,7 @@ const MainResult = [
     component: lazy(() => import('../../views/EcommerceMgmt/EcommerceStoreEdit')),
     meta: {
       action: 'read',
-      resource: '電商門店增修'
+      resource: '1083'
     },
     breadcrumb: null
   },
@@ -30,7 +30,7 @@ const MainResult = [
     component: lazy(() => import('../../views/EcommerceMgmt/EcommerceStoreEdit')),
     meta: ({ mode }) => ({
       action: 'update',
-      resource: '平台參數設定'
+      resource: '1083'
     }),
     breadcrumb: null
   },

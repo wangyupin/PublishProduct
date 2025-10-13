@@ -15,7 +15,7 @@ import SettingMgmt_UserAccount from '@src/views/SettingMgmt/UserAccount/store'
 import SettingMgmt_GroupAccount from '@src/views/SettingMgmt/GroupAccount/store'
 
 //EcommerceMgmt
-import EcommerceMgmt_EcommerceStore from '@src/views/EcommerceMgmt/EcommerceStoreEdit/store'
+import EcommerceMgmt_EcommerceStoreEdit from '@src/views/EcommerceMgmt/EcommerceStoreEdit/store'
 import EcommerceMgmt_PublishGoods from '@src/views/EcommerceMgmt/PublishGoods/store'
 
 //MainTableMgmt
@@ -26,7 +26,7 @@ const cityappReducer = {
   sysSettings,
 
   // EcommerceMgmt
-  EcommerceMgmt_EcommerceStore,
+  EcommerceMgmt_EcommerceStoreEdit,
   EcommerceMgmt_PublishGoods,
 
   // SettingMgmt

@@ -348,6 +348,7 @@ namespace HqSrv.Application.Services.EcommerceMgmt
                         "0002" => "Yahoo",
                         "0003" => "Momo",
                         "0004" => "Shopee",
+                        "0005" => "OfficialWebsite",
                         _ => null
                     });
 

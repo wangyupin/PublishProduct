@@ -29,7 +29,7 @@ namespace HqSrv.Repository.EcommerceMgmt
                 SELECT StoreID, ES.EStoreID, ES.EStoreName + ' ' + CAST(ROW_NUMBER()OVER(Partition By StoreTag Order By StoreID ASC) AS VARCHAR)+'店' AS StoreName, EStoreStyle, OldID AS PlatformID
                 FROM EcommerceStore EC
                 LEFT JOIN EC_Store ES ON EC.EStoreID = ES.EStoreID
-                WHERE ES.EStoreID='0001'
+                WHERE ES.EStoreID='0005'
                 ORDER BY EC.EStoreID
             ";
 

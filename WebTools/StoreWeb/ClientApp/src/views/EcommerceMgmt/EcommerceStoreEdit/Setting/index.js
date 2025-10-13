@@ -182,7 +182,7 @@ const Setting = ({ access, t }) => {
                     <Form className='mt-2 pt-50'>
 
                         {/* ** 91App */}
-                        <Row className={`${id === '0001' ? '' : 'd-none'}`}>
+                        <Row className={`${(id === '0001' || id === '0005') ? '' : 'd-none'}`}>
                             <Col sm='3' className='mb-1'>
                                 <Label className='form-label' for='isRestricted_0'>
                                     {t('publish.isRestricted', { ns: 'ecommerceMgmt' })}<span className='text-danger'>*</span>

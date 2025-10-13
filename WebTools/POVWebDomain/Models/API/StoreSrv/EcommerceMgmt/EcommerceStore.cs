@@ -115,32 +115,32 @@ namespace POVWebDomain.Models.API.StoreSrv.EcommerceMgmt.EcommerceStore
     {
         public string EStoreID { get; set; }
         //91app
-        public bool IsRestricted_91 { get; set; }
+        public bool? IsRestricted_91 { get; set; }
         public string SoldOutActionType_91 { get; set; }
         public string Status_91 { get; set; }
-        public bool IsShowPurchaseList_91 { get; set; }
-        public bool IsShowSoldQty_91 { get; set; }
-        public bool IsShowStockQty_91 { get; set; }
+        public bool? IsShowPurchaseList_91 { get; set; }
+        public bool? IsShowSoldQty_91 { get; set; }
+        public bool? IsShowStockQty_91 { get; set; }
         //momoo
         public string GoodsType_Momo { get; set; }
-        public bool IsECWarehouse_Momo { get; set; }
-        public bool HasAs_Momo { get; set; }
-        public bool IsCommission_Momo { get; set; }
-        public bool IsAcceptTravelCard_Momo { get; set; }
+        public bool? IsECWarehouse_Momo { get; set; }
+        public bool? HasAs_Momo { get; set; }
+        public bool? IsCommission_Momo { get; set; }
+        public bool? IsAcceptTravelCard_Momo { get; set; }
         public string OutplaceSeq_Momo { get; set; }
         public string OutplaceSeqRtn_Momo { get; set; }
-        public bool IsIncludeInstall_Momo { get; set; }
-        public bool LiveStreamYn_Momo { get; set; }
+        public bool? IsIncludeInstall_Momo { get; set; }
+        public bool? LiveStreamYn_Momo { get; set; }
         //yahoo
         public string ContentRating_Yahoo { get; set; }
         public string ProductWarrantlyPeriod_Yahoo { get; set; }
         public string ProductWarrantlyScope_Yahoo { get; set; }
         public string ProductWarrantlyHandler_Yahoo { get; set; }
         public string ProductWarrantlyDescription_Yahoo { get; set; }
-        public bool IsInstallRequired_Yahoo { get; set; }
-        public bool IsLargeVolumnProductGift_Yahoo { get; set; }
-        public bool IsNeedRecycle_Yahoo { get; set; }
-        public bool IsOutrightPurchase_Yahoo { get; set; }
+        public bool? IsInstallRequired_Yahoo { get; set; }
+        public bool? IsLargeVolumnProductGift_Yahoo { get; set; }
+        public bool? IsNeedRecycle_Yahoo { get; set; }
+        public bool? IsOutrightPurchase_Yahoo { get; set; }
         //shopee
         public string Condition_Shopee { get; set; }
         public string DescriptionType_Shopee { get; set; }
