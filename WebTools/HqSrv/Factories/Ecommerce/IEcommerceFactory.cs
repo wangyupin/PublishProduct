@@ -11,8 +11,9 @@ namespace HqSrv.Factories.Ecommerce
     {
         IEcommerceService CreateEcommerceService();
         Task<object> CreateRequestDtoAdd(SubmitMainRequestAll request, StoreSetting storeSetting, GetLookupAndCommonValueResponse commonInfo);
-        Task<object> CreateRequestDtoEdit(SubmitMainRequestAll request, string request1, string request2, StoreSetting storeSetting);
+        Task<object> CreateRequestDtoEdit(SubmitMainRequestAll request, string request1, string request2, StoreSetting storeSetting, GetLookupAndCommonValueResponse commonInfo);
         Type GetResponseDtoType();
+        bool ShouldSaveEditResponse();
     }
 
     public interface IEcommerceFactoryManager

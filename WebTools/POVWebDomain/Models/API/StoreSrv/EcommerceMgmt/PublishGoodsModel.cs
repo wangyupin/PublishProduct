@@ -121,6 +121,9 @@ namespace POVWebDomain.Models.API.StoreSrv.EcommerceMgmt.PublishGoods
 
         // Momo
         public List<ShippingTypes> ShipType_shopee { get; set; }
+
+        //Official
+        public int? CategoryOfficialId { get; set; }
     }
 
     public class SavePictureRequest
@@ -215,8 +218,7 @@ namespace POVWebDomain.Models.API.StoreSrv.EcommerceMgmt.PublishGoods
 
     public class GetOptionAllRequest
     {
-        public string WebBrandChiName { get; set; }
-        public string EcCategoryCode { get; set; }
+        public int StoreNumber { get; set; }
     }
 
     // default value
@@ -563,6 +565,7 @@ namespace POVWebDomain.Models.API.StoreSrv.EcommerceMgmt.PublishGoods
 
     public class GetOptionAllResponse
     {
+        public dynamic Category_Official { get; set; }
         public dynamic ShipType_91app { get; set; }
         public dynamic Payment { get; set; }
         public dynamic SpecChart { get; set; }

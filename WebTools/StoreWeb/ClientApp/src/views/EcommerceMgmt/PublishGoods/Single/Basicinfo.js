@@ -29,8 +29,6 @@ import { Button, Label, FormText, Form, Input, Card, CardBody, CardHeader, CardT
 
 // ** Store & Actions
 import { getColumnDefs, getSizeIndexColumnDefs, getTryIndexColumnDefs, createIndexRow } from '../columns'
-import { getSubmitDefVal } from '../store'
-import { useDispatch } from 'react-redux'
 
 const createOption = (label) => ({
     label,
@@ -352,6 +350,26 @@ const renderOfficialPlatform = ({ arrVal, control, setValue, getValues, errors, 
     return (
         <Fragment>
             <Row className='mb-1'>
+                <Label className='form-label d-block' for='categoryOfficial'>
+                    商品類別
+                </Label>
+                <Col sm='3' className='d-flex'>
+                    <Controller
+                        name='categoryOfficial'
+                        control={control}
+                        render={({ field }) => (
+                            <Cascader {...field}
+                                options={option.categoryOfficialOption || []}
+                                placeholder={t('selectPlaceholder', { ns: 'common' })}
+                                className="custom-cascader flex-grow-1 me-50"
+                                suffixIcon={<CustomArrow />}
+                            />
+                        )}
+                    />
+                </Col>
+            </Row>
+
+            <Row className='mb-1'>
                 <Col sm='3' className='mb-1'>
                     <Label className='form-label' for='isClosed'>
                         {t('publish.isClosed', { ns: 'ecommerceMgmt' })}
@@ -515,7 +533,6 @@ const renderInfo = ({ arrVal, control, setValue, getValues, watch, t, option }) 
             force: true
         })
     }
-
 
     return (
         <Card className='mb-2'>
@@ -1397,16 +1414,6 @@ const renderAddiInfo = ({ arrVal, control, setValue, getValues, watch, t, option
 }
 
 const BasicInfo = ({ control, setValue, getValues, reset, errors, watch, t, id, arrVal, setArrVal, status, option }) => {
-
-    const dispatch = useDispatch()
-
-    useEffect(() => {
-        const fetchData = async () => {
-            dispatch(getSubmitDefVal({ parentID: id }))
-        }
-        fetchData()
-
-    }, [])
 
     return (
         <Row className='g-0'>

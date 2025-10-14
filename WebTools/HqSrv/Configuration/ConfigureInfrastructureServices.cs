@@ -31,6 +31,7 @@ namespace HqSrv.Configuration
 
             // Platform Mapping Service - 在 Infrastructure 實作但實現 Domain 介面
             services.AddScoped<IPlatformMappingService, PlatformMappingService>();
+            services.AddScoped<IOptionService, OptionService>();
 
             // ============================================
             // External Services (移動到 Infrastructure)
@@ -39,6 +40,7 @@ namespace HqSrv.Configuration
             // 91App External API Service
             services.AddScoped<Store91ExternalApiService>();
             services.AddScoped<OfficialWebsiteExternalApiService>();
+            services.AddScoped<OfficialFrontExternalApiService>();
 
             // 其他外部服務
             // services.AddScoped<YahooExternalApiService>();

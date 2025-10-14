@@ -55,6 +55,23 @@ export const getSubmitDefVal = createAsyncThunk(`${sliceName}/getSubmitDefVal`, 
     }
 })
 
+const findCategoryPath = (categories, targetId, currentPath = []) => {
+    for (const category of categories) {
+        const newPath = [...currentPath, category.value]
+
+        if (category.value === targetId) {
+            return newPath
+        }
+
+        if (category.children?.length > 0) {
+            const foundPath = findCategoryPath(category.children, targetId, newPath)
+            if (foundPath) return foundPath
+        }
+    }
+    return null
+}
+
+
 const initialState = () => {
     return {
         option: {
@@ -72,7 +89,8 @@ const initialState = () => {
             clothDataTryIndex: [],
             shipType_yahooOption: [],
             productStatusOption: [],
-            shipType_shopeeOption: []
+            shipType_shopeeOption: [],
+            categoryOfficialOption: []
         },
         targetDefaultValue: {
             indexList: [],
@@ -139,7 +157,7 @@ export const slice = createSlice({
             //getOptionAll
             .addCase(getOptionAll.fulfilled, (state, action) => {
                 //set option
-                const { ecIndex, goodsType, shipType_91app, payment, specChart, shopCategory, salesModeType, sellingDateTime, clothData, shipType_yahoo, productStatus, shipType_shopee } = action.payload.data
+                const { ecIndex, goodsType, shipType_91app, payment, specChart, shopCategory, salesModeType, sellingDateTime, clothData, shipType_yahoo, productStatus, shipType_shopee, category_Official } = action.payload.data
                 state.option.ecIndexOption = ecIndex?.options
                 state.option.goodsTypeOption = goodsType?.options
                 state.option.shipType_91appOption = shipType_91app?.options
@@ -155,6 +173,7 @@ export const slice = createSlice({
                 state.option.shipType_yahooOption = shipType_yahoo?.options || []
                 state.option.productStatusOption = productStatus?.options || []
                 state.option.shipType_shopeeOption = shipType_shopee?.options || []
+                state.option.categoryOfficialOption = category_Official || []
 
                 //set default value
                 state.targetDefaultValue.indexList = ecIndex?.indexList || []
@@ -199,7 +218,10 @@ export const slice = createSlice({
                     storeSettings: submitHistory.storeSettings ? submitHistory.storeSettings.map(item => ({
                         ...item,
                         isPublished: item.publish
-                    })) : []
+                    })) : [],
+
+                    // 轉換 categoryOfficial 從單一 ID 轉為陣列路徑
+                    categoryOfficial: submitHistory.categoryOfficialId ? findCategoryPath(state.option.categoryOfficialOption, submitHistory.categoryOfficialId) : null
                 } : {}
 
                 state.selectedValue = {

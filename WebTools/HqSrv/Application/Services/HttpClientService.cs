@@ -77,7 +77,7 @@ namespace HqSrv.Application.Services
             var request = new HttpRequestMessage(HttpMethod.Get, uriBuilder.Uri);
 
             var response = await httpClient.SendAsync(request);
-            //response.EnsureSuccessStatusCode();
+            response.EnsureSuccessStatusCode();
 
             var content = await response.Content.ReadAsStringAsync();
 
@@ -113,7 +113,7 @@ namespace HqSrv.Application.Services
                 AddCustomHeaders(request, headers);
 
                 var response = await httpClient.SendAsync(request);
-                //response.EnsureSuccessStatusCode();
+                response.EnsureSuccessStatusCode();
 
                 var result = await response.Content.ReadAsStringAsync();
 

@@ -107,13 +107,16 @@ namespace POVWebDomain.Models.ExternalApi.OfficialWebsite
     public class SubmitGoodsEditRequest
     {
         public UpdateProductRequest MainRequest { get; set; }
-        public UpdateProductOptionRequest UpdateProductOptionRequest { get; set; }
+        public List<IFormFile> MainImage { get; set; }
+        public List<IFormFile> SkuImage { get; set; }
+        public AddProductOptionRequest NewOptionsRequest { get; set; } 
+        public UpdateProductOptionRequest UpdateOptionsRequest { get; set; }
     }
 
     public class UpdateProductRequest
     {
         public int StoreNumber { get; set; }
-        public long ProductID { get; set; }
+        public int ProductID { get; set; }
         public int CategoryID { get; set; }
         public string ProductName { get; set; }
         public bool IsClosed { get; set; }
@@ -168,7 +171,7 @@ namespace POVWebDomain.Models.ExternalApi.OfficialWebsite
     {
         public int StoreNumber { get; set; }
         public long ProductID { get; set; }
-        public List<ProductOptionUpdate> ProductOptionList { get; set; }
+        public List<ProductOption> ProductOptionList { get; set; }
     }
 
     public class UpdateProductOptionResponse
@@ -194,10 +197,6 @@ namespace POVWebDomain.Models.ExternalApi.OfficialWebsite
         public int LimitedQty { get; set; }
     }
 
-    public class ProductOptionUpdate : ProductOption
-    {
-        public long? SkuID { get; set; }
-    }
 
     public class SkuResult
     {
@@ -223,6 +222,7 @@ namespace POVWebDomain.Models.ExternalApi.OfficialWebsite
     public class UpdateProductOptionImageRequest
     {
         public int StoreNumber { get; set; }
+        public int ProductID { get; set; }
         public List<ProductOptionImageData> Data { get; set; } = new List<ProductOptionImageData>();
     }
 

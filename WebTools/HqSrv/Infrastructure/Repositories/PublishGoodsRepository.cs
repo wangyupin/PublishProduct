@@ -656,10 +656,10 @@ namespace HqSrv.Infrastructure.Repositories
                 // 確保 skuList 和對應的 image 結構存在
                 if (obj["skuList"] != null && obj["skuList"][idx] != null)
                 {
-                    if (obj["skuList"][idx]["image"] == null)
-                        obj["skuList"][idx]["image"] = new JObject();
-
-                    obj["skuList"][idx]["image"]["path"] = path == "" ? image.FileName : path;
+                    obj["skuList"][idx]["image"] = new JObject
+                    {
+                        ["path"] = path == "" ? image.FileName : path
+                    };
                 }
             }
 

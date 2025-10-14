@@ -55,7 +55,7 @@ namespace HqSrv.Infrastructure.ExternalServices
         protected override async Task<Dictionary<string, string>> GetHeadersAsync(string endPoint)
         {
             _storeId = await _apiKeyProvider.GetApiKeyStoreIDAsync(_platformId);
-            string apiKey = await _apiKeyProvider.GetApiKeyAsync(_storeId);
+            string apiKey = await _apiKeyProvider.GetApiKeyAsync(_storeId, "91");
 
             return new Dictionary<string, string>
             {
@@ -315,40 +315,6 @@ namespace HqSrv.Infrastructure.ExternalServices
 
             return await CallPostAsync<OperateBrandRequest, OperateBrandRequest, ApiResponse_91App<dynamic>>(
                 "V2/Brand/OperateBrand", request);
-        }
-
-        public async Task<Result<dynamic>> GetSalesModeType()
-        {
-            SaleModeTypeReturn responseBody = new SaleModeTypeReturn
-            {
-                Options = new List<CheckboxOption<int>> {
-                    new CheckboxOption<int>(1, "現金"),
-                    new CheckboxOption<int>(2, "點數加價購")
-                },
-            };
-            responseBody.SalesModeTypeDef = responseBody.Options.Select(t => new SaleModeTypes
-            {
-                ID = t.ID,
-                Checked = t.ID == 1
-            }).ToList();
-
-            return Result<dynamic>.Success(new { responseBody });
-        }
-
-        public async Task<Result<dynamic>> GetSellingDateTime()
-        {
-            SellingDateTimeReturn responseBody = new SellingDateTimeReturn
-            {
-                Options = new List<Option<int>> {
-                    new Option<int>(0, "一年"),
-                    new Option<int>(1, "五年"),
-                    new Option<int>(2, "無期限"),
-                    new Option<int>(3, "自定結束時間")
-                }
-            };
-            responseBody.SellingDateTime = responseBody.Options[0];
-
-            return Result<dynamic>.Success(new { responseBody });
         }
 
         private List<MultipleLayerOption<int>> ProcessShopCategoryResponse(List<GetShopCategoryResponse> data)

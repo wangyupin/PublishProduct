@@ -103,7 +103,7 @@ export const getColumnDefs = ({ t, control, getValues, setValue }) => {
             headerName: t('publish.sku', { ns: 'ecommerceMgmt' }),
             flex: 3,
             field: 'name',
-            valueFormatter: ({ data }) => (data.colDetail1 && data.colDetail2 ? `${data.colDetail1.label} ; ${data.colDetail2.label}` : data.colDetail1 ? data.colDetail1.label : data.colDetail2 ? data.colDetail2.label : '')
+            valueFormatter: ({ data }) => (data.colDetail1?.label && data.colDetail2?.label ? `${data.colDetail1.label} ; ${data.colDetail2.label}` : data.colDetail1?.label ? data.colDetail1.label : data.colDetail2?.label ? data.colDetail2.label : '')
 
         },
         {

@@ -8,6 +8,7 @@ using System;
 using System.Text.Json;
 using HqSrv.Application.Services.ApiKey;
 using HqSrv.Application.Services;
+using System.Linq;
 
 namespace HqSrv.Infrastructure.ExternalServices
 {
@@ -65,6 +66,49 @@ namespace HqSrv.Infrastructure.ExternalServices
                     );
                 }
 
+                return ProcessResponse(response);
+            }
+            catch (Exception ex)
+            {
+                return Result<T>.Failure(
+                    Error.Custom("API_EXCEPTION", $"API 呼叫異常: {ex.Message}")
+                );
+            }
+        }
+
+        protected async Task<Result<T>> CallGetAsync<T>(string endpoint, object parameters = null) where T : class
+        {
+            try
+            {
+                var finalEndpoint = endpoint;
+
+                if (parameters != null)
+                {
+                    var queryParams = new List<string>();
+
+                    foreach (var prop in parameters.GetType().GetProperties())
+                    {
+                        var value = prop.GetValue(parameters);
+                        if (value != null)
+                        {
+                            queryParams.Add($"{prop.Name}={Uri.EscapeDataString(value.ToString())}");
+                        }
+                    }
+
+                    if (queryParams.Any())
+                    {
+                        finalEndpoint += "?" + string.Join("&", queryParams);
+                    }
+                }
+
+                var headers = await GetHeadersAsync(finalEndpoint);
+                var response = await _httpClient.GetAsync<T>(EndPoint, finalEndpoint, headers);
+                if (response == null)
+                {
+                    return Result<T>.Failure(
+                        Error.Custom("API_NULL_RESPONSE", "API 回應為空")
+                    );
+                }
                 return ProcessResponse(response);
             }
             catch (Exception ex)

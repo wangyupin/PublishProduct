@@ -49,11 +49,11 @@ namespace HqSrv.Application.Services.ApiKey
             });
         }
 
-        public async Task<string> GetApiKeyAsync(string storeID)
+        public async Task<string> GetApiKeyAsync(string storeID, string platform)
         {
             string sql = "SELECT ApiKey FROM EcommerceStore WHERE StoreID = @StoreID";
             
-            return await _cache.GetOrCreateAsync($"91ApiKey{storeID}", async entry =>
+            return await _cache.GetOrCreateAsync($"{platform}ApiKey{storeID}", async entry =>
             {
                 entry.AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(30); // 快取 30 分鐘
                 string key = await _context.Connection.QueryFirstOrDefaultAsync<string>(sql, new { StoreID = storeID });
@@ -61,6 +61,7 @@ namespace HqSrv.Application.Services.ApiKey
                 return key ?? throw new Exception("API key not found.");
             });
         }
+
 
         public async Task<MomoLoginInfo> GetMomoApiKeyAsync(string platformID)
         {

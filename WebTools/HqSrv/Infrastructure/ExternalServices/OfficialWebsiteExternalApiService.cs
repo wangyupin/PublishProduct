@@ -83,14 +83,14 @@ namespace HqSrv.Infrastructure.ExternalServices
 
         public async Task<Result<AddProductOptionResponse>> AddProductOption(AddProductOptionRequest request)
         {
-            return await CallGetAsync<AddProductOptionResponse>(
-                $"api/product/add_ProductOption?ProductID={request.ProductID}");
+            return await CallPostAsync<AddProductOptionRequest, AddProductOptionRequest, AddProductOptionResponse>(
+                $"api/product/add_ProductOption", request);
         }
 
         public async Task<Result<UpdateProductOptionResponse>> UpdateProductOption(UpdateProductOptionRequest request)
         {
-            return await CallGetAsync<UpdateProductOptionResponse>(
-                $"api/product/update_ProductOption?StoreNumber={request.StoreNumber}&ProductID={request.ProductID}");
+            return await CallPostAsync<UpdateProductOptionRequest, UpdateProductOptionRequest,UpdateProductOptionResponse>(
+                "api/product/update_ProductOption", request);
         }
 
         // 上傳主圖 API
@@ -125,7 +125,7 @@ namespace HqSrv.Infrastructure.ExternalServices
             }
 
             return await CallMultipartAsync<ApiResponse_OfficialPlatform<string>>(
-                "api/product/Update_ProductOption_Image", content);
+                "api/product/Update_Product_Image", content);
         }
 
         // 上傳選項圖片 API
@@ -134,6 +134,7 @@ namespace HqSrv.Infrastructure.ExternalServices
             var content = new MultipartFormDataContent();
 
             content.Add(new StringContent(request.StoreNumber.ToString()), "StoreNumber");
+            content.Add(new StringContent(request.ProductID.ToString()), "ProductID");
 
             for (int idx = 0; idx < request.Data?.Count; idx++)
             {
@@ -141,9 +142,6 @@ namespace HqSrv.Infrastructure.ExternalServices
 
                 // 加入 SkuID
                 content.Add(new StringContent(imageData.SkuID.ToString()), $"Data[{idx}].SkuID");
-
-                // 加入 DisplayOrder
-                content.Add(new StringContent(imageData.DisplayOrder.ToString()), $"Data[{idx}].DisplayOrder");
 
                 // 加入圖片檔案
                 if (imageData.ImageFile != null && imageData.ImageFile.Length > 0)

@@ -27,7 +27,7 @@ import { Button, Label, FormText, Form, Input, Card, CardBody, CardHeader, CardT
 // ** Store & Actions
 import BasicInfo from './Basicinfo'
 import StoreSetting from './StoreSetting'
-import { resetContent, savePageStatus, submitMain, getOptionAll } from '../store'
+import { resetContent, savePageStatus, submitMain, getOptionAll, getSubmitDefVal } from '../store'
 
 
 const Single = ({ access, t, mode, id }) => {
@@ -100,7 +100,10 @@ const Single = ({ access, t, mode, id }) => {
         isExpiringItem: false,
         productStatus: null,
         shipType_shopee: [], //shopee配送方式
-        sizeImage: null
+        sizeImage: null,
+
+        //official
+        categoryOfficial: null
     })
 
 
@@ -188,7 +191,8 @@ const Single = ({ access, t, mode, id }) => {
             shipType_shopee: data.shipType_shopee,
 
             mainImage: data.mainImage.map(img => ({ path: img.path || '' })),
-            sizeImage: { path: data.sizeImage?.path || '' }
+            sizeImage: { path: data.sizeImage?.path || '' },
+            categoryOfficialId: data.categoryOfficial?.[data.categoryOfficial.length - 1]
         }
 
         const formData = new FormData()
@@ -261,7 +265,13 @@ const Single = ({ access, t, mode, id }) => {
             reset(selectedGoods)
             setActive(activeTab)
         } else {
-            dispatch(getOptionAll({ webBrandChiName: 'iris', ecCategoryCode: '1900100043' }))
+            dispatch(getOptionAll({ storeNumber: 6 }))
+                .then(() => {
+                    // 選項載入完成後，再取得編輯資料
+                    if (id) {
+                        dispatch(getSubmitDefVal({ parentID: id }))
+                    }
+                })
         }
 
         return () => {

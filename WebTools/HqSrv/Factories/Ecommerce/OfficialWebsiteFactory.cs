@@ -55,7 +55,7 @@ namespace HqSrv.Factories.Ecommerce
                 MainRequest = new AddProductRequest
                 {
                     StoreNumber = int.Parse(storeSetting.PlatformID),
-                    CategoryID = 1,
+                    CategoryID = basicInfo.CategoryOfficialId ?? 0,
                     ProductName = basicInfo.Title,
                     IsClosed = false,
                     SellingStartDT = basicInfo.SellingStartDateTime,
@@ -114,7 +114,7 @@ namespace HqSrv.Factories.Ecommerce
                     IsReturnable = basicInfo.IsReturnable,
                     ProductFeatures = basicInfo.ProductDescription ?? "",
                     ProductDetail = basicInfo.MoreInfo ?? "",
-                    Brand = new int[] { 14 },
+                    Brand = new int[] { int.Parse(commonInfo.BrandID) },
                     PictureCount = request.MainImage?.Count ?? 0,
                     PayType = basicInfo.PayTypes.ToArray(),
                     ShippingType = basicInfo.ShipType_91app.Select(t => (int)t).ToArray(),
@@ -142,7 +142,7 @@ namespace HqSrv.Factories.Ecommerce
             };
         }
 
-        public async Task<object> CreateRequestDtoEdit(SubmitMainRequestAll request, string originalBasicInfo, string platformResponse, StoreSetting storeSetting)
+        public async Task<object> CreateRequestDtoEdit(SubmitMainRequestAll request, string originalBasicInfo, string platformResponse, StoreSetting storeSetting, GetLookupAndCommonValueResponse commonInfo)
         {
             // 當前要編輯的基本資料
             POVWebDomain.Models.API.StoreSrv.EcommerceMgmt.PublishGoods.SubmitMainRequest basicInfo =
@@ -155,20 +155,52 @@ namespace HqSrv.Factories.Ecommerce
             // 平台回應資料
             AddProductResponse historyResponse = JsonConvert.DeserializeObject<AddProductResponse>(platformResponse);
 
-            bool hasColDetail1 = basicInfo.HasSku && basicInfo.SkuList?.Count > 0 && !string.IsNullOrEmpty(basicInfo.SkuList[0].ColDetail1?.Value);
-            bool hasColDetail2 = basicInfo.HasSku && basicInfo.SkuList?.Count > 0 && !string.IsNullOrEmpty(basicInfo.SkuList[0].ColDetail2?.Value);
 
-            // 決定選項順序：如果兩個都有，尺寸在前，顏色在後
-            bool useOption1 = hasColDetail1 || hasColDetail2;
-            bool useOption2 = hasColDetail1 && hasColDetail2;
+            var productId = historyResponse.ProductID;
+            var storeNumber = int.Parse(storeSetting.PlatformID);
+
+
+            UpdateProductOptionRequest updateOptionsRequest = null;
+
+            if (basicInfo.HasSku && basicInfo.SkuList?.Any() == true)
+            {
+                var updateSkus = new List<ProductOption>();
+
+                foreach (var sku in basicInfo.SkuList)
+                {
+                    var existingOption = historyResponse.ProductOpton?.FirstOrDefault(t => t.GoodID == sku.OriginalOuterId);
+
+                    updateSkus.Add(new ProductOption
+                    {
+                        SkuID = existingOption?.SkuID,
+                        GoodID = sku.OuterId,
+                        SuggestPrice = sku.SuggestPrice,
+                        Price = sku.Price,
+                        Cost = sku.Cost,
+                        SafetyInventoryQty = sku.SafetyStockQty,
+                        InventoryQty = sku.Qty,
+                        LimitedQty = sku.OnceQty
+                    });
+                }
+
+                updateOptionsRequest = new UpdateProductOptionRequest
+                {
+                    StoreNumber = storeNumber,
+                    ProductID = productId,
+                    ProductOptionList = updateSkus
+                };
+            }
+
+
+
 
             SubmitGoodsEditRequest editRequest = new SubmitGoodsEditRequest
             {
                 MainRequest = new UpdateProductRequest
                 {
-                    StoreNumber = int.Parse(storeSetting.PlatformID),
+                    StoreNumber = storeNumber,
                     ProductID = historyResponse.ProductID,
-                    CategoryID = 1,
+                    CategoryID = basicInfo.CategoryOfficialId ?? 0,
                     ProductName = basicInfo.Title,
                     IsClosed = false,
                     SellingStartDT = basicInfo.SellingStartDateTime,
@@ -213,6 +245,9 @@ namespace HqSrv.Factories.Ecommerce
                     WebPageDesc = basicInfo.SEODescription,
                     WebPageKeywords = basicInfo.SEOKeywords,
                     IsShowProduct = true,
+                    IsShowSold = commonInfo.IsShowSoldQty_91 ?? false,
+                    IsShowInventory = commonInfo.IsShowStockQty_91 ?? false,
+                    IsRestricted = commonInfo.IsRestricted_91 ?? false,
                     StockoutShow = basicInfo.SoldOutActionType switch
                     {
                         "OutOfStock" => 1,
@@ -224,48 +259,23 @@ namespace HqSrv.Factories.Ecommerce
                     IsReturnable = basicInfo.IsReturnable,
                     ProductFeatures = basicInfo.ProductDescription ?? "",
                     ProductDetail = basicInfo.MoreInfo ?? "",
+                    Brand = new int[] { int.Parse(commonInfo.BrandID) },
                     PictureCount = request.MainImage.Count,
                     PayType = basicInfo.PayTypes.ToArray(),
                     ShippingType = basicInfo.ShipType_91app.Select(t => (int)t).ToArray(),
                     ProductSpecification = basicInfo.Specifications.ConvertToOfficial(new List<ProductSpecification>())
                     
-                }
+                },
+                MainImage = request.MainImage,
+                SkuImage = request.SkuImage,
+                UpdateOptionsRequest = updateOptionsRequest
             };
 
-            // 處理商品選項更新
-            if (basicInfo.SkuList?.Count > 0)
-            {
-                List<ProductOptionUpdate> updateOptions = new List<ProductOptionUpdate>();
-
-                foreach (SkuItem sku in basicInfo.SkuList)
-                {
-                    SkuResult historySkuResult = historyResponse.ProductOpton?.FirstOrDefault(h => h.GoodID == sku.OuterId);
-
-                    updateOptions.Add(new ProductOptionUpdate
-                    {
-                        SkuID = historySkuResult?.SkuID,
-                        SkuName = sku.ConbineColDetail_Official(),
-                        GoodID = sku.OuterId,
-                        SuggestPrice = sku.SuggestPrice,
-                        Price = sku.Price,
-                        Cost = sku.Cost,
-                        SafetyInventoryQty = sku.SafetyStockQty,
-                        InventoryQty = sku.OnceQty,
-                        LimitedQty = sku.SafetyStockQty
-                    });
-                }
-
-                editRequest.UpdateProductOptionRequest = new UpdateProductOptionRequest
-                {
-                    StoreNumber = int.Parse(storeSetting.PlatformID),
-                    ProductID = historyResponse.ProductID,
-                    ProductOptionList = updateOptions
-                };
-            }
 
             return editRequest;
         }
 
         public Type GetResponseDtoType() => typeof(AddProductResponse);
+        public bool ShouldSaveEditResponse() => false;
     }
 }

@@ -27,6 +27,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using SubmitMainRequest = POVWebDomain.Models.API.StoreSrv.EcommerceMgmt.PublishGoods.SubmitMainRequest;
+using POVWebDomain.Models.ExternalApi.OfficialFront;
 
 namespace HqSrv.Application.Services.EcommerceMgmt
 {
@@ -39,6 +40,7 @@ namespace HqSrv.Application.Services.EcommerceMgmt
         private readonly IPublishGoodsInfrastructureRepository _repository;
         private readonly IPublishGoodsRepository _domainRepository;          // 新增 Domain 介面
         private readonly Store91ExternalApiService _91Api;
+        private readonly OfficialFrontExternalApiService _officialFrontApi;
         private readonly IEcommerceFactoryManager _ecommerceFactoryManager;
 
         // Domain 服務依賴 - 新增
@@ -47,28 +49,33 @@ namespace HqSrv.Application.Services.EcommerceMgmt
         private readonly IPlatformMappingService _platformMappingService;
         private readonly IProductRepository _productRepository;
         private readonly IWebHostEnvironment _hostEnvironment;
+        private readonly IOptionService _optionService;
 
 
         public PublishGoodsApplicationService(
             IPublishGoodsInfrastructureRepository repository,
             IPublishGoodsRepository domainRepository,
             Store91ExternalApiService api91,
+            OfficialFrontExternalApiService officialFrontApi,
             IEcommerceFactoryManager ecommerceFactoryManager,
             IProductValidationService productValidationService,  // 新增
             IPublishingService publishingService,                // 新增
             IPlatformMappingService platformMappingService,      // 新增
             IProductRepository productRepository,
-            IWebHostEnvironment hostEnvironment)                // 新增
+            IWebHostEnvironment hostEnvironment,
+            IOptionService optionService)                // 新增
         {
             _repository = repository;
             _domainRepository = domainRepository;
             _91Api = api91;
+            _officialFrontApi = officialFrontApi;
             _ecommerceFactoryManager = ecommerceFactoryManager;
             _productValidationService = productValidationService;
             _publishingService = publishingService;
             _platformMappingService = platformMappingService;
             _productRepository = productRepository;
             _hostEnvironment = hostEnvironment;
+            _optionService = optionService;
         }
 
         // ============================================
@@ -78,35 +85,34 @@ namespace HqSrv.Application.Services.EcommerceMgmt
         {
             try
             {
-                // 91App API 呼叫
-                var shippingResult = await _91Api.GetShipping(new GetShippingRequest { });
-                if (shippingResult.IsFailure)
-                    return Result<GetOptionAllResponse>.Failure(shippingResult.Error);
+                // OfficialFront API 呼叫
 
-                var paymentResult = await _91Api.GetPayment(new GetPaymentRequest { });
-                if (paymentResult.IsFailure)
-                    return Result<GetOptionAllResponse>.Failure(paymentResult.Error);
-
-                var specChartResult = await _91Api.SalePageSpecChartGetList(new SalePageSpecChartGetListRequest
+                var officialFrontCategoryResult = await _officialFrontApi.GetCategory(new POVWebDomain.Models.ExternalApi.OfficialFront.GetCategoryRequest
                 {
-                    SearchItem = new SearchItem(),
-                    Skip = 0,
-                    Take = 50
+                    StoreNumber = request.StoreNumber
                 });
-                if (specChartResult.IsFailure)
-                    return Result<GetOptionAllResponse>.Failure(specChartResult.Error);
+                if (officialFrontCategoryResult.IsFailure)
+                    return Result<GetOptionAllResponse>.Failure(officialFrontCategoryResult.Error);
 
                 var shopCategoryResult = await _91Api.GetShopCategory(new GetShopCategoryRequest { });
                 if (shopCategoryResult.IsFailure)
                     return Result<GetOptionAllResponse>.Failure(shopCategoryResult.Error);
 
-                var salesModeTypeResult = await _91Api.GetSalesModeType();
+                var salesModeTypeResult = await _optionService.GetSalesModeType();
                 if (salesModeTypeResult.IsFailure)
                     return Result<GetOptionAllResponse>.Failure(salesModeTypeResult.Error);
 
-                var sellingDateTimeResult = await _91Api.GetSellingDateTime();
+                var sellingDateTimeResult = await _optionService.GetSellingDateTime();
                 if (sellingDateTimeResult.IsFailure)
                     return Result<GetOptionAllResponse>.Failure(sellingDateTimeResult.Error);
+
+                var shippingResult = await _optionService.GetShipping();
+                if (shippingResult.IsFailure)
+                    return Result<GetOptionAllResponse>.Failure(shippingResult.Error);
+
+                var paymentResult = await _optionService.GetPayment();
+                if (paymentResult.IsFailure)
+                    return Result<GetOptionAllResponse>.Failure(paymentResult.Error);
 
                 // Repository 呼叫
                 var ecIndex = await _repository.MergeEcAttributesAsync(
@@ -115,9 +121,9 @@ namespace HqSrv.Application.Services.EcommerceMgmt
 
                 var response = new GetOptionAllResponse
                 {
+                    Category_Official = (officialFrontCategoryResult.Data as dynamic)?.responseBody,
                     ShipType_91app = (shippingResult.Data as dynamic)?.responseBody,
                     Payment = (paymentResult.Data as dynamic)?.responseBody,
-                    SpecChart = (specChartResult.Data as dynamic)?.options,
                     ShopCategory = (shopCategoryResult.Data as dynamic)?.responseBody,
                     SalesModeType = (salesModeTypeResult.Data as dynamic)?.responseBody,
                     SellingDateTime = (sellingDateTimeResult.Data as dynamic)?.responseBody,
@@ -400,26 +406,35 @@ namespace HqSrv.Application.Services.EcommerceMgmt
 
                 object requestDto;
                 Result<object> submitResult;
+                bool isEditMode = false;
 
                 if (resData == null)
                 {
                     // 新增模式
                     requestDto = await factory.CreateRequestDtoAdd(request, store, commonInfo);
                     submitResult = await service.SubmitGoodsAddAsync(requestDto, store.PlatformID);
+                    isEditMode = false;
                 }
                 else
                 {
                     // 編輯模式
                     var originalRequestParams = await _repository.GetOriginalRequestParamsAsync(request.ParentID);
-                    requestDto = await factory.CreateRequestDtoEdit(request, originalRequestParams, resData.ResponseData, store);
+                    requestDto = await factory.CreateRequestDtoEdit(request, originalRequestParams, resData.ResponseData, store, commonInfo);
                     submitResult = await service.SubmitGoodsEditAsync(requestDto, store.PlatformID);
+                    isEditMode = true;
                 }
 
                 // 儲存回應
                 if (submitResult.IsSuccess)
                 {
-                    var saveResResult = await _repository.SaveSubmitGoodsResAsync(request, requestDto,
-                        new SubmitMainResponseAll { Response = submitResult.Data }, store);
+                    bool shouldSaveResponse = !isEditMode || factory.ShouldSaveEditResponse();
+
+                    if (shouldSaveResponse)
+                    {
+                        var saveResResult = await _repository.SaveSubmitGoodsResAsync(request, requestDto,
+                            new SubmitMainResponseAll { Response = submitResult.Data }, store);
+                    }
+                    
                 }
 
                 return submitResult;
@@ -452,7 +467,7 @@ namespace HqSrv.Application.Services.EcommerceMgmt
                 // 根據不同平台解析 ProductID
                 if (store.EStoreID == "0005") // OfficialWebsite
                 {
-                    productID = (int)responseData.Data.ProductID;
+                    productID = (int)responseData.ProductID;
                 }
                 else if (store.EStoreID == "0001") // 91App
                 {

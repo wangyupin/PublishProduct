@@ -130,7 +130,7 @@ namespace HqSrv.Factories.Ecommerce
             };
         }
 
-        public async Task<object> CreateRequestDtoEdit(SubmitMainRequestAll request, string originalBasicInfo, string platformResponse, StoreSetting storeSetting)
+        public async Task<object> CreateRequestDtoEdit(SubmitMainRequestAll request, string originalBasicInfo, string platformResponse, StoreSetting storeSetting, GetLookupAndCommonValueResponse commonInfo)
         {
 
             // 當前要編輯的基本資料
@@ -339,5 +339,6 @@ namespace HqSrv.Factories.Ecommerce
         }
 
         public Type GetResponseDtoType() => typeof(SubmitMainResponse);
+        public bool ShouldSaveEditResponse() => true;
     }
 }
