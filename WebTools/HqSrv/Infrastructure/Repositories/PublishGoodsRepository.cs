@@ -243,6 +243,7 @@ namespace HqSrv.Infrastructure.Repositories
                        G.SpecialPrice AS Price, 
                        G.Cost, G.Sort05 AS ColorName, G.Sort05 AS ColorName, G.SizeName AS SizeID, G.SizeName AS SizeName
                 FROM Goods G
+                WHERE G.ParentID = @ParentID
                 GROUP BY G.GoodID, G.GoodName, G.AdvicePrice, G.Cost, G.Sort05, G.SizeName, G.SpecialPrice
             ";
 

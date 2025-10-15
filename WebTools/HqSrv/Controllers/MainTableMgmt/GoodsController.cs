@@ -66,20 +66,15 @@ namespace HqSrv.Controllers.MainTableMgmt
             }
             string sql = @$"
                 select GoodID, GoodName, t1.BrandName, t2.FactoryName, AdvicePrice, PicturePath, Sort01, Sort02, Sort03, Sort04, Sort05, ParentID, Currency,
-                        IntoPrice, Cost, s_Ply, price, specialPrice, hongLiTimes, Season, Material1, P_StyleA, P_StyleB, P_StyleC, P_StyleD, P_StyleE, t3.Bar,
+                        IntoPrice, Cost, s_Ply, price, specialPrice, hongLiTimes, Season, Material1, P_StyleA, P_StyleB, P_StyleC, P_StyleD, P_StyleE,
                         GoodNameUS, ParentID, CurrencyRate, TradePrice1, SizeTagName as SizeName, YearOfSeason, t0.OpenDate, SellDateST, Remark, GoodTags, t0.Display, Material,
 				        IsStruct, IsExclCost
                 from Goods t0
                 left join Brand t1 on t1.BrandID = t0.Brand
                 left join Factory t2 on t2.FactoryID = t0.Factory
-                outer apply(
-					SELECT STRING_AGG(Bar, ',') AS Bar
-					from GoodsBar GB
-					where GB.GoodsID = t0.GoodID
-				) t3
                 left join SizeTag t4 on t0.SizeName = t4.SizeTagID
                 where 1=1
-                and (goodID like '%' + @Q + '%'OR goodName like '%' + @Q + '%'OR factoryName like '%' + @Q + '%'OR brandName like '%' + @Q + '%'OR parentID like '%' + @Q + '%'OR advicePrice like '%' + @Q + '%'OR currency like '%' + @Q + '%'OR intoPrice like '%' + @Q + '%'OR cost like '%' + @Q + '%'OR s_Ply like '%' + @Q + '%'OR price like '%' + @Q + '%'OR specialPrice like '%' + @Q + '%'OR hongLiTimes like '%' + @Q + '%'OR season like '%' + @Q + '%'OR material1 like '%' + @Q + '%'OR p_StyleA like '%' + @Q + '%'OR p_StyleB like '%' + @Q + '%'OR p_StyleC like '%' + @Q + '%'OR p_StyleD like '%' + @Q + '%'OR p_StyleE like '%' + @Q + '%'OR sort01 like '%' + @Q + '%'OR sort02 like '%' + @Q + '%'OR sort03 like '%' + @Q + '%'OR sort04 like '%' + @Q + '%'OR sort05 like '%' + @Q + '%'OR goodNameUS like '%' + @Q + '%'OR parentID like '%' + @Q + '%'OR currencyRate like '%' + @Q + '%'OR tradePrice1 like '%' + @Q + '%'OR sizeName like '%' + @Q + '%'OR yearOfSeason like '%' + @Q + '%'OR t0.openDate like '%' + @Q + '%'OR sellDateST like '%' + @Q + '%'OR remark like '%' + @Q + '%'OR t0.display like '%' + @Q + '%'OR material like '%' + @Q + '%'OR isStruct like '%' + @Q + '%'OR isExclCost like '%' + @Q + '%'OR Bar like '%' + @Q + '%')
+                and (goodID like '%' + @Q + '%'OR goodName like '%' + @Q + '%'OR factoryName like '%' + @Q + '%'OR brandName like '%' + @Q + '%'OR parentID like '%' + @Q + '%'OR advicePrice like '%' + @Q + '%'OR currency like '%' + @Q + '%'OR intoPrice like '%' + @Q + '%'OR cost like '%' + @Q + '%'OR s_Ply like '%' + @Q + '%'OR price like '%' + @Q + '%'OR specialPrice like '%' + @Q + '%'OR hongLiTimes like '%' + @Q + '%'OR season like '%' + @Q + '%'OR material1 like '%' + @Q + '%'OR p_StyleA like '%' + @Q + '%'OR p_StyleB like '%' + @Q + '%'OR p_StyleC like '%' + @Q + '%'OR p_StyleD like '%' + @Q + '%'OR p_StyleE like '%' + @Q + '%'OR sort01 like '%' + @Q + '%'OR sort02 like '%' + @Q + '%'OR sort03 like '%' + @Q + '%'OR sort04 like '%' + @Q + '%'OR sort05 like '%' + @Q + '%'OR goodNameUS like '%' + @Q + '%'OR parentID like '%' + @Q + '%'OR currencyRate like '%' + @Q + '%'OR tradePrice1 like '%' + @Q + '%'OR sizeName like '%' + @Q + '%'OR yearOfSeason like '%' + @Q + '%'OR t0.openDate like '%' + @Q + '%'OR sellDateST like '%' + @Q + '%'OR remark like '%' + @Q + '%'OR t0.display like '%' + @Q + '%'OR material like '%' + @Q + '%'OR isStruct like '%' + @Q + '%'OR isExclCost like '%' + @Q + '%')
                 {advanceRequestStr}
                 {userOrderByStr}
                 {offSetStr}
@@ -89,9 +84,8 @@ namespace HqSrv.Controllers.MainTableMgmt
                 from Goods t0
                 left join Brand t1 on t1.BrandID = t0.Brand
                 left join Factory t2 on t2.FactoryID = t0.Factory
-                left join GoodsBar t3 on t3.GoodsID = t0.GoodID
                 where 1=1
-                and (goodID like '%' + @Q + '%'OR goodName like '%' + @Q + '%'OR factoryName like '%' + @Q + '%'OR brandName like '%' + @Q + '%'OR parentID like '%' + @Q + '%'OR advicePrice like '%' + @Q + '%'OR currency like '%' + @Q + '%'OR intoPrice like '%' + @Q + '%'OR cost like '%' + @Q + '%'OR s_Ply like '%' + @Q + '%'OR price like '%' + @Q + '%'OR specialPrice like '%' + @Q + '%'OR hongLiTimes like '%' + @Q + '%'OR season like '%' + @Q + '%'OR material1 like '%' + @Q + '%'OR p_StyleA like '%' + @Q + '%'OR p_StyleB like '%' + @Q + '%'OR p_StyleC like '%' + @Q + '%'OR p_StyleD like '%' + @Q + '%'OR p_StyleE like '%' + @Q + '%'OR sort01 like '%' + @Q + '%'OR sort02 like '%' + @Q + '%'OR sort03 like '%' + @Q + '%'OR sort04 like '%' + @Q + '%'OR sort05 like '%' + @Q + '%'OR goodNameUS like '%' + @Q + '%'OR parentID like '%' + @Q + '%'OR currencyRate like '%' + @Q + '%'OR tradePrice1 like '%' + @Q + '%'OR sizeName like '%' + @Q + '%'OR yearOfSeason like '%' + @Q + '%'OR t0.openDate like '%' + @Q + '%'OR sellDateST like '%' + @Q + '%'OR remark like '%' + @Q + '%'OR t0.display like '%' + @Q + '%'OR material like '%' + @Q + '%'OR isStruct like '%' + @Q + '%'OR isExclCost like '%' + @Q + '%'OR Bar like '%' + @Q + '%')
+                and (goodID like '%' + @Q + '%'OR goodName like '%' + @Q + '%'OR factoryName like '%' + @Q + '%'OR brandName like '%' + @Q + '%'OR parentID like '%' + @Q + '%'OR advicePrice like '%' + @Q + '%'OR currency like '%' + @Q + '%'OR intoPrice like '%' + @Q + '%'OR cost like '%' + @Q + '%'OR s_Ply like '%' + @Q + '%'OR price like '%' + @Q + '%'OR specialPrice like '%' + @Q + '%'OR hongLiTimes like '%' + @Q + '%'OR season like '%' + @Q + '%'OR material1 like '%' + @Q + '%'OR p_StyleA like '%' + @Q + '%'OR p_StyleB like '%' + @Q + '%'OR p_StyleC like '%' + @Q + '%'OR p_StyleD like '%' + @Q + '%'OR p_StyleE like '%' + @Q + '%'OR sort01 like '%' + @Q + '%'OR sort02 like '%' + @Q + '%'OR sort03 like '%' + @Q + '%'OR sort04 like '%' + @Q + '%'OR sort05 like '%' + @Q + '%'OR goodNameUS like '%' + @Q + '%'OR parentID like '%' + @Q + '%'OR currencyRate like '%' + @Q + '%'OR tradePrice1 like '%' + @Q + '%'OR sizeName like '%' + @Q + '%'OR yearOfSeason like '%' + @Q + '%'OR t0.openDate like '%' + @Q + '%'OR sellDateST like '%' + @Q + '%'OR remark like '%' + @Q + '%'OR t0.display like '%' + @Q + '%'OR material like '%' + @Q + '%'OR isStruct like '%' + @Q + '%'OR isExclCost like '%' + @Q + '%')
                 {advanceRequestStr}
                 ";
 

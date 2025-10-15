@@ -112,7 +112,7 @@ namespace POVWebDomain.Models.API.StoreSrv.EcommerceMgmt.PublishGoods
         public List<Dictionary<string, string>> ClothDataSizeIndex { get; set; }
         [JsonPropertyName("clothDataTryIndex")]
         public List<Dictionary<string, string>> ClothDataTryIndex { get; set; }
-        public int ExpDays { get; set; }
+        public int? ExpDays { get; set; }
 
         // Yahoo
         public int ShipType_yahoo { get; set; }

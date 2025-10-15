@@ -125,18 +125,22 @@ namespace HqSrv.Domain.Services
         {
             var errors = new List<string>();
 
-            if (product.Price <= 0)
-                errors.Add("商品價格必須大於 0");
+            if (!product.HasSku)
+            {
+                if (product.Price <= 0)
+                    errors.Add("商品價格必須大於 0");
 
-            if (product.Cost < 0)
-                errors.Add("商品成本不能為負數");
+                if (product.Cost < 0)
+                    errors.Add("商品成本不能為負數");
 
-            if (product.SuggestPrice < 0)
-                errors.Add("建議售價不能為負數");
+                if (product.SuggestPrice < 0)
+                    errors.Add("建議售價不能為負數");
 
-            // 成本不應高於售價 (警告，但不阻止發布)
-            if (product.Cost > product.Price)
-                errors.Add("警告：成本高於售價，請確認定價策略");
+                // 成本不應高於售價 (警告，但不阻止發布)
+                if (product.Cost > product.Price)
+                    errors.Add("警告：成本高於售價，請確認定價策略");
+            }
+           
 
             if (product.HasSku)
             {

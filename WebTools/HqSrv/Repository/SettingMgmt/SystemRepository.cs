@@ -63,6 +63,8 @@ namespace HqSrv.Repository.SettingMgmt
 
                     var settings = result.IsConsumed ? null : result.Read<SystemSettings>().ToList().FirstOrDefault();
 
+                    if (settings == null) settings = new SystemSettings();
+
                     var costPermission = result.IsConsumed ? false : result.Read<bool>().ToList().FirstOrDefault();
 
                     settings.CostPermission = costPermission;

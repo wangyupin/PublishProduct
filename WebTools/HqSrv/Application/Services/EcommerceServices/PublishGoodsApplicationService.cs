@@ -94,9 +94,9 @@ namespace HqSrv.Application.Services.EcommerceMgmt
                 if (officialFrontCategoryResult.IsFailure)
                     return Result<GetOptionAllResponse>.Failure(officialFrontCategoryResult.Error);
 
-                var shopCategoryResult = await _91Api.GetShopCategory(new GetShopCategoryRequest { });
-                if (shopCategoryResult.IsFailure)
-                    return Result<GetOptionAllResponse>.Failure(shopCategoryResult.Error);
+                //var shopCategoryResult = await _91Api.GetShopCategory(new GetShopCategoryRequest { });
+                //if (shopCategoryResult.IsFailure)
+                //    return Result<GetOptionAllResponse>.Failure(shopCategoryResult.Error);
 
                 var salesModeTypeResult = await _optionService.GetSalesModeType();
                 if (salesModeTypeResult.IsFailure)
@@ -124,7 +124,6 @@ namespace HqSrv.Application.Services.EcommerceMgmt
                     Category_Official = (officialFrontCategoryResult.Data as dynamic)?.responseBody,
                     ShipType_91app = (shippingResult.Data as dynamic)?.responseBody,
                     Payment = (paymentResult.Data as dynamic)?.responseBody,
-                    ShopCategory = (shopCategoryResult.Data as dynamic)?.responseBody,
                     SalesModeType = (salesModeTypeResult.Data as dynamic)?.responseBody,
                     SellingDateTime = (sellingDateTimeResult.Data as dynamic)?.responseBody,
                     EcIndex = ecIndex
@@ -178,9 +177,9 @@ namespace HqSrv.Application.Services.EcommerceMgmt
                 }
 
                 // 4. 使用 Domain Service 進行發布前驗證
-                var canPublishResult = await _publishingService.CanPublishAsync(product, targetPlatforms);
-                if (canPublishResult.IsFailure)
-                    return Result<object>.Failure(canPublishResult.Error);
+                //var canPublishResult = await _publishingService.CanPublishAsync(product, targetPlatforms);
+                //if (canPublishResult.IsFailure)
+                //    return Result<object>.Failure(canPublishResult.Error);
 
                 // 5. 使用 Domain Service 計算發布順序
                 var publishOrderResult = _publishingService.CalculatePublishOrder(targetPlatforms);

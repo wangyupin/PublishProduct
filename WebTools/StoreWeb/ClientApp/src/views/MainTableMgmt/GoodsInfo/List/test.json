@@ -1,0 +1,31 @@
+{
+  "Logging": {
+    "LogLevel": {
+      "Default": "Information",
+      "Microsoft": "Warning",
+      "Microsoft.Hosting.Lifetime": "Information"
+    }
+  },
+  "AllowedHosts": "*",
+  "ConnectionStrings": {
+    "POVWebDb": "server=127.0.0.1,1457; database=ROYAL_WebPOS; uid=gbtech; pwd=27638165; Connection Timeout=180;Application Name=StoreWeb; Encrypt=false; MultipleActiveResultSets=true;",
+    "GBSMS": "server=127.0.0.1,1457; database=ROYAL_WebPOS; uid=gbtech; pwd=27638165; Connection Timeout=180;Application Name=StoreWeb; Encrypt=false; MultipleActiveResultSets=true;"
+  },
+  "CityAdminSrv": {
+    "Uri": "http://CityAdminSrv.cityapp.com.tw:35000",
+    "UserAgent": "HqSrv",
+    "Timeout": 180
+  },
+  "Jwt": {
+    //https://www.browserling.com/tools/random-string A-Z0-9 uppercase Length 128
+    "HeaderName": "Authorization",
+    "Secret": "V9S0UKL648TGU40AE66FSG1L8P783INOOC2EBH0GPRC7CCG99HYJB8N3KV8X4Z8BMM4P5TR0XYZIH2G9OKTKR8OIGIOVYG0DSH0T0QW2SJRA48LXYIMCGKWVK1X5OQ43",
+    "Issuer": "CityApp.StoreSrv",
+    "Audience": "1",
+    "AccessTokenExpiresInMinutes": 60,
+    "RefreshTokenSecret": "03094VV2WAUKY8YBASP1ZER2MKC7ZAEW7DNHZDT30XYEJ07U39L342WJKVHMURFRQ6UV7UJ2R26GZ19X33G5GTO6YU9DGKUF1JBP1G5JGORMCLDWVL3UAXFDYUXDIK37",
+    "RefreshTokenExpiresInHours": 24,
+    "RefreshTokenQueueLimit": 10,
+    "AccessTokenErrorCountDown": 5
+  }
+}

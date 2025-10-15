@@ -32,7 +32,8 @@ namespace HqSrv.Infrastructure.ExternalServices
             ApiKeyProvider apiKeyProvider)
             : base(context, configuration, httpClient, apiKeyProvider)
         {
-            _endPoint = "https://onlineshop-admin.gbtech.com.tw/";
+            _endPoint = configuration["ExternalApis:OfficialWebsiteEndPoint"]
+                ?? throw new InvalidOperationException("OfficialWebsiteEndPoint configuration is missing");
         }
 
         protected override async Task<Dictionary<string, string>> GetHeadersAsync(string endPoint)

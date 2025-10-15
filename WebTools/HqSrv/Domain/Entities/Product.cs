@@ -217,7 +217,6 @@ namespace HqSrv.Domain.Entities
         public bool CanPublish()
         {
             if (string.IsNullOrWhiteSpace(Title)) return false;
-            if (Price <= 0) return false;
 
             if (HasSku)
             {

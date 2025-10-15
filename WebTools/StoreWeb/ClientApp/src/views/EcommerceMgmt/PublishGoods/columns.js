@@ -45,7 +45,7 @@ const ImageCellRenderer = ({ rowIndex, value, control }) => {
                     <div className='thumb'>
                         <div className='thumbInner'>
                             <img
-                                src={field.value?.path ? `${process.env.NODE_ENV === 'production' ? window.location.origin : 'https://localhost:44320'}/${field.value?.path}` : field.value?.preview}
+                                src={field.value?.path ? `${process.env.NODE_ENV === 'production' ? window.location.origin : 'https://localhost:44320'}/${field.value?.path}?v=${new Date().getTime()}` : field.value?.preview}
                                 className='img'
                                 alt='Preview'
                             />
