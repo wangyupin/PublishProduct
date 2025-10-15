@@ -240,19 +240,10 @@ namespace HqSrv.Infrastructure.Repositories
                 SELECT RequestParams FROM ESubmitGoodsReq WHERE ParentID=@ParentID
 
                 SELECT G.GoodID, G.GoodName, G.AdvicePrice, 
-                       ISNULL(MIN(CASE pjtpsort when '2' THEN ROUND(G.AdvicePrice*A.pjtdiscount/100,0) ELSE pjtprice END),G.SpecialPrice) AS Price, 
-                       G.Cost, G.Sort05 AS ColorID, S.Sort05Name AS ColorName, G.SizeName AS SizeID, ST.SizeTagName AS SizeName
+                       G.SpecialPrice AS Price, 
+                       G.Cost, G.Sort05 AS ColorName, G.Sort05 AS ColorName, G.SizeName AS SizeID, G.SizeName AS SizeName
                 FROM Goods G
-                LEFT JOIN Sort05 S ON G.Sort05=S.Sort05ID
-                LEFT JOIN SizeTag ST ON G.SizeName=ST.SizeTagID
-                LEFT JOIN anewpjtdetail AD ON G.GoodID = AD.goodid
-                LEFT JOIN anewpjt A ON A.pjtid = AD.pjtid
-                LEFT JOIN anewpjtrange AR ON A.pjtid = AR.pjtid
-                LEFT JOIN Client C ON C.Remark02='4' AND C.ClientID BETWEEN AR.sstore AND AR.estore
-                WHERE G.ParentID = @ParentID
-                  AND (AR.sdate IS NULL OR AR.sdate <= CONVERT(VARCHAR, GETDATE(), 112))
-                  AND (AR.edate IS NULL OR AR.edate >= CONVERT(VARCHAR, GETDATE(), 112))
-                GROUP BY G.GoodID, G.GoodName, G.AdvicePrice, G.Cost, G.Sort05, S.Sort05Name, G.SizeName, ST.SizeTagName, G.SpecialPrice
+                GROUP BY G.GoodID, G.GoodName, G.AdvicePrice, G.Cost, G.Sort05, G.SizeName, G.SpecialPrice
             ";
 
             using (var connection = _context.Connection)

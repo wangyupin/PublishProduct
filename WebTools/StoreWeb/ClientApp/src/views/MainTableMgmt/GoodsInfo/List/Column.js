@@ -30,12 +30,7 @@ const Columns = ({ access, t, setCurrentPage, navigate }) => ([
       <div className='d-flex justify-content-left align-items-center'>
         {renderGoodName(data)}
         <div className='d-flex'>
-          <Link
-            to={`../MainTableMgmt/GoodsInfo/Single/${data.goodID}`}
-            className='text-body'
-          >
-            <span className='text-primary'>{data.goodID}</span>
-          </Link>
+          <span className='text-primary'>{data.goodID}</span>
         </div>
       </div>
     ),
