@@ -13,8 +13,6 @@ using POVWebDomain.Models.API.StoreSrv.EcommerceMgmt.PublishGoods;
 using POVWebDomain.Models.DB.POVWeb;
 using System;
 using System.Collections.Generic;
-using System.Drawing;
-using System.Drawing.Imaging;
 using System.IO;
 using System.Linq;
 using System.Text.Json;
@@ -23,6 +21,9 @@ using IndexList = POVWebDomain.Models.API.StoreSrv.EcommerceMgmt.PublishGoods.In
 using JsonSerializer = System.Text.Json.JsonSerializer;
 using HqSrv.Domain.Repositories;
 using HqSrv.Domain.Entities;
+using SixLabors.ImageSharp;
+using SixLabors.ImageSharp.Formats.Jpeg; // 為了儲存成 JPEG
+using System.Runtime.InteropServices;
 
 namespace HqSrv.Infrastructure.Repositories
 {
@@ -271,9 +272,12 @@ namespace HqSrv.Infrastructure.Repositories
                         }
                     }
 
-                    if (goodsList.Count == 0)
+                    if (goodsList != null && goodsList.Count > 0)
                     {
-                        return Result<object>.Failure("沒有款式編號!");
+                        goodsList = goodsList
+                            .OrderBy(x => x.ColorName, Comparer<string>.Create((x, y) => StrCmpLogicalW(x ?? "", y ?? "")))
+                            .ThenBy(x => x.SizeName, Comparer<string>.Create((x, y) => StrCmpLogicalW(x ?? "", y ?? "")))
+                            .ToList();
                     }
 
                     object defVal = new
@@ -284,6 +288,8 @@ namespace HqSrv.Infrastructure.Repositories
                         Cost = goodsList[0].Cost,
                         OuterId = goodsList[0].GoodID
                     };
+
+
 
                     var optionList = CreateOptionList(goodsList);
                     var missingItems = CreateMissingItems(skuItems, goodsList);
@@ -578,9 +584,12 @@ namespace HqSrv.Infrastructure.Repositories
                     {
                         await file.CopyToAsync(stream);
                         stream.Position = 0;
-                        using (var image = System.Drawing.Image.FromStream(stream))
+                        using (var image = Image.Load(stream))
                         {
-                            image.Save(filePath, ImageFormat.Jpeg);
+                            image.Save(filePath, new JpegEncoder
+                            {
+                                Quality = 75
+                            });
                         }
                     }
 
@@ -1131,5 +1140,9 @@ namespace HqSrv.Infrastructure.Repositories
 
 
         #endregion
+
+
+        [DllImport("shlwapi.dll", CharSet = CharSet.Unicode)]
+        private static extern int StrCmpLogicalW(string x, string y);
     }
 }

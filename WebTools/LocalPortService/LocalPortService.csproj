@@ -17,6 +17,7 @@
     <PackageReference Include="Handlebars.Net" Version="2.1.6" />
     <PackageReference Include="Microsoft.Extensions.Hosting.WindowsServices" Version="8.0.0" />
     <PackageReference Include="PDFsharp" Version="6.1.1" />
+    <PackageReference Include="SixLabors.ImageSharp" Version="2.1.12" />
     <PackageReference Include="Velopack" Version="0.0.626" />
 	<Content Include="font/code128.ttf">
 		<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>

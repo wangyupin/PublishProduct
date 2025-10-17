@@ -260,12 +260,36 @@ const Single = ({ access, t, mode, id }) => {
         setArrVal(arrs)
     }, [targetDefaultValue, selectedValue])
 
+    const [storeNumber, setStoreNumber] = useState(null)
+
     useEffect(() => {
+        const loadAppSettings = async () => {
+            try {
+                const res = await fetch('/api/EcommerceStore/GetStoreNumber')
+
+                if (!res.ok) {
+                    throw new Error(`HTTP error! status: ${res.status}`)
+                }
+
+                const data = await res.json()
+                setStoreNumber(data?.data?.storeNumber)
+            } catch (err) {
+                console.error('載入設定失敗:', err)
+                setStoreNumber(null)
+            }
+        }
+
+        loadAppSettings()
+    }, [])
+
+    useEffect(() => {
+        if (!storeNumber) return
+
         if (selectedMode) {
             reset(selectedGoods)
             setActive(activeTab)
         } else {
-            dispatch(getOptionAll({ storeNumber: 6 }))
+            dispatch(getOptionAll({ storeNumber: parseInt(storeNumber) }))
                 .then(() => {
                     // 選項載入完成後，再取得編輯資料
                     if (id) {
@@ -288,7 +312,7 @@ const Single = ({ access, t, mode, id }) => {
                 }))
             }
         }
-    }, [])
+    }, [storeNumber])
 
     return (
         <div className='p-1'>

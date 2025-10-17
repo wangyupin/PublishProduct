@@ -119,5 +119,7 @@ namespace HqSrv.Controllers.EcommerceMgmt
                 return Ok(FormatResultModel<dynamic>.Failure(new { MSG = e.Message }));
             }
         }
+
+
     }
 }

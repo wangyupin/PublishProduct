@@ -199,5 +199,19 @@ namespace StoreWeb.Controllers.EcommerceStoreMgmt
                 return NotFound(result);
             }
         }
+
+        [HttpGet("GetStoreNumber")]
+        public async Task<ActionResult> GetStoreNumber()
+        {
+            var result = await _srvClient.HttpGetAsync<ResultModel<dynamic>>("api/EcommerceStore/V1/GetStoreNumber");
+            if (result is object && result.Succeeded)
+            {
+                return Ok(result);
+            }
+            else
+            {
+                return NotFound(result);
+            }
+        }
     }
 }

@@ -30,6 +30,7 @@ using POVWebDomain.Models.API.StoreSrv.SettingMgmt.SystemSetting;
 using POVWebDomain.Models.API.StoreSrv.EcommerceMgmt.PublishGoods;
 using POVWebDomain.Models.ExternalApi.Momo;
 using POVWebDomain.Models.ExternalApi.Store91;
+using POVWebDomain.Common;
 
 namespace HqSrv.Controllers.EcommerceStoreMgmt
 {
@@ -495,6 +496,17 @@ namespace HqSrv.Controllers.EcommerceStoreMgmt
                 return Ok(FormatResultModel<dynamic>.Failure(new { MSG = e.Message }));
             }
 
+        }
+
+        [HttpGet("V1/GetStoreNumber")]
+        public async Task<ActionResult> GetFrontendSettings()
+        {
+            var settings = new
+            {
+                storeNumber = _Config["FrontendSettings:StoreNumber"] ?? null
+            };
+
+            return Ok(FormatResultModel<dynamic>.Success(settings));
         }
 
     }

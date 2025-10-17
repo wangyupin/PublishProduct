@@ -85,6 +85,7 @@ const StoreSetting = ({ t, reset, getValues, setValue, control, arrVal }) => {
         }
     )
 
+
     const handlePublishToggle = (index, currentValue) => {
         const newValue = !currentValue
         const currentStore = getValues(`storeSettings.${index}`)

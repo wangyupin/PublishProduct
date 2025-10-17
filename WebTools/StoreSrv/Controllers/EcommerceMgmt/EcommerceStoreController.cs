@@ -202,6 +202,18 @@ namespace StoreSrv.Controllers.DashBoard
             }
             return Ok(FormatResultModel<dynamic>.Success(result.Data));
         }
+
+        [HttpGet("V1/GetStoreNumber")]
+        public async Task<ActionResult> GetStoreNumber()
+        {
+            var result = await _HqSrvClient.HttpGetAsync<ResultModel<object>>("api/EcommerceStore/V1/GetStoreNumber");
+
+            if (result is null || result.Succeeded is false)
+            {
+                return Ok(FormatResultModel<dynamic>.Failure(result?.Data));
+            }
+            return Ok(FormatResultModel<dynamic>.Success(result.Data));
+        }
     }
     
 }

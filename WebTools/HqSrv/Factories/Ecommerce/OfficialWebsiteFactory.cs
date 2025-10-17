@@ -14,6 +14,7 @@ namespace HqSrv.Factories.Ecommerce
     {
         private readonly OfficialWebsiteExternalApiService _websiteApi;
 
+
         public OfficialWebsiteFactory(OfficialWebsiteExternalApiService websiteApi)
         {
             _websiteApi = websiteApi;
@@ -114,7 +115,7 @@ namespace HqSrv.Factories.Ecommerce
                     IsReturnable = basicInfo.IsReturnable,
                     ProductFeatures = basicInfo.ProductDescription ?? "",
                     ProductDetail = basicInfo.MoreInfo ?? "",
-                    Brand = new int[] { int.Parse(commonInfo.BrandID) },
+                    Brand = new int[] { int.Parse(commonInfo.BrandID ?? "0") },
                     PictureCount = request.MainImage?.Count ?? 0,
                     PayType = basicInfo.PayTypes.ToArray(),
                     ShippingType = basicInfo.ShipType_91app.Select(t => (int)t).ToArray(),
@@ -123,7 +124,7 @@ namespace HqSrv.Factories.Ecommerce
                     IsProductOption2 = useOption2,
                     ProductOption1 = useOption1 ? new ProductOptionType
                     {
-                        Type = 1,
+                        Type = hasColDetail1 ? 1 : 2,
                         Name = hasColDetail1 ? "尺寸" : "顏色",
                         Data = hasColDetail1 ?
                             basicInfo.SkuList.Select(s => s.ColDetail1?.Label).Where(v => !string.IsNullOrEmpty(v)).Distinct().ToArray() :
@@ -259,12 +260,12 @@ namespace HqSrv.Factories.Ecommerce
                     IsReturnable = basicInfo.IsReturnable,
                     ProductFeatures = basicInfo.ProductDescription ?? "",
                     ProductDetail = basicInfo.MoreInfo ?? "",
-                    Brand = new int[] { int.Parse(commonInfo.BrandID) },
-                    PictureCount = request.MainImage.Count,
+                    Brand = new int[] { int.Parse(commonInfo.BrandID ?? "0") },
+                    PictureCount = request.MainImage?.Count ?? 0,
                     PayType = basicInfo.PayTypes.ToArray(),
                     ShippingType = basicInfo.ShipType_91app.Select(t => (int)t).ToArray(),
                     ProductSpecification = basicInfo.Specifications.ConvertToOfficial(new List<ProductSpecification>())
-                    
+
                 },
                 MainImage = request.MainImage,
                 SkuImage = request.SkuImage,
