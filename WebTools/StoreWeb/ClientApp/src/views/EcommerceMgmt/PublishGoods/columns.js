@@ -6,7 +6,8 @@ import { X, Trash, Plus } from 'react-feather'
 import { useDropzone } from 'react-dropzone'
 import { ICellEditorParams, ICellEditorComp } from 'ag-grid-community'
 
-const ImageCellRenderer = ({ rowIndex, value, control }) => {
+const ImageCellRenderer = ({ rowIndex, value, control, data }) => {
+    const fieldName = `skuList.${rowIndex}.image`
 
     const onDrop = useCallback((acceptedFiles, field) => {
         const file = acceptedFiles[0]
@@ -26,8 +27,10 @@ const ImageCellRenderer = ({ rowIndex, value, control }) => {
 
     return (
         <Controller
-            name={`skuList.${rowIndex}.image`}
+            key={`${fieldName}-${data?.outerId || rowIndex}`}
+            name={fieldName}
             control={control}
+            defaultValue={null}
             render={({ field }) => {
                 const { getRootProps, getInputProps } = useDropzone({
                     onDrop: (acceptedFiles) => onDrop(acceptedFiles, field),
@@ -95,8 +98,13 @@ export const getColumnDefs = ({ t, control, getValues, setValue }) => {
                     rowIndex={params.rowIndex}
                     value={params.value}
                     control={control}
+                    data={params.data}
                 />
             ),
+            cellRendererParams: {
+                // 強制 AG-Grid 在資料變更時重新渲染
+                suppressCellFlash: false
+            },
             valueFormatter: ({ data }) => data.path
         },
         {

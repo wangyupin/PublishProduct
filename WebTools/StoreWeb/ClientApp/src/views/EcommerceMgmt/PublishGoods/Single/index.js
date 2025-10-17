@@ -258,6 +258,7 @@ const Single = ({ access, t, mode, id }) => {
             setValue(key, defaultValues[key])
         })
         setArrVal(arrs)
+
     }, [targetDefaultValue, selectedValue])
 
     const [storeNumber, setStoreNumber] = useState(null)

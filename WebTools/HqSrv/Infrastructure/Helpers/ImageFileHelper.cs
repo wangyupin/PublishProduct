@@ -17,29 +17,45 @@ namespace HqSrv.Infrastructure.Helpers
         public static async Task<IFormFile?> ReadImageFromPath(string relativePath, IWebHostEnvironment hostEnvironment)
         {
             if (string.IsNullOrEmpty(relativePath))
+            {
+                Console.WriteLine("relativePath 是空的");
                 return null;
+            }
 
             try
             {
                 string fullPath = Path.Combine(hostEnvironment.ContentRootPath, relativePath);
+                Console.WriteLine($"完整路徑: {fullPath}");
 
                 if (!File.Exists(fullPath))
+                {
+                    Console.WriteLine($"檔案不存在: {fullPath}");
                     return null;
+                }
 
                 byte[] fileBytes = await File.ReadAllBytesAsync(fullPath);
+                Console.WriteLine($"讀取到 {fileBytes.Length} bytes");
+
+                if (fileBytes.Length == 0)
+                {
+                    Console.WriteLine("檔案是空的！");
+                    return null;
+                }
+
                 var memoryStream = new MemoryStream(fileBytes);
                 string fileName = Path.GetFileName(fullPath);
-
                 var formFile = new FormFile(memoryStream, 0, fileBytes.Length, "file", fileName)
                 {
                     Headers = new HeaderDictionary(),
                     ContentType = GetContentType(fileName)
                 };
 
+                Console.WriteLine($"成功建立 FormFile: {fileName}");
                 return formFile;
             }
-            catch (Exception)
+            catch (Exception ex)
             {
+                Console.WriteLine($"ReadImageFromPath 錯誤: {ex.Message}");
                 return null;
             }
         }
