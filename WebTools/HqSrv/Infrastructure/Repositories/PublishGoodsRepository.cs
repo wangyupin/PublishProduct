@@ -586,7 +586,7 @@ namespace HqSrv.Infrastructure.Repositories
                         stream.Position = 0;
                         using (var image = Image.Load(stream))
                         {
-                            using (var fileStream = new FileStream(filePath, FileMode.Create, FileAccess.Write, FileShare.None))
+                            using (var fileStream = new FileStream(filePath, FileMode.Create, FileAccess.Write, FileShare.None, 4096, useAsync: true))
                             {
                                 image.Save(fileStream, new JpegEncoder
                                 {
@@ -595,6 +595,19 @@ namespace HqSrv.Infrastructure.Repositories
                                 await fileStream.FlushAsync();
                             }
                         }
+                    }
+
+                    try
+                    {
+                        using (var testStream = File.OpenRead(filePath))
+                        {
+                            var buffer = new byte[1024];
+                            await testStream.ReadAsync(buffer, 0, buffer.Length);
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        throw new Exception($"圖片儲存後立即無法讀取: {filePath}, Error: {ex.Message}");
                     }
 
                     return Result<object>.Success(new { path = relativePath });
@@ -1141,5 +1154,6 @@ namespace HqSrv.Infrastructure.Repositories
 
         [DllImport("shlwapi.dll", CharSet = CharSet.Unicode)]
         private static extern int StrCmpLogicalW(string x, string y);
+
     }
 }
