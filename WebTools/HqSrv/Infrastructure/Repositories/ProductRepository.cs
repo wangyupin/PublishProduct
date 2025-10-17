@@ -212,8 +212,7 @@ namespace HqSrv.Infrastructure.Repositories
             // 處理 SKU
             if (jsonData.HasSku && jsonData.SkuList?.Any() == true)
             {
-                product.EnableSkuMode();
-
+               
                 foreach (var skuData in jsonData.SkuList)
                 {
                     var sku = ProductSku.Create(
@@ -230,13 +229,7 @@ namespace HqSrv.Infrastructure.Repositories
                     product.AddSku(sku);
                 }
             }
-            else if (jsonData.Qty.HasValue)
-            {
-                product.DisableSkuMode(
-                    qty: jsonData.Qty.Value,
-                    onceQty: jsonData.OnceQty ?? 1,
-                    outerId: jsonData.OuterId ?? "");
-            }
+           
 
             return product;
         }

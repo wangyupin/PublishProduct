@@ -7,6 +7,8 @@ using System.Collections.Generic;
 using HqSrv.Infrastructure.ExternalServices;
 using System.Linq;
 using System.Threading.Tasks;
+using HqSrv.Domain.Entities;
+using POVWebDomain.Models.DB.POVWeb;
 
 namespace HqSrv.Factories.Ecommerce
 {
@@ -36,20 +38,42 @@ namespace HqSrv.Factories.Ecommerce
 
             List<ProductOption> productOptions = new List<ProductOption>();
 
-            foreach (SkuItem sku in basicInfo.SkuList)
+
+            if (basicInfo.HasSku && basicInfo.SkuList?.Count > 0)
             {
+                // 有選項：使用 SkuList
+                foreach (SkuItem sku in basicInfo.SkuList)
+                {
+                    productOptions.Add(new ProductOption
+                    {
+                        SkuName = sku.ConbineColDetail_Official(),
+                        GoodID = sku.OuterId,
+                        SuggestPrice = sku.SuggestPrice,
+                        Price = sku.Price,
+                        Cost = sku.Cost,
+                        SafetyInventoryQty = sku.SafetyStockQty,
+                        InventoryQty = sku.OnceQty,
+                        LimitedQty = sku.SafetyStockQty
+                    });
+                }
+            }
+            else
+            {
+                // 無選項：用 basicInfo 組一筆
                 productOptions.Add(new ProductOption
                 {
-                    SkuName = sku.ConbineColDetail_Official(),
-                    GoodID = sku.OuterId,
-                    SuggestPrice = sku.SuggestPrice,
-                    Price = sku.Price,
-                    Cost = sku.Cost,
-                    SafetyInventoryQty = sku.SafetyStockQty,
-                    InventoryQty = sku.OnceQty,
-                    LimitedQty = sku.SafetyStockQty
+                    SkuName = basicInfo.Title, // 或空字串 ""
+                    GoodID = request.ParentID,
+                    SuggestPrice = basicInfo.SuggestPrice,
+                    Price = basicInfo.Price,
+                    Cost = basicInfo.Cost,
+                    SafetyInventoryQty = basicInfo.SafetyStockQty,
+                    InventoryQty = basicInfo.Qty ?? 0,
+                    LimitedQty = basicInfo.OnceQty ?? 1
                 });
             }
+
+            var firstOption = productOptions.FirstOrDefault();
 
             return new SubmitGoodsRequest
             {
@@ -63,13 +87,13 @@ namespace HqSrv.Factories.Ecommerce
                     SellingEndDT = basicInfo.SellingEndDateTime,
                     SellingEndSetting = 1, // 預設一年
                     IsProductOption = basicInfo.HasSku,
-                    GoodID = request.ParentID,
-                    SuggestPrice = basicInfo.SuggestPrice,
-                    Price = basicInfo.Price,
-                    Cost = basicInfo.Cost,
-                    SafetyInventoryQty = basicInfo.SafetyStockQty,
-                    InventoryQty = basicInfo.Qty ?? 0,
-                    LimitedQty = basicInfo.OnceQty ?? 1,
+                    GoodID = firstOption?.GoodID,
+                    SuggestPrice = firstOption?.SuggestPrice ?? 0,
+                    Price = firstOption?.Price ?? 0,
+                    Cost = firstOption?.Cost ?? 0,
+                    SafetyInventoryQty = firstOption?.SafetyInventoryQty ?? 0,
+                    InventoryQty = firstOption?.InventoryQty ?? 0,
+                    LimitedQty = firstOption?.LimitedQty ?? 1,
                     DeliveryDateType = basicInfo.ApplyType switch
                     {
                         "一般" => 1, // 指定出貨日
@@ -162,16 +186,17 @@ namespace HqSrv.Factories.Ecommerce
 
 
             UpdateProductOptionRequest updateOptionsRequest = null;
+            List<ProductOption> productOptions = new List<ProductOption>();
 
+            // 判斷是否有 SKU 選項
             if (basicInfo.HasSku && basicInfo.SkuList?.Any() == true)
             {
-                var updateSkus = new List<ProductOption>();
-
+                // 有選項：使用 SkuList
                 foreach (var sku in basicInfo.SkuList)
                 {
                     var existingOption = historyResponse.ProductOpton?.FirstOrDefault(t => t.GoodID == sku.OriginalOuterId);
 
-                    updateSkus.Add(new ProductOption
+                    productOptions.Add(new ProductOption
                     {
                         SkuID = existingOption?.SkuID,
                         GoodID = sku.OuterId,
@@ -188,12 +213,35 @@ namespace HqSrv.Factories.Ecommerce
                 {
                     StoreNumber = storeNumber,
                     ProductID = productId,
-                    ProductOptionList = updateSkus
+                    ProductOptionList = productOptions
+                };
+            }
+            else
+            {
+                // 無選項：用 basicInfo 組一筆
+                var existingOption = historyResponse.ProductOpton?.FirstOrDefault();
+
+                productOptions.Add(new ProductOption
+                {
+                    SkuID = existingOption?.SkuID,
+                    GoodID = basicInfo.OuterId,
+                    SuggestPrice = basicInfo.SuggestPrice,
+                    Price = basicInfo.Price,
+                    Cost = basicInfo.Cost,
+                    SafetyInventoryQty = basicInfo.SafetyStockQty,
+                    InventoryQty = basicInfo.Qty ?? 0,
+                    LimitedQty = basicInfo.OnceQty ?? 1
+                });
+
+                updateOptionsRequest = new UpdateProductOptionRequest
+                {
+                    StoreNumber = storeNumber,
+                    ProductID = productId,
+                    ProductOptionList = productOptions
                 };
             }
 
-
-
+            var firstOption = productOptions.FirstOrDefault();
 
             SubmitGoodsEditRequest editRequest = new SubmitGoodsEditRequest
             {
@@ -208,13 +256,13 @@ namespace HqSrv.Factories.Ecommerce
                     SellingEndDT = basicInfo.SellingEndDateTime,
                     SellingEndSetting = 1,
                     IsProductOption = basicInfo.HasSku,
-                    GoodID = basicInfo.OuterId,
-                    SuggestPrice = basicInfo.SuggestPrice,
-                    Price = basicInfo.Price,
-                    Cost = basicInfo.Cost,
-                    SafetyInventoryQty = basicInfo.SafetyStockQty,
-                    InventoryQty = basicInfo.Qty ?? 0,
-                    LimitedQty = basicInfo.OnceQty ?? 1,
+                    GoodID = firstOption?.GoodID,
+                    SuggestPrice = firstOption?.SuggestPrice ?? 0,
+                    Price = firstOption?.Price ?? 0,
+                    Cost = firstOption?.Cost ?? 0,
+                    SafetyInventoryQty = firstOption?.SafetyInventoryQty ?? 0,
+                    InventoryQty = firstOption?.InventoryQty ?? 0,
+                    LimitedQty = firstOption?.LimitedQty ?? 1,
                     DeliveryDateType = basicInfo.ApplyType switch
                     {
                         "一般" => 1,

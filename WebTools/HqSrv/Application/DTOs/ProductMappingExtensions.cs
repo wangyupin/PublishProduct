@@ -50,7 +50,6 @@ namespace HqSrv.Application.DTOs
             // 處理 SKU
             if (basicInfo.HasSku && basicInfo.SkuList?.Any() == true)
             {
-                product.EnableSkuMode();
 
                 foreach (var skuDto in basicInfo.SkuList)
                 {
@@ -67,13 +66,6 @@ namespace HqSrv.Application.DTOs
 
                     product.AddSku(sku);
                 }
-            }
-            else
-            {
-                product.DisableSkuMode(
-                    qty: basicInfo.Qty ?? 0,
-                    onceQty: basicInfo.OnceQty ?? 1,
-                    outerId: basicInfo.OuterId ?? "");
             }
 
             return product;

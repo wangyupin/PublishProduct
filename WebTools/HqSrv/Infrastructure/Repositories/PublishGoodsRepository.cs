@@ -586,10 +586,14 @@ namespace HqSrv.Infrastructure.Repositories
                         stream.Position = 0;
                         using (var image = Image.Load(stream))
                         {
-                            image.Save(filePath, new JpegEncoder
+                            using (var fileStream = new FileStream(filePath, FileMode.Create, FileAccess.Write, FileShare.None))
                             {
-                                Quality = 75
-                            });
+                                image.Save(fileStream, new JpegEncoder
+                                {
+                                    Quality = 75
+                                });
+                                await fileStream.FlushAsync();
+                            }
                         }
                     }
 
@@ -829,8 +833,7 @@ namespace HqSrv.Infrastructure.Repositories
             // 處理 SKU
             if (jsonData.HasSku && jsonData.SkuList?.Any() == true)
             {
-                product.EnableSkuMode();
-
+              
                 foreach (var skuData in jsonData.SkuList)
                 {
                     var sku = ProductSku.Create(
@@ -847,13 +850,7 @@ namespace HqSrv.Infrastructure.Repositories
                     product.AddSku(sku);
                 }
             }
-            else if (jsonData.Qty.HasValue)
-            {
-                product.DisableSkuMode(
-                    qty: jsonData.Qty.Value,
-                    onceQty: jsonData.OnceQty ?? 1,
-                    outerId: jsonData.OuterId ?? "");
-            }
+           
 
             return product;
         }

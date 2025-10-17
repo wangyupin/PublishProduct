@@ -170,41 +170,13 @@ namespace HqSrv.Domain.Entities
             SellingEndDateTime = endTime;
         }
 
-        /// <summary>
-        /// 啟用 SKU 模式
-        /// </summary>
-        public void EnableSkuMode()
-        {
-            HasSku = true;
-            Qty = null;
-            OnceQty = null;
-            OuterId = null;
-        }
-
-        /// <summary>
-        /// 停用 SKU 模式
-        /// </summary>
-        public void DisableSkuMode(int qty, int onceQty, string outerId)
-        {
-            if (qty < 0) throw new ArgumentException("庫存數量不能為負數");
-            if (onceQty <= 0) throw new ArgumentException("單次購買數量必須大於0");
-            if (string.IsNullOrWhiteSpace(outerId)) throw new ArgumentException("外部編號不能為空");
-
-            HasSku = false;
-            Qty = qty;
-            OnceQty = onceQty;
-            OuterId = outerId;
-            SkuList.Clear();
-        }
+       
 
         /// <summary>
         /// 添加 SKU
         /// </summary>
         public void AddSku(ProductSku sku)
         {
-            if (!HasSku)
-                throw new InvalidOperationException("必須先啟用 SKU 模式");
-
             if (SkuList.Any(s => s.OuterId == sku.OuterId))
                 throw new ArgumentException($"SKU 外部編號 {sku.OuterId} 已存在");
 

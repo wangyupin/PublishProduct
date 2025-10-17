@@ -247,10 +247,10 @@ namespace HqSrv.Application.Services.EcommerceMgmt
                     weight: basicInfo.Weight);
 
                 // 處理 SKU
+                // 處理 SKU
                 if (basicInfo.HasSku && basicInfo.SkuList?.Any() == true)
                 {
-                    product.EnableSkuMode();
-
+                    // 有選項：使用 SkuList
                     foreach (var skuDto in basicInfo.SkuList)
                     {
                         var sku = ProductSku.Create(
@@ -263,17 +263,25 @@ namespace HqSrv.Application.Services.EcommerceMgmt
 
                         sku.UpdatePricing(skuDto.SuggestPrice, skuDto.Price, skuDto.Cost);
                         sku.UpdateInventory(skuDto.Qty, skuDto.SafetyStockQty);
-
                         product.AddSku(sku);
                     }
                 }
                 else
                 {
-                    product.DisableSkuMode(
+                    // 無選項：用 basicInfo 組一筆 SKU
+                    var sku = ProductSku.Create(
+                        outerId: request.ParentID,
+                        name: basicInfo.Title, // 或空字串 ""
                         qty: basicInfo.Qty ?? 0,
                         onceQty: basicInfo.OnceQty ?? 1,
-                        outerId: basicInfo.OuterId ?? "");
+                        price: basicInfo.Price,
+                        cost: basicInfo.Cost);
+
+                    sku.UpdatePricing(basicInfo.SuggestPrice, basicInfo.Price, basicInfo.Cost);
+                    sku.UpdateInventory(basicInfo.Qty ?? 0, basicInfo.SafetyStockQty);
+                    product.AddSku(sku);
                 }
+
 
                 return Result<Product>.Success(product);
             }
