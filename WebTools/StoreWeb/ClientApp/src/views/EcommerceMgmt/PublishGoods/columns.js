@@ -25,9 +25,12 @@ const ImageCellRenderer = ({ rowIndex, value, control, data }) => {
         reader.readAsDataURL(file)
     }, [])
 
+    const imageKey = data?.image?.path || data?.image?.preview || 'empty'
+    const controllerKey = `${data?.id || rowIndex}-${imageKey}`
+
     return (
         <Controller
-            key={`${fieldName}-${data?.outerId || rowIndex}`}
+            key={controllerKey}
             name={fieldName}
             control={control}
             defaultValue={null}

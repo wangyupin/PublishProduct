@@ -51,32 +51,41 @@ const getRootCategories = async (apiName, request) => {
 const StoreSetting = ({ t, reset, getValues, setValue, control, arrVal }) => {
     const [storeTag, setStoreTag] = useState([])
 
+    const [isInitialized, setIsInitialized] = useState(false)
+
     useEffect(() => {
         const fetchData = async () => {
             await axios.get('/api/EcommerceStore/GetEStoreTag')
                 .then((res) => {
-                    reset({
-                        ...getValues(),
-                        storeSettings: res.data.data.result?.map(store => {
-                            return {
-                                platformID: store.platformID,
-                                eStoreID: store.eStoreID,
-                                publish: false,
-                                needDelete: false,
-                                category0: null,
-                                category1: null,
-                                cost: 0,
-                                title: ''
-                            }
-                        })
-                    })
                     setStoreTag(res.data.data.result)
+                    setIsInitialized(true)
                 })
-
         }
 
         fetchData()
     }, [])
+
+    useEffect(() => {
+        if (!isInitialized || !storeTag.length) return
+
+        if (arrVal.storeSettings && arrVal.storeSettings.length > 0) {
+            setValue('storeSettings', arrVal.storeSettings)
+        } else {
+            const newSettings = storeTag.map(store => ({
+                platformID: store.platformID,
+                eStoreID: store.eStoreID,
+                publish: false,
+                needDelete: false,
+                category0: null,
+                category1: null,
+                cost: 0,
+                title: '',
+                isPublished: false
+            }))
+
+            setValue('storeSettings', newSettings)
+        }
+    }, [arrVal.storeSettings, isInitialized, storeTag, setValue])
 
     const { fields: storeSettingFields, append: storeSettingAppend, remove: storeSettingRemove, replace: storeSettingReplace } = useFieldArray(
         {

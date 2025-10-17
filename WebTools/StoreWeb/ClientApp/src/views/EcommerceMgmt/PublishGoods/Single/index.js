@@ -246,20 +246,30 @@ const Single = ({ access, t, mode, id }) => {
             }
         }
 
+        // 正規化資料：確保每個 SKU 都有 image 屬性（即使是 null）
+        const normalizedDefaults = {
+            ...defaultValues,
+            skuList: defaultValues.skuList?.map(sku => ({
+                ...sku,
+                image: sku.image || null  // 關鍵：明確設定為 null
+            })) || []
+        }
+
         const arrs = {}
-        Object.keys(defaultValues).forEach((key) => {
-            if (Array.isArray(defaultValues[key])) {
-                setValue(key, [])
-                arrs[key] = defaultValues[key]
-                Object.keys(defaultValues[key]).forEach((subKey) => {
-                    setValue(`${key}.${subKey}`, defaultValues[key][subKey])
-                })
+
+        // 使用 reset 而不是逐一 setValue
+        reset(normalizedDefaults)
+
+        // 只保存陣列到 arrs（如果需要的話）
+        Object.keys(normalizedDefaults).forEach((key) => {
+            if (Array.isArray(normalizedDefaults[key])) {
+                arrs[key] = normalizedDefaults[key]
             }
-            setValue(key, defaultValues[key])
         })
+
         setArrVal(arrs)
 
-    }, [targetDefaultValue, selectedValue])
+    }, [targetDefaultValue, selectedValue, reset])
 
     const [storeNumber, setStoreNumber] = useState(null)
 
