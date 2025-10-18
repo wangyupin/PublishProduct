@@ -74,70 +74,342 @@ namespace HqSrv.Infrastructure.Repositories
         public async Task<Result<object>> GetSubmitDefValAsync(GetSubmitDefValRequest request)
         {
             string searchSql = @"
-                SELECT RequestParams FROM ESubmitGoodsReq WHERE ParentID=@ParentID
+        SELECT RequestParams FROM ESubmitGoodsReq WHERE ParentID=@ParentID
 
-                SELECT G.GoodID, G.GoodName, G.AdvicePrice, 
-                       G.SpecialPrice AS Price, 
-                       G.Cost, G.Sort05 AS ColorName, G.Sort05 AS ColorName, G.SizeName AS SizeID, G.SizeName AS SizeName
-                FROM Goods G
-                WHERE G.ParentID = @ParentID
-                GROUP BY G.GoodID, G.GoodName, G.AdvicePrice, G.Cost, G.Sort05, G.SizeName, G.SpecialPrice
-            ";
+        SELECT G.GoodID, G.GoodName, G.AdvicePrice, 
+               G.SpecialPrice AS Price, 
+               G.Cost, G.Sort05 AS ColorName, G.Sort05 AS ColorID, 
+               G.SizeName AS SizeID, G.SizeName AS SizeName
+        FROM Goods G
+        WHERE G.ParentID = @ParentID
+        GROUP BY G.GoodID, G.GoodName, G.AdvicePrice, G.Cost, G.Sort05, G.SizeName, G.SpecialPrice
+        
+        -- ✨ 新增: 查詢啟用的平台
+        SELECT ES.EStoreID, OldID AS PlatformID
+        FROM EcommerceStore EC
+        LEFT JOIN EC_Store ES ON EC.EStoreID = ES.EStoreID
+        WHERE ES.EStoreID='0005'
+        ORDER BY EC.EStoreID
+    ";
 
             using (var connection = _context.Connection)
             {
                 connection.Open();
                 try
                 {
-                    List<SkuItem> skuItems = new List<SkuItem>();
                     var result = await connection.QueryMultipleAsync(searchSql, request, commandTimeout: 180);
-                    var submitHistory = result.IsConsumed ? null : result.Read().ToList().FirstOrDefault();
-                    var goodsList = result.IsConsumed ? null : result.Read<SkuItem_Goods>().ToList();
 
-                    if (submitHistory != null)
-                    {
-                        IDictionary<string, object> submitHistoryDict = (IDictionary<string, object>)submitHistory;
-                        if (submitHistoryDict.ContainsKey("RequestParams"))
-                        {
-                            if (submitHistoryDict["RequestParams"] != null)
-                            {
-                                submitHistory = submitHistoryDict["RequestParams"].ToString();
-                                skuItems = JsonConvert.DeserializeObject<SkuWrapper>(submitHistory)?.SkuList;
-                            }
-                            else submitHistory = "{}";
-                        }
-                    }
+                    var submitHistoryRaw = result.Read().ToList().FirstOrDefault();
+                    var currentGoodsList = result.Read<SkuItem_Goods>().ToList();
+                    var activePlatforms = result.Read<PlatformInfo>().ToList();
 
-                    if (goodsList != null && goodsList.Count > 0)
+                    if (currentGoodsList != null && currentGoodsList.Count > 0)
                     {
-                        goodsList = goodsList
-                            .OrderBy(x => x.ColorName, Comparer<string>.Create((x, y) => StrCmpLogicalW(x ?? "", y ?? "")))
-                            .ThenBy(x => x.SizeName, Comparer<string>.Create((x, y) => StrCmpLogicalW(x ?? "", y ?? "")))
+                        currentGoodsList = currentGoodsList
+                            .OrderBy(x => x.ColorName ?? "", Comparer<string>.Create((x, y) => StrCmpLogicalW(x ?? "", y ?? "")))
+                            .ThenBy(x => x.SizeName ?? "", Comparer<string>.Create((x, y) => StrCmpLogicalW(x ?? "", y ?? "")))
                             .ToList();
                     }
 
+                    // ✨ 用 SubmitHistoryDto 來反序列化
+                    SubmitHistoryDto submitHistory = null;
+                    List<SkuItem> historicalSkus = new List<SkuItem>();
+                    List<StoreSetting> historicalStoreSettings = new List<StoreSetting>();
+
+                    if (submitHistoryRaw != null)
+                    {
+                        var historyDict = (IDictionary<string, object>)submitHistoryRaw;
+                        if (historyDict.ContainsKey("RequestParams") && historyDict["RequestParams"] != null)
+                        {
+                            var rawJson = historyDict["RequestParams"].ToString();
+
+                            // ✨ 反序列化成 SubmitHistoryDto (有 StoreSettings 屬性)
+                            submitHistory = JsonConvert.DeserializeObject<SubmitHistoryDto>(rawJson);
+
+                            if (submitHistory != null)
+                            {
+                                historicalSkus = submitHistory.SkuList ?? new List<SkuItem>();
+                                historicalStoreSettings = submitHistory.StoreSettings ?? new List<StoreSetting>();
+                            }
+                        }
+                    }
+
+                    var skuAnalysis = AnalyzeSkuChanges(historicalSkus, currentGoodsList);
+                    var platformAnalysis = AnalyzePlatformChanges(historicalStoreSettings, activePlatforms);
+
                     object defVal = new
                     {
-                        Title = goodsList[0].GoodName,
-                        SuggestPrice = goodsList[0].AdvicePrice,
-                        Price = goodsList[0].Price,
-                        Cost = goodsList[0].Cost,
-                        OuterId = goodsList[0].GoodID
+                        Title = currentGoodsList.FirstOrDefault()?.GoodName,
+                        SuggestPrice = currentGoodsList.FirstOrDefault()?.AdvicePrice,
+                        Price = currentGoodsList.FirstOrDefault()?.Price,
+                        Cost = currentGoodsList.FirstOrDefault()?.Cost,
+                        OuterId = currentGoodsList.FirstOrDefault()?.GoodID
                     };
 
+                    var optionList = CreateOptionList(currentGoodsList);
 
+                    // ✨ submitHistory 現在包含所有屬性,包括 storeSettings
+                    return Result<object>.Success(new
+                    {
+                        defVal,
+                        submitHistory = submitHistory,  // ✨ SubmitHistoryDto 物件
+                        optionList,
 
-                    var optionList = CreateOptionList(goodsList);
-                    var missingItems = CreateMissingItems(skuItems, goodsList);
+                        skuChanges = new
+                        {
+                            newSkus = skuAnalysis.NewSkus,
+                            deletedSkus = skuAnalysis.DeletedSkus,
+                            modifiedSkus = skuAnalysis.ModifiedSkus,
+                            hasChanges = skuAnalysis.HasChanges
+                        },
 
-                    return Result<object>.Success(new { defVal, submitHistory, missingItems, optionList });
+                        platformChanges = new
+                        {
+                            newPlatforms = platformAnalysis.NewPlatforms,
+                            disabledPlatforms = platformAnalysis.DisabledPlatforms,
+                            hasChanges = platformAnalysis.HasChanges
+                        }
+                    });
                 }
                 catch (SqlException e)
                 {
                     return Result<object>.Failure(Error.Custom("DB_ERROR", e.Message));
                 }
             }
-            throw new NotImplementedException("保持原有的 GetSubmitDefValAsync 實作");
+        }
+
+        private SkuAnalysisResult AnalyzeSkuChanges(
+            List<SkuItem> historicalSkus,
+            List<SkuItem_Goods> currentGoods)
+        {
+            var result = new SkuAnalysisResult();
+
+            // 用 OuterID 來建立對應關係
+            var historicalOuterIds = historicalSkus
+                .Select(s => s.OuterId)
+                .ToHashSet();
+
+            var currentOuterIds = currentGoods
+                .Select(g => g.GoodID)
+                .ToHashSet();
+
+            // ========================================
+            // 1. 找出新增的 SKU (在資料庫但不在歷史記錄)
+            // ========================================
+            result.NewSkus = currentGoods
+                .Where(g => !historicalOuterIds.Contains(g.GoodID))
+                .Select(g => new SkuChangeInfo
+                {
+                    GoodID = g.GoodID,
+                    ColorName = g.ColorName,
+                    SizeName = g.SizeName,
+                    Price = g.Price,
+                    Cost = g.Cost,
+                    Image = new ImageInfo { Path = "" },
+                    ChangeType = "new",
+                    Message = "資料庫中的新 SKU"
+                })
+                .ToList();
+
+            // ========================================
+            // 2. 找出刪除的 SKU (在歷史記錄但不在資料庫)
+            // ========================================
+            result.DeletedSkus = historicalSkus
+                .Where(s => !currentOuterIds.Contains(s.OuterId))
+                .Select(s => new SkuChangeInfo
+                {
+                    OuterId = s.OuterId,
+                    ColorName = s.ColDetail2?.Label,  // 如果兩個都有,ColDetail2 是顏色
+                    SizeName = s.ColDetail1?.Label,   // ColDetail1 可能是尺寸或顏色
+                    Image = s.Image ?? new ImageInfo { Path = "" },
+                    ChangeType = "deleted",
+                    Message = "此 SKU 在資料庫中已不存在"
+                })
+                .ToList();
+
+            // ========================================
+            // 3. 找出屬性變更的 SKU (OuterID 相同但屬性不同)
+            // ========================================
+            var modifiedSkus = new List<SkuChangeInfo>();
+
+            foreach (var historicalSku in historicalSkus)
+            {
+                // 找到對應的資料庫 SKU
+                var currentGood = currentGoods.FirstOrDefault(g => g.GoodID == historicalSku.OuterId);
+
+                if (currentGood == null) continue; // 這個已經在 DeletedSkus 裡了
+
+                // 比對屬性是否改變
+                bool attributeChanged = false;
+                List<string> changes = new List<string>();
+
+                // 判斷歷史記錄的屬性配置
+                bool historyHasBothAttributes = historicalSku.ColDetail1.Value != null && historicalSku.ColDetail2.Value != null;
+                bool historyHasOnlyOne = (historicalSku.ColDetail1.Value != null) ^ (historicalSku.ColDetail2.Value != null);
+
+                if (historyHasBothAttributes)
+                {
+                    // 歷史記錄有兩個屬性: ColDetail1=尺寸, ColDetail2=顏色
+                    string historySizeName = historicalSku.ColDetail1?.Label;
+                    string historyColorName = historicalSku.ColDetail2?.Label;
+
+                    if (historySizeName != currentGood.SizeName)
+                    {
+                        attributeChanged = true;
+                        changes.Add($"尺寸: {historySizeName} → {currentGood.SizeName}");
+                    }
+
+                    if (historyColorName != currentGood.ColorName)
+                    {
+                        attributeChanged = true;
+                        changes.Add($"顏色: {historyColorName} → {currentGood.ColorName}");
+                    }
+                }
+                else if (historyHasOnlyOne)
+                {
+                    // 歷史記錄只有一個屬性,需要判斷是哪一個
+                    // 比對邏輯: 看資料庫目前有什麼屬性
+
+                    if (!string.IsNullOrEmpty(currentGood.SizeName) && !string.IsNullOrEmpty(currentGood.ColorName))
+                    {
+                        // 資料庫現在有兩個屬性,但歷史只有一個 → 屬性結構改變
+                        attributeChanged = true;
+                        changes.Add("屬性結構改變: 單一屬性 → 雙屬性");
+                    }
+                    else
+                    {
+                        // 資料庫也是單一屬性,比對值
+                        string historyAttributeValue = historicalSku.ColDetail1?.Label ?? historicalSku.ColDetail2?.Label;
+                        string currentAttributeValue = !string.IsNullOrEmpty(currentGood.SizeName)
+                            ? currentGood.SizeName
+                            : currentGood.ColorName;
+
+                        if (historyAttributeValue != currentAttributeValue)
+                        {
+                            attributeChanged = true;
+                            changes.Add($"屬性: {historyAttributeValue} → {currentAttributeValue}");
+                        }
+                    }
+                }
+
+                // 比對價格變更
+                if (historicalSku.Price != currentGood.Price)
+                {
+                    changes.Add($"價格: {historicalSku.Price} → {currentGood.Price}");
+                }
+
+                if (historicalSku.Cost != currentGood.Cost)
+                {
+                    changes.Add($"成本: {historicalSku.Cost} → {currentGood.Cost}");
+                }
+
+                if (attributeChanged || changes.Any())
+                {
+                    modifiedSkus.Add(new SkuChangeInfo
+                    {
+                        OuterId = historicalSku.OuterId,
+                        GoodID = currentGood.GoodID,
+                        ColorName = currentGood.ColorName,
+                        SizeName = currentGood.SizeName,
+                        Price = currentGood.Price,
+                        Cost = currentGood.Cost,
+                        Image = historicalSku.Image ?? new ImageInfo { Path = "" },
+                        ChangeType = "modified",
+                        Message = $"屬性或價格已變更: {string.Join(", ", changes)}",
+                        Changes = changes
+                    });
+                }
+            }
+
+            result.ModifiedSkus = modifiedSkus;
+            result.HasChanges = result.NewSkus.Any() || result.DeletedSkus.Any() || result.ModifiedSkus.Any();
+
+            return result;
+        }
+
+        // ✨ 新增: 平台比對方法
+        private PlatformAnalysisResult AnalyzePlatformChanges(
+            List<StoreSetting> historicalSettings,
+            List<PlatformInfo> activePlatforms)
+        {
+            var result = new PlatformAnalysisResult();
+
+            var historicalPlatformIds = historicalSettings
+                .Select(s => s.PlatformID)
+                .ToHashSet();
+
+            var activePlatformIds = activePlatforms
+                .Select(p => p.PlatformID)
+                .ToHashSet();
+
+            // 找出新平台
+            result.NewPlatforms = activePlatforms
+                .Where(p => !historicalPlatformIds.Contains(p.PlatformID))
+                .Select(p => new PlatformChangeInfo
+                {
+                    PlatformID = p.PlatformID,
+                    EStoreID = p.EStoreID,
+                    Message = "此平台是新啟用的,是否要上架?"
+                })
+                .ToList();
+
+            // 找出停用的平台
+            result.DisabledPlatforms = historicalSettings
+                .Where(s => !activePlatformIds.Contains(s.PlatformID))
+                .Select(s => new PlatformChangeInfo
+                {
+                    PlatformID = s.PlatformID,
+                    EStoreID = s.EStoreID,
+                    Message = "此平台已停用"
+                })
+                .ToList();
+
+            result.HasChanges = result.NewPlatforms.Any() || result.DisabledPlatforms.Any();
+
+            return result;
+        }
+
+
+
+        private class SkuAnalysisResult
+        {
+            public List<SkuChangeInfo> NewSkus { get; set; } = new();
+            public List<SkuChangeInfo> DeletedSkus { get; set; } = new();
+            public List<SkuChangeInfo> ModifiedSkus { get; set; } = new();
+            public bool HasChanges { get; set; }
+        }
+        private class PlatformAnalysisResult
+        {
+            public List<PlatformChangeInfo> NewPlatforms { get; set; } = new();
+            public List<PlatformChangeInfo> DisabledPlatforms { get; set; } = new();
+            public bool HasChanges { get; set; }
+        }
+
+        private class SkuChangeInfo
+        {
+            public string OuterId { get; set; }
+            public string GoodID { get; set; }
+            public string ColorName { get; set; }
+            public string SizeName { get; set; }
+            public decimal Price { get; set; }
+            public decimal Cost { get; set; }
+            public ImageInfo Image { get; set; }
+            public string ChangeType { get; set; }  // "new", "deleted", "modified"
+            public string Message { get; set; }
+            public List<string> Changes { get; set; }  // ✨ 詳細變更列表
+        }
+
+        private class PlatformChangeInfo
+        {
+            public string PlatformID { get; set; }
+            public string EStoreID { get; set; }
+            public string Message { get; set; }
+        }
+
+        private class PlatformInfo
+        {
+            public string PlatformID { get; set; }
+            public string EStoreID { get; set; }
         }
 
         public async Task<Result<object>> GetEStoreCatOptionsAsync()
@@ -772,7 +1044,6 @@ namespace HqSrv.Infrastructure.Repositories
 
         private List<SkuItem> CreateMissingItems(List<SkuItem> skuItems, List<SkuItem_Goods> goodsList)
         {
-            // 保持原有實作
             var existingOuterIds = skuItems?.Select(s => s.OuterId).ToHashSet() ?? new HashSet<string>();
             var uniqueSizes = goodsList.Select(g => new { g.SizeID, g.SizeName }).Distinct().ToList();
             var uniqueColors = goodsList.Select(g => new { g.ColorID, g.ColorName }).Distinct().ToList();
@@ -790,7 +1061,8 @@ namespace HqSrv.Infrastructure.Repositories
                     SafetyStockQty = 0,
                     SuggestPrice = goods.AdvicePrice,
                     Price = goods.Price,
-                    Cost = goods.Cost
+                    Cost = goods.Cost,
+                    Image = new ImageInfo { Path = "" }  // ✨ 加這行
                 })
                 .ToList();
 

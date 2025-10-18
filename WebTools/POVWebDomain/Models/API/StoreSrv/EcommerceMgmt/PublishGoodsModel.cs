@@ -127,6 +127,93 @@ namespace POVWebDomain.Models.API.StoreSrv.EcommerceMgmt.PublishGoods
         public int? CategoryOfficialId { get; set; }
     }
 
+    public class SubmitHistoryDto
+    {
+        public string ParentID { get; set; }
+        public long ShopId { get; set; }
+        public int CategoryId { get; set; }
+        public int? ShopCategoryId { get; set; }
+        public string Title { get; set; }
+        public DateTime? SellingStartDateTime { get; set; }
+        public DateTime? SellingEndDateTime { get; set; }
+        public string ApplyType { get; set; }
+        public DateTime ExpectShippingDate { get; set; }
+        public int ShippingPrepareDay { get; set; }
+        public List<long> ShipType_91app { get; set; }
+        public List<string> PayTypes { get; set; }
+        public decimal SuggestPrice { get; set; }
+        public decimal Price { get; set; }
+        public decimal Cost { get; set; }
+        public string ProductHighlight { get; set; } = string.Empty;
+        public string ProductDescription { get; set; } = string.Empty;
+        public string MoreInfo { get; set; }
+        public string Type { get; set; } = string.Empty;
+        public List<Specifications> Specifications { get; set; }
+        public bool HasSku { get; set; }
+        public int? OnceQty { get; set; }
+        public int? Qty { get; set; }
+        public string OuterId { get; set; }
+        public List<SkuItem> SkuList { get; set; }
+        public string TemperatureTypeDef { get; set; }
+        public int Length { get; set; }
+        public int WIdth { get; set; }
+        public int Height { get; set; }
+        public int Weight { get; set; }
+        public string Status { get; set; }
+        public bool IsShowStockQty { get; set; }
+        public string TaxTypeDef { get; set; } = "Taxable";
+        public bool IsReturnable { get; set; } = true;
+        public bool IsEnableBookingPickupDate { get; set; }
+        public int? PrepareDays { get; set; }
+        public int? AvailablePickupDays { get; set; }
+        public DateTime? AvailablePickupStartDateTime { get; set; }
+        public DateTime? AvailablePickupEndDateTime { get; set; }
+        public string SEOTitle { get; set; } = null;
+        public string SEOKeywords { get; set; } = null;
+        public string SEODescription { get; set; } = null;
+        public int SafetyStockQty { get; set; }
+        public bool IsShowPurchaseList { get; set; }
+        public bool IsShowSoldQty { get; set; }
+        public bool IsDesignatedReturnGoodsType { get; set; } = false;
+        public List<string> ReturnGoodsType { get; set; } = null;
+        public string SoldOutActionType { get; set; }
+        public bool IsRestricted { get; set; }
+        public int SalesModeTypeDef { get; set; }
+        public List<PointsPayPairsReq> PointsPayPairs { get; set; }
+        public long? SalePageSpecChartId { get; set; }
+
+        // Momo
+        public string SupGoodsName_serial { get; set; }
+        public string GoodsType { get; set; }
+        public string SaleUnit { get; set; }
+        public List<IndexList> IndexList { get; set; }
+        public string ClothDataType { get; set; }
+        public string ClothDataUnit { get; set; }
+
+        [JsonPropertyName("clothDataSizeIndex")]
+        public List<Dictionary<string, string>> ClothDataSizeIndex { get; set; }
+        [JsonPropertyName("clothDataTryIndex")]
+        public List<Dictionary<string, string>> ClothDataTryIndex { get; set; }
+        public int? ExpDays { get; set; }
+
+        // Yahoo
+        public int ShipType_yahoo { get; set; }
+        public bool IsExpiringItem { get; set; }
+        public string ProductStatus { get; set; }
+
+        // Momo
+        public List<ShippingTypes> ShipType_shopee { get; set; }
+
+        //Official
+        public int? CategoryOfficialId { get; set; }
+
+        // ✨ 額外的屬性 (資料庫存的時候被塞進來的)
+        public List<ImageInfo> MainImage { get; set; }
+        public ImageInfo SizeImage { get; set; }
+        public List<StoreSetting> StoreSettings { get; set; }  // ← 加這個!
+
+
+    }
     public class SavePictureRequest
     {
         public IFormFile Image { get; set; }
@@ -165,7 +252,7 @@ namespace POVWebDomain.Models.API.StoreSrv.EcommerceMgmt.PublishGoods
 
     public class SkuItem
     {
-        public string Path { get; set; }
+        public ImageInfo Image { get; set; }
         public Option<string> ColDetail1 { get; set; }
         public Option<string> ColDetail2 { get; set; }
         public int Qty { get; set; }
