@@ -7,9 +7,7 @@
 // ============================================
 // Application/Services/EcommerceMgmt/PublishGoodsApplicationService.cs (重構)
 // ============================================
-using HqSrv.Domain.Entities;  // 新增 - 引用 Domain Entities
-using HqSrv.Domain.Repositories;  // 新增 - 引用 Domain Repository 介面
-using HqSrv.Domain.Services;  // 新增 - 引用 Domain Services
+using HqSrv.Domain.Services;
 using HqSrv.Factories.Ecommerce;
 using HqSrv.Infrastructure.ExternalServices;
 using HqSrv.Infrastructure.Helpers;
@@ -38,42 +36,27 @@ namespace HqSrv.Application.Services.EcommerceMgmt
     {
         // 基礎設施依賴
         private readonly IPublishGoodsInfrastructureRepository _repository;
-        private readonly IPublishGoodsRepository _domainRepository;          // 新增 Domain 介面
         private readonly Store91ExternalApiService _91Api;
         private readonly OfficialFrontExternalApiService _officialFrontApi;
         private readonly IEcommerceFactoryManager _ecommerceFactoryManager;
 
         // Domain 服務依賴 - 新增
-        private readonly IProductValidationService _productValidationService;
-        private readonly IPublishingService _publishingService;
-        private readonly IPlatformMappingService _platformMappingService;
-        private readonly IProductRepository _productRepository;
         private readonly IWebHostEnvironment _hostEnvironment;
         private readonly IOptionService _optionService;
 
 
         public PublishGoodsApplicationService(
             IPublishGoodsInfrastructureRepository repository,
-            IPublishGoodsRepository domainRepository,
             Store91ExternalApiService api91,
             OfficialFrontExternalApiService officialFrontApi,
             IEcommerceFactoryManager ecommerceFactoryManager,
-            IProductValidationService productValidationService,  // 新增
-            IPublishingService publishingService,                // 新增
-            IPlatformMappingService platformMappingService,      // 新增
-            IProductRepository productRepository,
             IWebHostEnvironment hostEnvironment,
             IOptionService optionService)                // 新增
         {
             _repository = repository;
-            _domainRepository = domainRepository;
             _91Api = api91;
             _officialFrontApi = officialFrontApi;
             _ecommerceFactoryManager = ecommerceFactoryManager;
-            _productValidationService = productValidationService;
-            _publishingService = publishingService;
-            _platformMappingService = platformMappingService;
-            _productRepository = productRepository;
             _hostEnvironment = hostEnvironment;
             _optionService = optionService;
         }
@@ -148,17 +131,7 @@ namespace HqSrv.Application.Services.EcommerceMgmt
                 if (string.IsNullOrEmpty(request.BasicInfo))
                     return Result<object>.Failure(Error.Custom("INVALID_INPUT", "商品基本資料不可為空"));
 
-                // 2. 轉換為 Product 實體
-                var productResult = await ConvertToProductEntityAsync(request);
-                if (productResult.IsFailure)
-                    return Result<object>.Failure(productResult.Error);
-
-                var product = productResult.Data;
-
-                // 3. 取得目標發布平台
-                var targetPlatforms = GetTargetPlatforms(request.StoreSettings);
-
-                // 處理刪除邏輯 
+                // 2. 處理刪除邏輯 
                 var storeSettings = JsonConvert.DeserializeObject<List<StoreSetting>>(request.StoreSettings);
                 var deleteErrors = new List<string>();
 
@@ -176,23 +149,13 @@ namespace HqSrv.Application.Services.EcommerceMgmt
                     return Result<object>.Failure(Error.Custom("DELETE_ERRORS", string.Join("; ", deleteErrors)));
                 }
 
-                // 4. 使用 Domain Service 進行發布前驗證
-                //var canPublishResult = await _publishingService.CanPublishAsync(product, targetPlatforms);
-                //if (canPublishResult.IsFailure)
-                //    return Result<object>.Failure(canPublishResult.Error);
 
-                // 5. 使用 Domain Service 計算發布順序
-                var publishOrderResult = _publishingService.CalculatePublishOrder(targetPlatforms);
-                if (publishOrderResult.IsFailure)
-                    return Result<object>.Failure(publishOrderResult.Error);
-
-
-                // 6. 執行實際發布流程
-                var publishResult = await ExecutePublishingWorkflowAsync(request, product, publishOrderResult.Data);
+                // 3. 執行實際發布流程
+                var publishResult = await ExecutePublishingWorkflowAsync(request);
                 if (publishResult.IsFailure)
                     return Result<object>.Failure(publishResult.Error);
 
-
+                // 4. 儲存請求記錄
                 var saveReqResult = await _repository.SaveSubmitGoodsReqAsync(request);
                 if (saveReqResult.IsFailure)
                 {
@@ -207,116 +170,13 @@ namespace HqSrv.Application.Services.EcommerceMgmt
             }
         }
 
-        // ============================================
-        // 私有方法 - 商品實體轉換
-        // ============================================
-        private async Task<Result<Product>> ConvertToProductEntityAsync(SubmitMainRequestAll request)
-        {
-            try
-            {
-                // 解析基本資訊
-                var basicInfo = JsonConvert.DeserializeObject<SubmitMainRequest>(request.BasicInfo);
-
-                // 創建商品實體
-                var product = Product.Create(
-                    parentId: request.ParentID,
-                    title: basicInfo.Title,
-                    price: basicInfo.Price,
-                    cost: basicInfo.Cost,
-                    applyType: basicInfo.ApplyType);
-
-                // 設定詳細資訊
-                product.UpdateBasicInfo(
-                    title: basicInfo.Title,
-                    description: basicInfo.ProductDescription,
-                    moreInfo: basicInfo.MoreInfo);
-
-                product.UpdatePricing(
-                    suggestPrice: basicInfo.SuggestPrice,
-                    price: basicInfo.Price,
-                    cost: basicInfo.Cost);
-
-                product.SetSellingPeriod(
-                    startTime: basicInfo.SellingStartDateTime,
-                    endTime: basicInfo.SellingEndDateTime);
-
-                product.SetDimensions(
-                    height: basicInfo.Height,
-                    width: basicInfo.WIdth,  // 注意原本的拼寫
-                    length: basicInfo.Length,
-                    weight: basicInfo.Weight);
-
-                // 處理 SKU
-                // 處理 SKU
-                if (basicInfo.HasSku && basicInfo.SkuList?.Any() == true)
-                {
-                    // 有選項：使用 SkuList
-                    foreach (var skuDto in basicInfo.SkuList)
-                    {
-                        var sku = ProductSku.Create(
-                            outerId: skuDto.OuterId,
-                            name: skuDto.ConbineColDetail(),
-                            qty: skuDto.Qty,
-                            onceQty: skuDto.OnceQty,
-                            price: skuDto.Price,
-                            cost: skuDto.Cost);
-
-                        sku.UpdatePricing(skuDto.SuggestPrice, skuDto.Price, skuDto.Cost);
-                        sku.UpdateInventory(skuDto.Qty, skuDto.SafetyStockQty);
-                        product.AddSku(sku);
-                    }
-                }
-                else
-                {
-                    // 無選項：用 basicInfo 組一筆 SKU
-                    var sku = ProductSku.Create(
-                        outerId: request.ParentID,
-                        name: basicInfo.Title, // 或空字串 ""
-                        qty: basicInfo.Qty ?? 0,
-                        onceQty: basicInfo.OnceQty ?? 1,
-                        price: basicInfo.Price,
-                        cost: basicInfo.Cost);
-
-                    sku.UpdatePricing(basicInfo.SuggestPrice, basicInfo.Price, basicInfo.Cost);
-                    sku.UpdateInventory(basicInfo.Qty ?? 0, basicInfo.SafetyStockQty);
-                    product.AddSku(sku);
-                }
-
-
-                return Result<Product>.Success(product);
-            }
-            catch (Exception ex)
-            {
-                return Result<Product>.Failure(Error.Custom("CONVERT_TO_ENTITY_ERROR", ex.Message));
-            }
-        }
-
-        // ============================================
-        // 私有方法 - 取得目標發布平台
-        // ============================================
-        private List<string> GetTargetPlatforms(string storeSettingsJson)
-        {
-            try
-            {
-                var storeSettings = JsonConvert.DeserializeObject<List<StoreSetting>>(storeSettingsJson);
-                return storeSettings
-                    .Where(s => s.Publish)
-                    .Select(s => s.EStoreID)
-                    .ToList();
-            }
-            catch
-            {
-                return new List<string>();
-            }
-        }
+       
 
         // ============================================
         // 私有方法 - 執行發布工作流程
         // ============================================
         private async Task<Result<object>> ExecutePublishingWorkflowAsync(
-            SubmitMainRequestAll request,
-            Product product,
-            List<string> orderedPlatforms)
+            SubmitMainRequestAll request)
         {
             try
             {
@@ -338,24 +198,13 @@ namespace HqSrv.Application.Services.EcommerceMgmt
                 var storeSettings = JsonConvert.DeserializeObject<List<StoreSetting>>(request.StoreSettings);
 
                 // 按照優先順序發布到各平台
-                foreach (var platformId in orderedPlatforms)
+                foreach (var store in storeSettings.Where(s => s.Publish))
                 {
-                    var store = storeSettings.FirstOrDefault(s => s.EStoreID == platformId && s.Publish);
-                    if (store == null) continue;
-
-                    // 使用 Domain Service 準備發布資料
-                    var prepareResult = await _publishingService.PreparePublishDataAsync(product, platformId, store);
-                    if (prepareResult.IsFailure)
-                    {
-                        errorList.Add($"平台 {platformId} 資料準備失敗: {prepareResult.Error.Message}");
-                        continue;
-                    }
-
                     // 執行平台發布
-                    var publishResult = await PublishToPlatformAsync(request, store, product);
+                    var publishResult = await PublishToPlatformAsync(request, store);
                     if (publishResult.IsFailure)
                     {
-                        errorList.Add($"平台 {platformId} 發布失敗: {publishResult.Error.Message}");
+                        errorList.Add($"平台 {store.EStoreID} 發布失敗: {publishResult.Error.Message}");
                     }
                     else
                     {
@@ -383,8 +232,7 @@ namespace HqSrv.Application.Services.EcommerceMgmt
         // ============================================
         private async Task<Result<object>> PublishToPlatformAsync(
             SubmitMainRequestAll request,
-            StoreSetting store,
-            Product product)
+            StoreSetting store)
         {
             try
             {

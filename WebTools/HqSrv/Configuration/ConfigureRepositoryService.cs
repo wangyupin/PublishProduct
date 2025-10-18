@@ -7,7 +7,6 @@ using HqSrv.Repository.DashBoardMgmt;
 using HqSrv.Repository.EcommerceMgmt;
 
 using HqSrv.Infrastructure.Repositories;
-using HqSrv.Domain.Repositories;
 
 namespace HqSrv.Configuration
 {

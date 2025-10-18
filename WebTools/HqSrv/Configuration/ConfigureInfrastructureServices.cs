@@ -1,4 +1,4 @@
-﻿using HqSrv.Domain.Repositories;
+﻿
 using HqSrv.Domain.Services;
 using HqSrv.Infrastructure.Repositories;
 using HqSrv.Infrastructure.Services;
@@ -18,10 +18,6 @@ namespace HqSrv.Configuration
             // Repository 註冊
             // ============================================
 
-            // Domain Repository 介面 → Infrastructure 實作
-            services.AddScoped<IProductRepository, ProductRepository>();
-            services.AddScoped<IPublishGoodsRepository, PublishGoodsRepository>();
-
             // Infrastructure Repository 介面 → Infrastructure 實作
             services.AddScoped<IPublishGoodsInfrastructureRepository, PublishGoodsRepository>();
 
@@ -29,8 +25,6 @@ namespace HqSrv.Configuration
             // Domain Services 的 Infrastructure 實作
             // ============================================
 
-            // Platform Mapping Service - 在 Infrastructure 實作但實現 Domain 介面
-            services.AddScoped<IPlatformMappingService, PlatformMappingService>();
             services.AddScoped<IOptionService, OptionService>();
 
             // ============================================
@@ -46,10 +40,6 @@ namespace HqSrv.Configuration
             // services.AddScoped<YahooExternalApiService>();
             // services.AddScoped<MomoExternalApiService>();
             // services.AddScoped<ShopeeExternalApiService>();
-
-            // Domain Event Service
-            services.AddScoped<IDomainEventService, DomainEventService>();
-
 
             return services;
         }
