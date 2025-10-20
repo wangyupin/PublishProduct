@@ -103,6 +103,7 @@ namespace HqSrv.Infrastructure.Repositories
                     var currentGoodsList = result.Read<SkuItem_Goods>().ToList();
                     var activePlatforms = result.Read<PlatformInfo>().ToList();
 
+                    // 排序 currentGoodsList
                     if (currentGoodsList != null && currentGoodsList.Count > 0)
                     {
                         currentGoodsList = currentGoodsList
@@ -111,7 +112,7 @@ namespace HqSrv.Infrastructure.Repositories
                             .ToList();
                     }
 
-                    // ✨ 用 SubmitHistoryDto 來反序列化
+                    // 解析歷史資料
                     SubmitHistoryDto submitHistory = null;
                     List<SkuItem> historicalSkus = new List<SkuItem>();
                     List<StoreSetting> historicalStoreSettings = new List<StoreSetting>();
@@ -123,7 +124,6 @@ namespace HqSrv.Infrastructure.Repositories
                         {
                             var rawJson = historyDict["RequestParams"].ToString();
 
-                            // ✨ 反序列化成 SubmitHistoryDto (有 StoreSettings 屬性)
                             submitHistory = JsonConvert.DeserializeObject<SubmitHistoryDto>(rawJson);
 
                             if (submitHistory != null)
@@ -134,9 +134,168 @@ namespace HqSrv.Infrastructure.Repositories
                         }
                     }
 
-                    var skuAnalysis = AnalyzeSkuChanges(historicalSkus, currentGoodsList);
-                    var platformAnalysis = AnalyzePlatformChanges(historicalStoreSettings, activePlatforms);
+                    // ✨ 關鍵修改: 如果沒有歷史記錄,直接用資料庫的 Goods 建立 SKU 列表
+                    List<SkuItem> finalSkuList;
 
+                    if (submitHistory == null || historicalSkus.Count == 0)
+                    {
+                        // ✨ 第一次上架:直接從資料庫建立
+                        finalSkuList = currentGoodsList.Select(goods => new SkuItem
+                        {
+                            OuterId = goods.GoodID,
+                            ColDetail1 = !string.IsNullOrEmpty(goods.SizeName)
+                                ? new Option<string>(goods.SizeName, goods.SizeName)
+                                : null,
+                            ColDetail2 = !string.IsNullOrEmpty(goods.ColorName)
+                                ? new Option<string>(goods.ColorName, goods.ColorName)
+                                : null,
+                            Qty = 0,
+                            OnceQty = 1,
+                            Price = goods.Price,
+                            Cost = goods.Cost,
+                            SuggestPrice = goods.AdvicePrice,
+                            SafetyStockQty = 0,
+                            Image = new ImageInfo { Path = "" }
+                        }).ToList();
+                    }
+                    else
+                    {
+                        // ✨ 有歷史記錄:進行比對
+                        var skuAnalysis = AnalyzeSkuChanges(historicalSkus, currentGoodsList);
+
+                        var processedSkuList = new List<SkuItem>();
+
+                        // 1. 保留未刪除的 SKU
+                        var existingSkus = historicalSkus
+                            .Where(sku => !skuAnalysis.DeletedSkus.Any(d => d.OuterId == sku.OuterId))
+                            .Select(sku => {
+                                var modifiedInfo = skuAnalysis.ModifiedSkus?.FirstOrDefault(m => m.OuterId == sku.OuterId);
+
+                                if (modifiedInfo != null)
+                                {
+                                    return new SkuItem
+                                    {
+                                        OuterId = sku.OuterId,
+                                        OriginalOuterId = sku.OriginalOuterId,
+                                        ColDetail1 = sku.ColDetail1,
+                                        ColDetail2 = sku.ColDetail2,
+                                        Price = sku.Price,
+                                        Cost = sku.Cost,
+                                        SuggestPrice = sku.SuggestPrice,
+                                        Qty = sku.Qty,
+                                        OnceQty = sku.OnceQty,
+                                        SafetyStockQty = sku.SafetyStockQty,
+                                        Image = sku.Image,
+                                        _warning = "modified",
+                                        _warningMessage = $"已變更: {string.Join(", ", modifiedInfo.Changes ?? new List<string>())}",
+                                        _suggestedValues = new SuggestedValues
+                                        {
+                                            Price = modifiedInfo.Price,
+                                            Cost = modifiedInfo.Cost,
+                                            SizeName = modifiedInfo.SizeName,
+                                            ColorName = modifiedInfo.ColorName
+                                        }
+                                    };
+                                }
+
+                                return sku;
+                            }).ToList();
+
+                        // 2. 新增的 SKU
+                        var newSkus = (skuAnalysis.NewSkus?.Select(sku => new SkuItem
+                        {
+                            OuterId = sku.GoodID,
+                            ColDetail1 = !string.IsNullOrEmpty(sku.SizeName)
+                                ? new Option<string>(sku.SizeName, sku.SizeName)
+                                : null,
+                            ColDetail2 = !string.IsNullOrEmpty(sku.ColorName)
+                                ? new Option<string>(sku.ColorName, sku.ColorName)
+                                : null,
+                            Qty = 0,
+                            OnceQty = 1,
+                            Price = sku.Price,
+                            Cost = sku.Cost,
+                            SuggestPrice = sku.Price,
+                            SafetyStockQty = 0,
+                            Image = new ImageInfo { Path = "" },
+                            _warning = "new",
+                            _warningMessage = "新的 SKU"
+                        }).ToList() ?? new List<SkuItem>());
+
+                        processedSkuList.AddRange(existingSkus);
+                        processedSkuList.AddRange(newSkus);
+
+                        finalSkuList = processedSkuList;
+                    }
+
+                    // 排序
+                    finalSkuList = finalSkuList
+                        .OrderBy(x => x.ColDetail2?.Value ?? "", Comparer<string>.Create((x, y) => StrCmpLogicalW(x ?? "", y ?? "")))
+                        .ThenBy(x => x.ColDetail1?.Value ?? "", Comparer<string>.Create((x, y) => StrCmpLogicalW(x ?? "", y ?? "")))
+                        .ToList();
+
+                    // ✨ 處理 StoreSettings
+                    List<StoreSetting> finalStoreSettings;
+
+                    if (submitHistory == null || historicalStoreSettings.Count == 0)
+                    {
+                        // ✨ 第一次上架:直接從資料庫建立
+                        finalStoreSettings = activePlatforms.Select(platform => new StoreSetting
+                        {
+                            PlatformID = platform.PlatformID,
+                            EStoreID = platform.EStoreID,
+                            Publish = false,
+                            Cost = 0,
+                            Title = null
+                        }).ToList();
+                    }
+                    else
+                    {
+                        // ✨ 有歷史記錄:進行比對
+                        var platformAnalysis = AnalyzePlatformChanges(historicalStoreSettings, activePlatforms);
+
+                        var processedStoreSettings = new List<StoreSetting>();
+
+                        // 1. 保留啟用中的平台
+                        var existingPlatforms = historicalStoreSettings
+                            .Where(store => !platformAnalysis.DisabledPlatforms.Any(p => p.PlatformID == store.PlatformID))
+                            .ToList();
+
+                        // 2. 新平台
+                        var newPlatforms = (platformAnalysis.NewPlatforms?.Select(platform => new StoreSetting
+                        {
+                            PlatformID = platform.PlatformID,
+                            EStoreID = platform.EStoreID,
+                            Publish = false,
+                            Cost = 0,
+                            Title = null,
+                            _warning = "new",
+                            _warningMessage = "新啟用的平台"
+                        }).ToList() ?? new List<StoreSetting>());
+
+                        processedStoreSettings.AddRange(existingPlatforms);
+                        processedStoreSettings.AddRange(newPlatforms);
+
+                        finalStoreSettings = processedStoreSettings;
+                    }
+
+                    // ✨ 更新或建立 submitHistory
+                    if (submitHistory != null)
+                    {
+                        submitHistory.SkuList = finalSkuList;
+                        submitHistory.StoreSettings = finalStoreSettings;
+                    }
+                    else
+                    {
+                        // ✨ 第一次上架,建立空的 submitHistory 結構
+                        submitHistory = new SubmitHistoryDto
+                        {
+                            SkuList = finalSkuList,
+                            StoreSettings = finalStoreSettings
+                        };
+                    }
+
+                    // 組合預設值
                     object defVal = new
                     {
                         Title = currentGoodsList.FirstOrDefault()?.GoodName,
@@ -148,27 +307,46 @@ namespace HqSrv.Infrastructure.Repositories
 
                     var optionList = CreateOptionList(currentGoodsList);
 
-                    // ✨ submitHistory 現在包含所有屬性,包括 storeSettings
+                    // ✨ 判斷是否有變動
+                    bool hasSkuChanges = submitHistoryRaw != null &&
+                        (finalSkuList.Any(s => s._warning == "new") ||
+                         finalSkuList.Any(s => s._warning == "modified"));
+
+                    bool hasPlatformChanges = submitHistoryRaw != null &&
+                        finalStoreSettings.Any(s => s._warning == "new");
+
                     return Result<object>.Success(new
                     {
                         defVal,
-                        submitHistory = submitHistory,  // ✨ SubmitHistoryDto 物件
+                        submitHistory = submitHistory,
                         optionList,
 
-                        skuChanges = new
+                        skuChanges = submitHistoryRaw != null ? new
                         {
-                            newSkus = skuAnalysis.NewSkus,
-                            deletedSkus = skuAnalysis.DeletedSkus,
-                            modifiedSkus = skuAnalysis.ModifiedSkus,
-                            hasChanges = skuAnalysis.HasChanges
-                        },
+                            newSkus = finalSkuList.Where(s => s._warning == "new").Select(s => new {
+                                goodID = s.OuterId,
+                                sizeName = s.ColDetail1?.Label,
+                                colorName = s.ColDetail2?.Label,
+                                price = s.Price,
+                                cost = s.Cost
+                            }).ToList(),
+                            deletedSkus = new List<object>(),  // 已經過濾掉了
+                            modifiedSkus = finalSkuList.Where(s => s._warning == "modified").Select(s => new {
+                                outerId = s.OuterId,
+                                changes = s._warningMessage?.Replace("已變更: ", "").Split(", ").ToList()
+                            }).ToList(),
+                            hasChanges = hasSkuChanges
+                        } : null,
 
-                        platformChanges = new
+                        platformChanges = submitHistoryRaw != null ? new
                         {
-                            newPlatforms = platformAnalysis.NewPlatforms,
-                            disabledPlatforms = platformAnalysis.DisabledPlatforms,
-                            hasChanges = platformAnalysis.HasChanges
-                        }
+                            newPlatforms = finalStoreSettings.Where(s => s._warning == "new").Select(p => new {
+                                platformID = p.PlatformID,
+                                eStoreID = p.EStoreID
+                            }).ToList(),
+                            disabledPlatforms = new List<object>(),  // 已經過濾掉了
+                            hasChanges = hasPlatformChanges
+                        } : null
                     });
                 }
                 catch (SqlException e)

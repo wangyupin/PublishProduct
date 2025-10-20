@@ -190,133 +190,32 @@ export const slice = createSlice({
             .addCase(getSubmitDefVal.fulfilled, (state, action) => {
                 const {
                     defVal,
-                    submitHistory,
+                    submitHistory,  // ✨ 已經是過濾好的資料了!
                     optionList,
                     skuChanges,
                     platformChanges
                 } = action.payload.data
 
-                // ✨ 計算變動數量
-                const changeCount = {
-                    newSkus: skuChanges?.newSkus?.length || 0,
-                    deletedSkus: skuChanges?.deletedSkus?.length || 0,
-                    modifiedSkus: skuChanges?.modifiedSkus?.length || 0,
-                    newPlatforms: platformChanges?.newPlatforms?.length || 0,
-                    disabledPlatforms: platformChanges?.disabledPlatforms?.length || 0
+                // ✨ Toast 提示
+                if (skuChanges?.newSkus?.length > 0) {
+                    ShowToast('發現新的 SKU', `已自動加入 ${skuChanges.newSkus.length} 個新的 SKU`, 'success')
                 }
 
-                // ✨ 一次性提示所有變動
-                if (skuChanges?.hasChanges || platformChanges?.hasChanges) {
-                    const messages = []
-                    if (changeCount.newSkus > 0) messages.push(`新增 ${changeCount.newSkus} 個 SKU`)
-                    if (changeCount.deletedSkus > 0) messages.push(`${changeCount.deletedSkus} 個 SKU 已刪除`)
-                    if (changeCount.modifiedSkus > 0) messages.push(`${changeCount.modifiedSkus} 個 SKU 已變更`)
-                    if (changeCount.newPlatforms > 0) messages.push(`新增 ${changeCount.newPlatforms} 個平台`)
-                    if (changeCount.disabledPlatforms > 0) messages.push(`${changeCount.disabledPlatforms} 個平台已停用`)
-
-                    ShowToast(
-                        '資料變動檢測',
-                        messages.join('、'),
-                        'warning',
-                        5000  // 顯示 5 秒
-                    )
+                if (skuChanges?.deletedSkus?.length > 0) {
+                    ShowToast('SKU 已移除', `有 ${skuChanges.deletedSkus.length} 個 SKU 在資料庫中已不存在,已自動移除`, 'warning')
                 }
 
-                // ✨ 處理 SKU 列表
-                const processedSkuList = [
-                    // 1. 原有的 SKU (標記狀態)
-                    ...(submitHistory?.skuList?.map(sku => {
-                        // 檢查是否被刪除
-                        const deletedInfo = skuChanges?.deletedSkus?.find(d => d.outerId === sku.outerId)
+                if (skuChanges?.modifiedSkus?.length > 0) {
+                    ShowToast('SKU 已變更', `有 ${skuChanges.modifiedSkus.length} 個 SKU 的屬性或價格已變更`, 'warning')
+                }
 
-                        // 檢查是否被修改
-                        const modifiedInfo = skuChanges?.modifiedSkus?.find(m => m.outerId === sku.outerId)
+                if (platformChanges?.newPlatforms?.length > 0) {
+                    ShowToast('發現新平台', `已加入 ${platformChanges.newPlatforms.length} 個新平台`, 'success')
+                }
 
-                        if (deletedInfo) {
-                            return {
-                                ...sku,
-                                _warning: 'deleted',
-                                _warningMessage: '此 SKU 在資料庫中已不存在,儲存時會被移除'
-                            }
-                        }
-
-                        if (modifiedInfo) {
-                            return {
-                                ...sku,
-                                _warning: 'modified',
-                                _warningMessage: `已變更: ${modifiedInfo.changes?.join(', ')}`,
-                                _suggestedValues: {  // ✨ 儲存建議值,但不直接套用
-                                    price: modifiedInfo.price,
-                                    cost: modifiedInfo.cost,
-                                    sizeName: modifiedInfo.sizeName,
-                                    colorName: modifiedInfo.colorName
-                                }
-                            }
-                        }
-
-                        return sku
-                    }) || []),
-
-                    // 2. 新增的 SKU
-                    ...(skuChanges?.newSkus?.map(sku => ({
-                        outerId: sku.goodID,
-                        colDetail1: sku.sizeName ? {
-                            label: sku.sizeName,
-                            value: sku.sizeName
-                        } : null,
-                        colDetail2: sku.colorName ? {
-                            label: sku.colorName,
-                            value: sku.colorName
-                        } : null,
-                        qty: 0,
-                        onceQty: 1,
-                        price: sku.price,
-                        cost: sku.cost,
-                        suggestPrice: sku.price,
-                        safetyStockQty: 0,
-                        image: { path: '' },
-                        _warning: 'new',
-                        _warningMessage: '新的 SKU'
-                    })) || [])
-                ]
-
-                // ✨ 處理 StoreSettings
-                const processedStoreSettings = [
-                    // 1. 原有的平台 (標記狀態)
-                    ...(submitHistory?.storeSettings?.map(store => {
-                        const disabledInfo = platformChanges?.disabledPlatforms?.find(
-                            p => p.platformID === store.platformID
-                        )
-
-                        if (disabledInfo) {
-                            return {
-                                ...store,
-                                isPublished: store.publish,
-                                _warning: 'disabled',
-                                _warningMessage: '此平台已停用,儲存時會被移除'
-                            }
-                        }
-
-                        return {
-                            ...store,
-                            isPublished: store.publish
-                        }
-                    }) || []),
-
-                    // 2. 新平台
-                    ...(platformChanges?.newPlatforms?.map(platform => ({
-                        platformID: platform.platformID,
-                        eStoreID: platform.eStoreID,
-                        platformName: platform.platformName,
-                        publish: false,
-                        isPublished: false,
-                        needDelete: false,
-                        cost: null,
-                        title: null,
-                        _warning: 'new',
-                        _warningMessage: '新啟用的平台'
-                    })) || [])
-                ]
+                if (platformChanges?.disabledPlatforms?.length > 0) {
+                    ShowToast('平台已移除', `有 ${platformChanges.disabledPlatforms.length} 個平台已停用,已自動移除`, 'warning')
+                }
 
                 const convertedSubmitHistory = submitHistory ? {
                     ...submitHistory,
@@ -336,7 +235,11 @@ export const slice = createSlice({
                         { checked: submitHistory.salesModeTypeDef === 2 || submitHistory.salesModeTypeDef === 3 }
                     ],
 
-                    storeSettings: processedStoreSettings,
+                    // ✨ storeSettings 和 skuList 已經在後端過濾好了
+                    storeSettings: submitHistory.storeSettings?.map(item => ({
+                        ...item,
+                        isPublished: item.publish
+                    })) || [],
 
                     categoryOfficial: submitHistory.categoryOfficialId ? findCategoryPath(state.option.categoryOfficialOption, submitHistory.categoryOfficialId) : null
                 } : {}
@@ -345,7 +248,7 @@ export const slice = createSlice({
                     parentID: action.payload.params.parentID,
                     ...defVal,
                     ...convertedSubmitHistory,
-                    skuList: processedSkuList,
+                    skuList: submitHistory?.skuList || [],  // ✨ 直接用,已經過濾好了
                     hasSku: optionList.length > 0,
                     optionList
                 }

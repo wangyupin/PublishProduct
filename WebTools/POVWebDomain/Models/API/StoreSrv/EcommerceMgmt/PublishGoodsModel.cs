@@ -44,6 +44,8 @@ namespace POVWebDomain.Models.API.StoreSrv.EcommerceMgmt.PublishGoods
         public decimal Cost { get; set; }
         public bool Publish { get; set; }
         public bool NeedDelete { get; set; }
+        public string _warning { get; set; }  // "new", "disabled"
+        public string _warningMessage { get; set; }
     }
 
     public class SubmitMainRequest
@@ -208,7 +210,7 @@ namespace POVWebDomain.Models.API.StoreSrv.EcommerceMgmt.PublishGoods
         public int? CategoryOfficialId { get; set; }
 
         // ✨ 額外的屬性 (資料庫存的時候被塞進來的)
-        public List<ImageInfo> MainImage { get; set; }
+        public List<ImageInfo> MainImage { get; set; } = new List<ImageInfo>();
         public ImageInfo SizeImage { get; set; }
         public List<StoreSetting> StoreSettings { get; set; }  // ← 加這個!
 
@@ -264,8 +266,18 @@ namespace POVWebDomain.Models.API.StoreSrv.EcommerceMgmt.PublishGoods
         public decimal SuggestPrice { get; set; }
         public decimal Price { get; set; }
         public decimal Cost { get; set; }
-    }
 
+        public string _warning { get; set; }  // "new", "modified", "deleted"
+        public string _warningMessage { get; set; }
+        public SuggestedValues _suggestedValues { get; set; }
+    }
+    public class SuggestedValues
+    {
+        public decimal Price { get; set; }
+        public decimal Cost { get; set; }
+        public string SizeName { get; set; }
+        public string ColorName { get; set; }
+    }
 
     public class SkuWrapper
     {
