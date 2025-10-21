@@ -7,11 +7,7 @@ import axios from 'axios'
 import { selectThemeColors, selectStyle, formatSelectOptionLabelNL, selectStyleNHL, getUserData } from '@utils'
 import { CustomLabel, MultiSelect, Select, CustomArrow, Radio } from '@CityAppComponents'
 import { getDateTimeLocal, getFormatedDateForInput } from '@CityAppHelper'
-import '@styles/react/libs/editor/editor.scss'
-import '@styles/react/libs/file-uploader/file-uploader.scss'
-import '@srcAssets/css/tinymce/skin.css'
-import Avatar from '@components/avatar'
-import { booleanOption } from '@configs/constants'
+
 
 // ** Third Party Components
 import CreatableSelect from 'react-select/creatable'
@@ -20,9 +16,10 @@ import { Controller, get, useFieldArray, useWatch } from 'react-hook-form'
 import { X, Trash, Plus } from 'react-feather'
 import { AgGridReact } from 'ag-grid-react'
 import ReactSelect from "react-select"
-import { Editor } from '@tinymce/tinymce-react'
 import { useDropzone } from 'react-dropzone'
 import { Cascader } from 'antd'
+import ReactQuill from 'react-quill'
+import 'react-quill/dist/quill.snow.css'
 
 // ** Reactstrap Imports
 import { Button, Label, FormText, Form, Input, Card, CardBody, CardHeader, CardTitle, Row, Col, InputGroup, InputGroupText, Table, Nav, NavItem, NavLink, TabPane, TabContent } from 'reactstrap'
@@ -534,6 +531,33 @@ const renderInfo = ({ arrVal, control, setValue, getValues, watch, t, option }) 
         })
     }
 
+    // 定義 Quill 的工具列設定
+    const quillModules = {
+        toolbar: [
+            [{ font: [] }],  // 字型
+            [{ size: ['small', false, 'large', 'huge'] }],  // 字體大小
+            ['bold', 'italic'],  // 粗體、斜體
+            [{ color: [] }],  // 文字顏色
+            [{ align: [] }],  // 對齊
+            [{ list: 'ordered' }, { list: 'bullet' }],  // 列表
+            [{ indent: '-1' }, { indent: '+1' }],  // 縮排
+            ['link', 'image'],  // 連結、圖片
+            ['code-block'],  // 程式碼
+            ['clean']  // 清除格式
+        ]
+    }
+
+    const quillFormats = [
+        'font', 'size',
+        'bold', 'italic',
+        'color',
+        'align',
+        'list', 'bullet',
+        'indent',
+        'link', 'image',
+        'code-block'
+    ]
+
     return (
         <Card className='mb-2'>
             <CardBody>
@@ -1028,44 +1052,13 @@ const renderInfo = ({ arrVal, control, setValue, getValues, watch, t, option }) 
                             name='moreInfo'
                             control={control}
                             render={({ field }) => (
-                                <Editor
-                                    apiKey='mzpu6vd3cjwlblv9qcrlydsrx2nkpkyoz3bipewrfoakwkrw'
-                                    value={field.value}
-                                    init={{
-                                        language: 'zh_TW',
-                                        height: 500,
-                                        paste_remove_styles_if_webkit: false,
-                                        images_upload_url: false, // 禁用預設上傳
-                                        images_upload_handler: false, // 不使用上傳處理器
-                                        paste_data_images: true, // 允許貼上圖片
-                                        skin: false,
-                                        content_css: false,
-                                        menubar: false,
-                                        elementpath: false,
-                                        branding: false,
-                                        resize: true,
-                                        plugins: [
-                                            'advlist', 'autolink', 'lists', 'link', 'image', 'charmap', 'preview',
-                                            'anchor', 'searchreplace', 'visualblocks', 'code', 'fullscreen',
-                                            'insertdatetime', 'media', 'table', 'code', 'help', 'wordcount'
-                                        ],
-                                        toolbar: 'fontfamily fontsize bold italic forecolor | ' +
-                                            'alignleft aligncenter alignright | ' +
-                                            'bullist numlist outdent indent | ' +
-                                            'link image code',
-                                        setup: (ed) => {
-                                            ed.on('keydown', (event) => {
-                                                if (event.key === 'Tab') {
-                                                    if (event.shiftKey) ed.execCommand('Outdent')
-                                                    else ed.execCommand('Indent')
-                                                    event.preventDefault()
-                                                    return false
-                                                }
-                                            })
-                                        }
-                                    }}
-                                    onEditorChange={field.onChange}
-
+                                <ReactQuill
+                                    theme="snow"
+                                    value={field.value || ''}
+                                    onChange={field.onChange}
+                                    modules={quillModules}
+                                    formats={quillFormats}
+                                    style={{ height: '400px', marginBottom: '50px' }}  // 預留工具列空間
                                 />
                             )}
                         />
