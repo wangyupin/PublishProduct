@@ -422,8 +422,8 @@ namespace HqSrv.Infrastructure.Repositories
                 List<string> changes = new List<string>();
 
                 // 判斷歷史記錄的屬性配置
-                bool historyHasBothAttributes = historicalSku.ColDetail1.Value != null && historicalSku.ColDetail2.Value != null;
-                bool historyHasOnlyOne = (historicalSku.ColDetail1.Value != null) ^ (historicalSku.ColDetail2.Value != null);
+                bool historyHasBothAttributes = historicalSku.ColDetail1?.Value != null && historicalSku.ColDetail2?.Value != null;
+                bool historyHasOnlyOne = (historicalSku.ColDetail1?.Value != null) ^ (historicalSku.ColDetail2?.Value != null);
 
                 if (historyHasBothAttributes)
                 {

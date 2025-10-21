@@ -514,9 +514,9 @@ namespace POVWebDomain.Models.API.StoreSrv.EcommerceMgmt.PublishGoods
         public static string ConbineColDetail(this SkuItem sku)
         {
             string name = "";
-            if (!string.IsNullOrEmpty(sku.ColDetail1.Label) && !string.IsNullOrEmpty(sku.ColDetail2.Label)) name = $"尺寸:{sku.ColDetail1.Label};顏色:{sku.ColDetail2.Label}";
-            else if (!string.IsNullOrEmpty(sku.ColDetail1.Label)) name = $"尺寸:{sku.ColDetail1.Label}";
-            else if (!string.IsNullOrEmpty(sku.ColDetail2.Label)) name = $"顏色:{sku.ColDetail2.Label}";
+            if (!string.IsNullOrEmpty(sku.ColDetail1?.Label) && !string.IsNullOrEmpty(sku.ColDetail2?.Label)) name = $"尺寸:{sku.ColDetail1?.Label};顏色:{sku.ColDetail2?.Label}";
+            else if (!string.IsNullOrEmpty(sku.ColDetail1?.Label)) name = $"尺寸:{sku.ColDetail1?.Label}";
+            else if (!string.IsNullOrEmpty(sku.ColDetail2?.Label)) name = $"顏色:{sku.ColDetail2?.Label}";
 
             return name;
         }
@@ -525,9 +525,9 @@ namespace POVWebDomain.Models.API.StoreSrv.EcommerceMgmt.PublishGoods
         public static string ConbineColDetail_Official(this SkuItem sku)
         {
             string name = "";
-            if (!string.IsNullOrEmpty(sku.ColDetail1.Label) && !string.IsNullOrEmpty(sku.ColDetail2.Label)) name = $"尺寸:{sku.ColDetail1.Label}*顏色:{sku.ColDetail2.Label}";
-            else if (!string.IsNullOrEmpty(sku.ColDetail1.Label)) name = $"尺寸:{sku.ColDetail1.Label}";
-            else if (!string.IsNullOrEmpty(sku.ColDetail2.Label)) name = $"顏色:{sku.ColDetail2.Label}";
+            if (!string.IsNullOrEmpty(sku.ColDetail1?.Label) && !string.IsNullOrEmpty(sku.ColDetail2?.Label)) name = $"尺寸:{sku.ColDetail1?.Label}*顏色:{sku.ColDetail2?.Label}";
+            else if (!string.IsNullOrEmpty(sku.ColDetail1?.Label)) name = $"尺寸:{sku.ColDetail1?.Label}";
+            else if (!string.IsNullOrEmpty(sku.ColDetail2?.Label)) name = $"顏色:{sku.ColDetail2?.Label}";
 
             return name;
         }
