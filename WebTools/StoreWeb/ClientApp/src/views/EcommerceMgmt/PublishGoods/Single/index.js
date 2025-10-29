@@ -274,24 +274,29 @@ const Single = ({ access, t, mode, id }) => {
     const [storeNumber, setStoreNumber] = useState(null)
 
     useEffect(() => {
-        const loadAppSettings = async () => {
-            try {
-                const res = await fetch('/api/EcommerceStore/GetStoreNumber')
+        let defaultValues = selectedGoods
 
-                if (!res.ok) {
-                    throw new Error(`HTTP error! status: ${res.status}`)
-                }
-
-                const data = await res.json()
-                setStoreNumber(data?.data?.storeNumber)
-            } catch (err) {
-                console.error('載入設定失敗:', err)
-                setStoreNumber(null)
+        if (!selectedMode) {
+            defaultValues = {
+                ...targetDefaultValue,
+                ...selectedValue
             }
         }
 
-        loadAppSettings()
-    }, [])
+        const arrs = {}
+        Object.keys(defaultValues).forEach((key) => {
+            if (Array.isArray(defaultValues[key])) {
+                setValue(key, [])
+                arrs[key] = defaultValues[key]
+                Object.keys(defaultValues[key]).forEach((subKey) => {
+                    setValue(`${key}.${subKey}`, defaultValues[key][subKey])
+                })
+            }
+            setValue(key, defaultValues[key])
+        })
+        setArrVal(arrs)
+    }, [targetDefaultValue, selectedValue])
+
 
     useEffect(() => {
         if (!storeNumber) return

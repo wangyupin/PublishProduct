@@ -8,7 +8,6 @@ import { selectThemeColors, selectStyle, formatSelectOptionLabelNL, selectStyleN
 import { CustomLabel, MultiSelect, Select, CustomArrow, Radio } from '@CityAppComponents'
 import { getDateTimeLocal, getFormatedDateForInput } from '@CityAppHelper'
 
-
 // ** Third Party Components
 import CreatableSelect from 'react-select/creatable'
 import classnames from 'classnames'
